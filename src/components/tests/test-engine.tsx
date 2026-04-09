@@ -11,6 +11,7 @@ interface Question {
   question_text: string
   options: string[]
   difficulty: number
+  metadata?: { image_url?: string; [key: string]: unknown }
 }
 
 interface TestEngineProps {
@@ -204,6 +205,17 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
                     <span className="text-sm font-semibold text-slate-500 shrink-0">#{i + 1}</span>
                     <p className="text-sm font-medium text-slate-800">{q.question_text}</p>
                   </div>
+                  {q.metadata?.image_url && (
+                    <div className="mb-2 ml-5">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={q.metadata.image_url as string}
+                        alt="Imagine întrebare"
+                        className="max-w-full rounded-lg border border-slate-200 object-contain"
+                        style={{ maxHeight: '200px' }}
+                      />
+                    </div>
+                  )}
                   <div className="ml-5 space-y-1">
                     {q.options.map((opt, oi) => (
                       <div
@@ -274,10 +286,21 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
       </div>
 
       {/* Question */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-4">
         <p className="text-base font-medium text-slate-900 leading-relaxed">
           {currentQ.question_text}
         </p>
+        {currentQ.metadata?.image_url && (
+          <div className="flex justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={currentQ.metadata.image_url as string}
+              alt="Imagine întrebare"
+              className="max-w-full rounded-xl border border-slate-200 object-contain"
+              style={{ maxHeight: '360px' }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Options */}

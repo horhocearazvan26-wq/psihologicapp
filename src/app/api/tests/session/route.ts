@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   // Fetch questions
   const { data: questions, error } = await supabase
     .from('test_questions')
-    .select('id, question_text, options, difficulty, category, institution')
+    .select('id, question_text, options, difficulty, category, institution, metadata')
     .eq('institution', institution)
     .eq('category', category)
     .eq('is_active', true)

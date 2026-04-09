@@ -5,6 +5,7 @@ import { generateNumericalQuestions } from '@/lib/questions/numerical'
 import { generateVocabularyQuestions } from '@/lib/questions/vocabulary'
 import { generateMemoryQuestions } from '@/lib/questions/memory'
 import { generatePersonalityQuestions } from '@/lib/questions/personality'
+import { generateRavenQuestions } from '@/lib/questions/raven'
 
 // Only allow in development or with secret key
 export async function POST(request: Request) {
@@ -31,6 +32,7 @@ export async function POST(request: Request) {
       ...generateVocabularyQuestions(institution),
       ...generateMemoryQuestions(institution),
       ...generatePersonalityQuestions(institution),
+      ...generateRavenQuestions(institution),
     ]
 
     // Insert in batches of 50

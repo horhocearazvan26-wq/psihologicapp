@@ -18,6 +18,7 @@ import {
   LogOut,
   Zap,
   ChevronRight,
+  FolderOpen,
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 
@@ -29,6 +30,7 @@ const navItems = [
   { href: '/dashboard/review', label: 'Review Greșeli', icon: FileText },
   { href: '/dashboard/progress', label: 'Progres', icon: BarChart3 },
   { href: '/dashboard/achievements', label: 'Realizări', icon: Trophy },
+  { href: '/dashboard/materiale', label: 'Materiale PDF', icon: FolderOpen },
 ]
 
 const bottomItems = [
