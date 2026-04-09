@@ -1,38 +1,36 @@
 import { createClient } from '@/lib/supabase/server'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import {
-  INSTITUTION_LABELS,
-  INSTITUTION_FULL_NAMES,
-  CATEGORY_LABELS,
-  CATEGORY_ICONS,
-  getScoreColor,
+  INSTITUTION_LABELS, INSTITUTION_FULL_NAMES, CATEGORY_LABELS,
+  CATEGORY_ICONS, getScoreColor,
 } from '@/lib/utils'
 import type { Institution, TestCategory } from '@/types'
 import {
   BookOpen, Target, Trophy, ArrowRight, Play,
   TrendingUp, Clock, Zap, ChevronRight, Calendar,
-  BarChart3, Layers
+  BarChart3, Layers, Flame,
 } from 'lucide-react'
+import { InstitutionPicker } from '@/components/dashboard/institution-picker'
 
 const institutions: Institution[] = ['MAI', 'MApN', 'SRI', 'ANP']
 const categories: TestCategory[] = ['attention', 'logic', 'memory', 'numerical', 'vocabulary', 'personality']
 
-const INSTITUTION_COLORS: Record<Institution, { gradient: string; bg: string; text: string; ring: string }> = {
-  MAI: { gradient: 'from-blue-500 to-blue-700', bg: 'bg-blue-50', text: 'text-blue-700', ring: 'ring-blue-200' },
-  MApN: { gradient: 'from-green-500 to-green-700', bg: 'bg-green-50', text: 'text-green-700', ring: 'ring-green-200' },
-  SRI: { gradient: 'from-red-500 to-red-700', bg: 'bg-red-50', text: 'text-red-700', ring: 'ring-red-200' },
-  ANP: { gradient: 'from-purple-500 to-purple-700', bg: 'bg-purple-50', text: 'text-purple-700', ring: 'ring-purple-200' },
+const INSTITUTION_CONFIG: Record<Institution, {
+  gradient: string; bg: string; text: string; border: string; shadow: string
+}> = {
+  MAI:  { gradient: 'from-blue-600 to-blue-800',    bg: 'bg-blue-50 dark:bg-blue-950/30',    text: 'text-blue-700 dark:text-blue-300',    border: 'border-blue-200 dark:border-blue-800',    shadow: 'shadow-blue-100 dark:shadow-blue-950' },
+  MApN: { gradient: 'from-emerald-600 to-teal-700', bg: 'bg-emerald-50 dark:bg-emerald-950/30', text: 'text-emerald-700 dark:text-emerald-300', border: 'border-emerald-200 dark:border-emerald-800', shadow: 'shadow-emerald-100 dark:shadow-emerald-950' },
+  SRI:  { gradient: 'from-red-600 to-rose-700',     bg: 'bg-red-50 dark:bg-red-950/30',       text: 'text-red-700 dark:text-red-300',       border: 'border-red-200 dark:border-red-800',       shadow: 'shadow-red-100 dark:shadow-red-950' },
+  ANP:  { gradient: 'from-violet-600 to-indigo-700',bg: 'bg-violet-50 dark:bg-violet-950/30', text: 'text-violet-700 dark:text-violet-300', border: 'border-violet-200 dark:border-violet-800', shadow: 'shadow-violet-100 dark:shadow-violet-950' },
 }
 
-const CATEGORY_BG: Record<TestCategory, string> = {
-  attention: 'bg-blue-50 text-blue-600',
-  logic: 'bg-purple-50 text-purple-600',
-  memory: 'bg-amber-50 text-amber-600',
-  numerical: 'bg-green-50 text-green-600',
-  vocabulary: 'bg-rose-50 text-rose-600',
-  personality: 'bg-teal-50 text-teal-600',
+const CATEGORY_CONFIG: Record<TestCategory, { bg: string; text: string }> = {
+  attention:   { bg: 'bg-sky-50 dark:bg-sky-950/40',     text: 'text-sky-600 dark:text-sky-400' },
+  logic:       { bg: 'bg-purple-50 dark:bg-purple-950/40', text: 'text-purple-600 dark:text-purple-400' },
+  memory:      { bg: 'bg-amber-50 dark:bg-amber-950/40',  text: 'text-amber-600 dark:text-amber-400' },
+  numerical:   { bg: 'bg-green-50 dark:bg-green-950/40',  text: 'text-green-600 dark:text-green-400' },
+  vocabulary:  { bg: 'bg-rose-50 dark:bg-rose-950/40',    text: 'text-rose-600 dark:text-rose-400' },
+  personality: { bg: 'bg-teal-50 dark:bg-teal-950/40',   text: 'text-teal-600 dark:text-teal-400' },
 }
 
 function getDaysUntilExam(examDate: string | null): number | null {
@@ -45,298 +43,234 @@ export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user!.id)
-    .single()
-
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user!.id).single()
   const { data: recentSessions } = await supabase
-    .from('test_sessions')
-    .select('*')
-    .eq('user_id', user!.id)
-    .eq('completed', true)
-    .order('completed_at', { ascending: false })
-    .limit(4)
+    .from('test_sessions').select('*').eq('user_id', user!.id).eq('completed', true)
+    .order('completed_at', { ascending: false }).limit(5)
+  const { data: progressData } = await supabase.from('user_progress').select('*').eq('user_id', user!.id)
 
-  const { data: progressData } = await supabase
-    .from('user_progress')
-    .select('*')
-    .eq('user_id', user!.id)
-
-  const totalTests = progressData?.reduce((sum, p) => sum + p.tests_taken, 0) ?? 0
-  const avgScore = progressData && progressData.length > 0
-    ? progressData.reduce((sum, p) => sum + p.average_score, 0) / progressData.length
-    : 0
-  const bestScore = progressData && progressData.length > 0
-    ? Math.max(...progressData.map(p => Number(p.best_score)))
-    : 0
+  const totalTests = progressData?.reduce((s, p) => s + p.tests_taken, 0) ?? 0
+  const avgScore = progressData?.length ? progressData.reduce((s, p) => s + p.average_score, 0) / progressData.length : 0
+  const bestScore = progressData?.length ? Math.max(...progressData.map(p => Number(p.best_score))) : 0
 
   const firstName = profile?.full_name?.split(' ')[0] ?? 'utilizator'
   const daysUntil = getDaysUntilExam(profile?.exam_date ?? null)
 
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Bună dimineața' : hour < 18 ? 'Bună ziua' : 'Bună seara'
+
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">
-            Bună, {firstName}! 👋
-          </h1>
-          <p className="text-slate-500 mt-1 text-sm">
-            {totalTests === 0
-              ? 'Alege o categorie și începe primul test astăzi.'
-              : `Ai completat ${totalTests} teste până acum. Continuă să exersezi!`}
-          </p>
+    <>
+      <InstitutionPicker />
+
+      <div className="space-y-10 animate-fade-up">
+
+        {/* ── Header ── */}
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-sm text-[var(--text-muted)] font-medium mb-1">{greeting},</p>
+            <h1 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight leading-none">
+              {firstName} 👋
+            </h1>
+            <p className="text-[var(--text-secondary)] mt-2 text-sm">
+              {totalTests === 0
+                ? 'Alege o instituție și începe primul test astăzi.'
+                : `Ai completat ${totalTests} teste. Continuă să exersezi!`}
+            </p>
+          </div>
+          {daysUntil !== null && daysUntil > 0 && (
+            <div className="hidden sm:flex items-center gap-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-2xl px-4 py-3 shrink-0">
+              <Calendar className="w-5 h-5 text-amber-500" />
+              <div>
+                <p className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold uppercase tracking-wide">Până la examen</p>
+                <p className="text-2xl font-extrabold text-amber-700 dark:text-amber-300 leading-none">{daysUntil} <span className="text-sm font-medium">zile</span></p>
+              </div>
+            </div>
+          )}
         </div>
-        {daysUntil !== null && daysUntil > 0 && (
-          <div className="hidden sm:flex items-center gap-3 bg-amber-50 border border-amber-100 rounded-2xl px-4 py-3">
-            <Calendar className="w-5 h-5 text-amber-500" />
-            <div>
-              <p className="text-xs text-amber-600 font-medium">Până la examen</p>
-              <p className="text-lg font-extrabold text-amber-700">{daysUntil} zile</p>
-            </div>
-          </div>
-        )}
-      </div>
 
-      {/* Stats row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {[
-          {
-            icon: BookOpen, label: 'Teste completate', value: totalTests.toString(),
-            color: 'text-blue-600', bg: 'bg-blue-50',
-          },
-          {
-            icon: Target, label: 'Scor mediu', value: avgScore > 0 ? `${avgScore.toFixed(0)}%` : '—',
-            color: getScoreColor(avgScore).replace('text-', 'text-'), bg: 'bg-green-50',
-          },
-          {
-            icon: Trophy, label: 'Cel mai bun scor', value: bestScore > 0 ? `${bestScore.toFixed(0)}%` : '—',
-            color: 'text-yellow-600', bg: 'bg-yellow-50',
-          },
-          {
-            icon: Zap,
-            label: 'Plan',
-            value: profile?.subscription_plan === 'free' ? 'Gratuit' : profile?.subscription_plan === 'one_institution' ? '1 Inst.' : 'Complet',
-            color: profile?.subscription_plan === 'free' ? 'text-slate-600' : 'text-purple-600',
-            bg: profile?.subscription_plan === 'free' ? 'bg-slate-50' : 'bg-purple-50',
-          },
-        ].map((stat) => {
-          const Icon = stat.icon
-          return (
-            <Card key={stat.label}>
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center shrink-0`}>
-                  <Icon className={`w-5 h-5 ${stat.color}`} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-lg font-bold text-slate-900 leading-none">{stat.value}</p>
-                  <p className="text-xs text-slate-500 mt-0.5 truncate">{stat.label}</p>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
-      </div>
-
-      {/* Quick actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Link href="/dashboard/simulate">
-          <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-5 text-white hover:opacity-95 transition-opacity cursor-pointer group">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                <Play className="w-5 h-5 text-white" />
-              </div>
-              <ChevronRight className="w-4 h-4 text-white/60 group-hover:text-white transition-colors" />
-            </div>
-            <p className="font-bold text-base">Simulare Examen</p>
-            <p className="text-blue-100 text-xs mt-1">Condiții reale cu cronometru</p>
-          </div>
-        </Link>
-
-        <Link href="/dashboard/flashcards">
-          <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-5 text-white hover:opacity-95 transition-opacity cursor-pointer group">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                <Layers className="w-5 h-5 text-white" />
-              </div>
-              <ChevronRight className="w-4 h-4 text-white/60 group-hover:text-white transition-colors" />
-            </div>
-            <p className="font-bold text-base">Flashcard-uri</p>
-            <p className="text-purple-100 text-xs mt-1">Memorare rapidă</p>
-          </div>
-        </Link>
-
-        <Link href="/dashboard/review">
-          <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl p-5 text-white hover:opacity-95 transition-opacity cursor-pointer group">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-white" />
-              </div>
-              <ChevronRight className="w-4 h-4 text-white/60 group-hover:text-white transition-colors" />
-            </div>
-            <p className="font-bold text-base">Review Greșeli</p>
-            <p className="text-amber-100 text-xs mt-1">Revizuiește răspunsurile greșite</p>
-          </div>
-        </Link>
-      </div>
-
-      {/* Institutions */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-bold text-slate-800">Instituții</h2>
-          <Link href="/dashboard/tests">
-            <Button variant="ghost" size="sm" className="text-xs gap-1">
-              Toate testele <ArrowRight className="w-3 h-3" />
-            </Button>
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {institutions.map((inst) => {
-            const colors = INSTITUTION_COLORS[inst]
-            const instProgress = progressData?.filter(p => p.institution === inst) ?? []
-            const instAvg = instProgress.length > 0
-              ? instProgress.reduce((s, p) => s + p.average_score, 0) / instProgress.length
-              : null
-            const instTests = instProgress.reduce((s, p) => s + p.tests_taken, 0)
-
+        {/* ── Stats ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {[
+            { icon: BookOpen, label: 'Teste completate', value: totalTests.toString(), iconBg: 'bg-blue-50 dark:bg-blue-950/40', iconColor: 'text-blue-500' },
+            { icon: Target,   label: 'Scor mediu',       value: avgScore > 0 ? `${avgScore.toFixed(0)}%` : '—', iconBg: 'bg-green-50 dark:bg-green-950/40', iconColor: 'text-green-500' },
+            { icon: Trophy,   label: 'Cel mai bun scor', value: bestScore > 0 ? `${bestScore.toFixed(0)}%` : '—', iconBg: 'bg-amber-50 dark:bg-amber-950/40', iconColor: 'text-amber-500' },
+            { icon: Flame,    label: 'Plan',             value: profile?.subscription_plan === 'free' ? 'Gratuit' : profile?.subscription_plan === 'one_institution' ? '1 Inst.' : 'Complet', iconBg: 'bg-violet-50 dark:bg-violet-950/40', iconColor: 'text-violet-500' },
+          ].map((stat, i) => {
+            const Icon = stat.icon
             return (
-              <Link key={inst} href={`/dashboard/tests?institution=${inst}`}>
-                <Card hover>
-                  <CardContent className="p-5">
-                    <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${colors.gradient} flex items-center justify-center mb-4 shadow-sm`}>
-                      <span className="text-white font-bold text-sm">{inst}</span>
-                    </div>
-                    <h3 className="font-bold text-slate-800 text-sm leading-tight mb-0.5">
-                      {INSTITUTION_LABELS[inst]}
-                    </h3>
-                    <p className="text-xs text-slate-400 mb-3 leading-tight">
-                      {INSTITUTION_FULL_NAMES[inst]}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-slate-400">{instTests} teste</span>
-                      {instAvg !== null ? (
-                        <span className={`text-xs font-bold ${getScoreColor(instAvg)}`}>
-                          {instAvg.toFixed(0)}%
-                        </span>
-                      ) : (
-                        <span className="text-xs text-slate-300">—</span>
-                      )}
-                    </div>
-                    {instAvg !== null && (
-                      <div className="w-full bg-slate-100 rounded-full h-1 mt-2">
-                        <div
-                          className="bg-blue-500 h-1 rounded-full"
-                          style={{ width: `${Math.min(instAvg, 100)}%` }}
-                        />
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </Link>
+              <div key={stat.label} className={`bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] p-5 shadow-sm animate-fade-up stagger-${i + 1}`}>
+                <div className={`w-10 h-10 rounded-xl ${stat.iconBg} flex items-center justify-center mb-3`}>
+                  <Icon className={`w-5 h-5 ${stat.iconColor}`} />
+                </div>
+                <p className="text-2xl font-extrabold text-[var(--text-primary)] leading-none">{stat.value}</p>
+                <p className="text-xs text-[var(--text-muted)] mt-1.5 font-medium">{stat.label}</p>
+              </div>
             )
           })}
         </div>
-      </div>
 
-      {/* Categories */}
-      <div>
-        <h2 className="text-base font-bold text-slate-800 mb-4">Categorii</h2>
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-          {categories.map((cat) => {
-            const catProgress = progressData?.filter(p => p.category === cat) ?? []
-            const catAvg = catProgress.length > 0
-              ? catProgress.reduce((s, p) => s + p.average_score, 0) / catProgress.length
-              : null
+        {/* ── Quick actions ── */}
+        <div>
+          <h2 className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-widest mb-4">Acțiuni rapide</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              { href: '/dashboard/simulate', icon: Play,       gradient: 'from-indigo-600 to-blue-600',   shadow: 'shadow-indigo-200 dark:shadow-indigo-950', title: 'Simulare Examen',  sub: 'Condiții reale, cronometru' },
+              { href: '/dashboard/flashcards', icon: Layers,   gradient: 'from-violet-500 to-purple-600', shadow: 'shadow-violet-200 dark:shadow-violet-950', title: 'Flashcard-uri',    sub: 'Memorare rapidă' },
+              { href: '/dashboard/review',   icon: TrendingUp, gradient: 'from-amber-500 to-orange-500',  shadow: 'shadow-amber-200 dark:shadow-amber-950',   title: 'Review Greșeli',   sub: 'Revizuiește erorile' },
+            ].map(({ href, icon: Icon, gradient, shadow, title, sub }) => (
+              <Link key={href} href={href}>
+                <div className={`relative overflow-hidden bg-gradient-to-br ${gradient} rounded-2xl p-5 text-white shadow-lg ${shadow} hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group`}>
+                  <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 rounded-full" />
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-10 h-10 bg-white/15 rounded-xl flex items-center justify-center">
+                      <Icon className="w-5 h-5 text-white" />
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-white/50 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                  </div>
+                  <p className="font-bold text-base leading-none">{title}</p>
+                  <p className="text-white/60 text-xs mt-1.5">{sub}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
 
-            return (
-              <Link key={cat} href={`/dashboard/tests?category=${cat}`}>
-                <Card hover>
-                  <CardContent className="p-3 text-center">
-                    <div className={`w-9 h-9 rounded-xl ${CATEGORY_BG[cat]} flex items-center justify-center mx-auto mb-2 text-lg`}>
+        {/* ── Institutions ── */}
+        <div>
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-base font-bold text-[var(--text-primary)]">Instituții</h2>
+            <Link href="/dashboard/tests" className="flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-semibold">
+              Toate testele <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {institutions.map((inst, i) => {
+              const cfg = INSTITUTION_CONFIG[inst]
+              const instProgress = progressData?.filter(p => p.institution === inst) ?? []
+              const instAvg = instProgress.length ? instProgress.reduce((s, p) => s + p.average_score, 0) / instProgress.length : null
+              const instTests = instProgress.reduce((s, p) => s + p.tests_taken, 0)
+              return (
+                <Link key={inst} href={`/dashboard/tests?institution=${inst}`}>
+                  <div className={`bg-[var(--bg-surface)] border ${cfg.border} rounded-2xl p-5 hover:-translate-y-1 hover:shadow-lg ${cfg.shadow} transition-all duration-200 cursor-pointer animate-fade-up stagger-${i + 1}`}>
+                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${cfg.gradient} flex items-center justify-center mb-4 shadow-sm`}>
+                      <span className="text-white font-extrabold text-xs tracking-wide">{inst}</span>
+                    </div>
+                    <h3 className="font-bold text-[var(--text-primary)] text-sm leading-tight">{INSTITUTION_LABELS[inst]}</h3>
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5 leading-tight line-clamp-1">{INSTITUTION_FULL_NAMES[inst]}</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="text-xs text-[var(--text-muted)]">{instTests} teste</span>
+                      {instAvg !== null
+                        ? <span className={`text-xs font-bold ${getScoreColor(instAvg)}`}>{instAvg.toFixed(0)}%</span>
+                        : <span className="text-xs text-[var(--text-muted)]">—</span>}
+                    </div>
+                    {instAvg !== null && (
+                      <div className="w-full bg-[var(--bg-muted)] rounded-full h-1.5 mt-2">
+                        <div className={`bg-gradient-to-r ${cfg.gradient} h-1.5 rounded-full`} style={{ width: `${Math.min(instAvg, 100)}%` }} />
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* ── Categories ── */}
+        <div>
+          <h2 className="text-base font-bold text-[var(--text-primary)] mb-5">Categorii teste</h2>
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+            {categories.map((cat, i) => {
+              const cfg = CATEGORY_CONFIG[cat]
+              const catProgress = progressData?.filter(p => p.category === cat) ?? []
+              const catAvg = catProgress.length ? catProgress.reduce((s, p) => s + p.average_score, 0) / catProgress.length : null
+              return (
+                <Link key={cat} href={`/dashboard/tests?category=${cat}`}>
+                  <div className={`bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-3 text-center hover:-translate-y-1 hover:shadow-md transition-all duration-200 cursor-pointer animate-fade-up stagger-${(i % 4) + 1}`}>
+                    <div className={`w-10 h-10 rounded-xl ${cfg.bg} flex items-center justify-center mx-auto mb-2 text-xl`}>
                       {CATEGORY_ICONS[cat]}
                     </div>
-                    <p className="text-xs font-semibold text-slate-700 leading-tight line-clamp-2">
+                    <p className="text-xs font-semibold text-[var(--text-primary)] leading-tight line-clamp-2">
                       {CATEGORY_LABELS[cat].split(' ')[0]}
                     </p>
                     {catAvg !== null && (
-                      <p className={`text-xs font-bold mt-1 ${getScoreColor(catAvg)}`}>
-                        {catAvg.toFixed(0)}%
-                      </p>
+                      <p className={`text-xs font-bold mt-1 ${getScoreColor(catAvg)}`}>{catAvg.toFixed(0)}%</p>
                     )}
-                  </CardContent>
-                </Card>
-              </Link>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Recent activity */}
-      {recentSessions && recentSessions.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-bold text-slate-800">Activitate recentă</h2>
-            <Link href="/dashboard/progress">
-              <Button variant="ghost" size="sm" className="text-xs gap-1">
-                <BarChart3 className="w-3 h-3" /> Progres complet
-              </Button>
-            </Link>
+                  </div>
+                </Link>
+              )
+            })}
           </div>
-          <Card>
-            <CardContent className="p-0">
-              <div className="divide-y divide-slate-50">
-                {recentSessions.map((session) => (
-                  <div key={session.id} className="flex items-center gap-3 px-5 py-3.5 hover:bg-slate-50 transition-colors">
-                    <div className={`w-9 h-9 rounded-xl ${CATEGORY_BG[session.category as TestCategory] ?? 'bg-slate-100 text-slate-600'} flex items-center justify-center text-base shrink-0`}>
+        </div>
+
+        {/* ── Recent activity ── */}
+        {recentSessions && recentSessions.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-base font-bold text-[var(--text-primary)]">Activitate recentă</h2>
+              <Link href="/dashboard/progress" className="flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-semibold">
+                <BarChart3 className="w-3 h-3" /> Progres complet
+              </Link>
+            </div>
+            <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] overflow-hidden shadow-sm">
+              {recentSessions.map((session, i) => {
+                const catCfg = CATEGORY_CONFIG[session.category as TestCategory] ?? { bg: 'bg-slate-100 dark:bg-slate-800', text: 'text-slate-500' }
+                return (
+                  <div
+                    key={session.id}
+                    className={`flex items-center gap-4 px-5 py-4 hover:bg-[var(--bg-muted)] transition-colors ${i < recentSessions.length - 1 ? 'border-b border-[var(--border)]' : ''}`}
+                  >
+                    <div className={`w-10 h-10 rounded-xl ${catCfg.bg} flex items-center justify-center text-lg shrink-0`}>
                       {CATEGORY_ICONS[session.category as TestCategory]}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-800 truncate">
+                      <p className="text-sm font-semibold text-[var(--text-primary)] truncate">
                         {CATEGORY_LABELS[session.category as TestCategory]}
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-slate-400">
-                        <span>{session.institution}</span>
+                      <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mt-0.5">
+                        <span className={`font-medium ${catCfg.text}`}>{session.institution}</span>
                         <span>·</span>
                         <Clock className="w-3 h-3" />
                         <span>{new Date(session.completed_at).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' })}</span>
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className={`text-sm font-bold ${getScoreColor(session.score)}`}>
-                        {session.score?.toFixed(0)}%
-                      </p>
-                      <p className="text-xs text-slate-400">{session.correct_answers}/{session.total_questions}</p>
+                      <p className={`text-sm font-extrabold ${getScoreColor(session.score)}`}>{session.score?.toFixed(0)}%</p>
+                      <p className="text-xs text-[var(--text-muted)]">{session.correct_answers}/{session.total_questions}</p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* CTA for free users */}
-      {profile?.subscription_plan === 'free' && (
-        <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6">
-          <div className="absolute -right-8 -top-8 w-40 h-40 bg-white/10 rounded-full" />
-          <div className="absolute -right-4 bottom-0 w-24 h-24 bg-indigo-500/30 rounded-full" />
-          <div className="relative flex items-center justify-between gap-4">
-            <div>
-              <h3 className="text-white font-bold text-lg">Deblochează accesul complet</h3>
-              <p className="text-blue-100 text-sm mt-1">
-                De la 69 lei — 200+ întrebări per categorie, simulare completă, statistici avansate
-              </p>
+                )
+              })}
             </div>
-            <Link href="/dashboard/pricing" className="shrink-0">
-              <Button variant="secondary" size="md">
-                Vezi planuri <ArrowRight className="w-4 h-4 ml-1" />
-              </Button>
-            </Link>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+
+        {/* ── Upgrade CTA ── */}
+        {profile?.subscription_plan === 'free' && (
+          <div className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-700 rounded-2xl p-7 shadow-xl shadow-indigo-200 dark:shadow-indigo-950">
+            <div className="absolute -right-10 -top-10 w-48 h-48 bg-white/10 rounded-full" />
+            <div className="absolute right-12 bottom-0 w-24 h-24 bg-violet-500/20 rounded-full" />
+            <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="w-4 h-4 text-yellow-300" />
+                  <span className="text-yellow-300 text-xs font-semibold uppercase tracking-wide">Upgrade disponibil</span>
+                </div>
+                <h3 className="text-white font-extrabold text-xl leading-tight">Deblochează accesul complet</h3>
+                <p className="text-indigo-200 text-sm mt-1.5">
+                  De la 69 lei — 200+ întrebări, simulare completă, statistici avansate
+                </p>
+              </div>
+              <Link href="/dashboard/pricing" className="shrink-0">
+                <div className="bg-white text-indigo-700 font-bold text-sm px-5 py-2.5 rounded-xl hover:bg-indigo-50 transition-colors flex items-center gap-2">
+                  Vezi planuri <ArrowRight className="w-4 h-4" />
+                </div>
+              </Link>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </>
   )
 }

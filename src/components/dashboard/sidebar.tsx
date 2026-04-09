@@ -6,37 +6,33 @@ import { cn } from '@/lib/utils'
 import { signOut } from '@/app/auth/actions'
 import type { UserProfile } from '@/types'
 import {
-  LayoutDashboard,
-  BookOpen,
-  ClipboardList,
-  BarChart3,
-  CreditCard,
-  User,
-  Trophy,
-  Layers,
-  FileText,
-  LogOut,
-  Zap,
-  ChevronRight,
-  FolderOpen,
+  LayoutDashboard, BookOpen, ClipboardList, BarChart3,
+  CreditCard, User, Trophy, Layers, FileText, LogOut,
+  ChevronRight, FolderOpen, Sparkles, Brain,
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 const navItems = [
-  { href: '/dashboard', label: 'Acasă', icon: LayoutDashboard, exact: true },
-  { href: '/dashboard/tests', label: 'Teste', icon: BookOpen },
-  { href: '/dashboard/simulate', label: 'Simulare Examen', icon: ClipboardList },
-  { href: '/dashboard/flashcards', label: 'Flashcard-uri', icon: Layers },
-  { href: '/dashboard/review', label: 'Review Greșeli', icon: FileText },
-  { href: '/dashboard/progress', label: 'Progres', icon: BarChart3 },
-  { href: '/dashboard/achievements', label: 'Realizări', icon: Trophy },
-  { href: '/dashboard/materiale', label: 'Materiale PDF', icon: FolderOpen },
+  { href: '/dashboard',              label: 'Acasă',           icon: LayoutDashboard, exact: true },
+  { href: '/dashboard/tests',        label: 'Teste',           icon: BookOpen },
+  { href: '/dashboard/simulate',     label: 'Simulare',        icon: ClipboardList },
+  { href: '/dashboard/flashcards',   label: 'Flashcard-uri',   icon: Layers },
+  { href: '/dashboard/review',       label: 'Greșeli',         icon: FileText },
+  { href: '/dashboard/materiale',    label: 'Materiale PDF',   icon: FolderOpen },
+  { href: '/dashboard/progress',     label: 'Progres',         icon: BarChart3 },
+  { href: '/dashboard/achievements', label: 'Realizări',       icon: Trophy },
 ]
 
 const bottomItems = [
   { href: '/dashboard/profile', label: 'Profil', icon: User },
   { href: '/dashboard/pricing', label: 'Planuri', icon: CreditCard },
 ]
+
+const PLAN_CONFIG = {
+  free:             { label: 'Gratuit',         color: 'text-slate-400 dark:text-slate-500',   dot: 'bg-slate-300 dark:bg-slate-600' },
+  one_institution:  { label: '1 Instituție',    color: 'text-blue-500',                        dot: 'bg-blue-400' },
+  all_institutions: { label: 'Acces Complet',   color: 'text-violet-500',                      dot: 'bg-violet-400' },
+}
 
 interface SidebarProps {
   user: UserProfile
@@ -46,40 +42,34 @@ interface SidebarProps {
 export function Sidebar({ user, onClose }: SidebarProps) {
   const pathname = usePathname()
 
-  const isActive = (href: string, exact?: boolean) => {
-    if (exact) return pathname === href
-    return pathname === href || pathname.startsWith(href + '/')
-  }
+  const isActive = (href: string, exact?: boolean) =>
+    exact ? pathname === href : pathname === href || pathname.startsWith(href + '/')
 
-  const planLabel = user.subscription_plan === 'free'
-    ? 'Gratuit'
-    : user.subscription_plan === 'one_institution'
-    ? '1 Instituție'
-    : 'Toate instituțiile'
-
-  const planColor = user.subscription_plan === 'free'
-    ? 'text-slate-500 dark:text-slate-400'
-    : user.subscription_plan === 'one_institution'
-    ? 'text-blue-600'
-    : 'text-purple-600'
+  const plan = PLAN_CONFIG[user.subscription_plan as keyof typeof PLAN_CONFIG] ?? PLAN_CONFIG.free
 
   return (
-    <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 flex flex-col h-screen sticky top-0 shrink-0">
-      {/* Logo */}
-      <div className="p-5 border-b border-slate-100 dark:border-slate-800">
-        <Link href="/dashboard" className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-sm shadow-blue-200">
-            <Zap className="w-5 h-5 text-white" />
+    <aside className="w-64 flex flex-col h-screen bg-[var(--bg-surface)] border-r border-[var(--border)] shrink-0">
+
+      {/* ── Logo ── */}
+      <div className="px-5 py-5 border-b border-[var(--border)]">
+        <Link href="/dashboard" onClick={onClose} className="flex items-center gap-3 group">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-sm shadow-indigo-200/40 dark:shadow-indigo-900/40 shrink-0">
+            <Brain className="w-5 h-5 text-white" />
           </div>
           <div>
-            <span className="font-bold text-slate-900 dark:text-slate-100 text-sm leading-none block">PsihologicApp</span>
-            <span className={cn('text-xs font-medium leading-none mt-0.5 block', planColor)}>{planLabel}</span>
+            <span className="font-extrabold text-[var(--text-primary)] text-sm tracking-tight block leading-none">
+              PsihoPrep
+            </span>
+            <div className="flex items-center gap-1.5 mt-1">
+              <span className={cn('w-1.5 h-1.5 rounded-full', plan.dot)} />
+              <span className={cn('text-[10px] font-semibold', plan.color)}>{plan.label}</span>
+            </div>
           </div>
         </Link>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
+      {/* ── Nav ── */}
+      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
           const active = isActive(item.href, item.exact)
           const Icon = item.icon
@@ -89,20 +79,26 @@ export function Sidebar({ user, onClose }: SidebarProps) {
               href={item.href}
               onClick={onClose}
               className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group',
+                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group relative',
                 active
-                  ? 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-400'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
+                  ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300'
+                  : 'text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]'
               )}
             >
-              <Icon className={cn('w-4 h-4 shrink-0', active ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300')} />
+              {active && (
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-indigo-500 rounded-r-full" />
+              )}
+              <Icon className={cn(
+                'w-4 h-4 shrink-0 transition-colors',
+                active ? 'text-indigo-500 dark:text-indigo-400' : 'text-[var(--text-muted)] group-hover:text-[var(--text-secondary)]'
+              )} />
               <span className="flex-1">{item.label}</span>
-              {active && <ChevronRight className="w-3 h-3 text-blue-400" />}
+              {active && <ChevronRight className="w-3 h-3 text-indigo-400 shrink-0" />}
             </Link>
           )
         })}
 
-        <div className="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800 space-y-0.5">
+        <div className="pt-4 mt-4 border-t border-[var(--border)] space-y-0.5">
           {bottomItems.map((item) => {
             const active = isActive(item.href)
             const Icon = item.icon
@@ -112,29 +108,33 @@ export function Sidebar({ user, onClose }: SidebarProps) {
                 href={item.href}
                 onClick={onClose}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group',
+                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group relative',
                   active
-                    ? 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-400'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
+                    ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300'
+                    : 'text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]'
                 )}
               >
-                <Icon className={cn('w-4 h-4 shrink-0', active ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300')} />
+                {active && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-indigo-500 rounded-r-full" />
+                )}
+                <Icon className={cn('w-4 h-4 shrink-0', active ? 'text-indigo-500 dark:text-indigo-400' : 'text-[var(--text-muted)]')} />
                 <span className="flex-1">{item.label}</span>
-                {active && <ChevronRight className="w-3 h-3 text-blue-400" />}
               </Link>
             )
           })}
         </div>
       </nav>
 
-      {/* Upgrade CTA for free users */}
+      {/* ── Upgrade banner (free users) ── */}
       {user.subscription_plan === 'free' && (
         <div className="px-3 pb-3">
-          <Link href="/dashboard/pricing">
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl p-3.5 cursor-pointer hover:opacity-90 transition-opacity">
-              <p className="text-white font-semibold text-xs mb-1">Deblochează tot</p>
-              <p className="text-blue-100 text-xs">De la 69 lei — acces complet</p>
-              <div className="mt-2.5 bg-white/20 hover:bg-white/30 transition-colors rounded-lg px-3 py-1.5 text-center">
+          <Link href="/dashboard/pricing" onClick={onClose}>
+            <div className="relative overflow-hidden bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl p-4 cursor-pointer hover:opacity-95 transition-opacity">
+              <div className="absolute -top-3 -right-3 w-16 h-16 bg-white/10 rounded-full" />
+              <Sparkles className="w-4 h-4 text-yellow-300 mb-2" />
+              <p className="text-white font-bold text-xs">Deblochează tot</p>
+              <p className="text-indigo-200 text-xs mt-0.5 leading-snug">De la 69 lei — acces complet</p>
+              <div className="mt-3 bg-white/20 hover:bg-white/30 transition-colors rounded-lg px-3 py-1.5 text-center">
                 <span className="text-white text-xs font-semibold">Upgrade acum →</span>
               </div>
             </div>
@@ -142,29 +142,28 @@ export function Sidebar({ user, onClose }: SidebarProps) {
         </div>
       )}
 
-      {/* Dark mode toggle */}
-      <div className="px-4 pb-3 flex items-center justify-between">
-        <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Mod întunecat</span>
+      {/* ── Theme + user ── */}
+      <div className="px-4 py-3 flex items-center justify-between border-t border-[var(--border)]">
+        <span className="text-xs text-[var(--text-muted)]">Mod întunecat</span>
         <ThemeToggle />
       </div>
 
-      {/* User + Sign out */}
-      <div className="p-3 border-t border-slate-100 dark:border-slate-800">
-        <div className="flex items-center gap-3 px-2 py-2 mb-1">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm">
+      <div className="px-3 pb-4">
+        <div className="flex items-center gap-3 px-2 py-2">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
             {user.full_name?.[0]?.toUpperCase() ?? user.email[0].toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{user.full_name ?? 'Utilizator'}</p>
-            <p className="text-xs text-slate-400 dark:text-slate-500 truncate">{user.email}</p>
+            <p className="text-xs font-semibold text-[var(--text-primary)] truncate">{user.full_name ?? 'Utilizator'}</p>
+            <p className="text-[10px] text-[var(--text-muted)] truncate">{user.email}</p>
           </div>
         </div>
         <form action={signOut}>
           <button
             type="submit"
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-slate-500 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-950 hover:text-red-600 transition-all duration-150"
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-[var(--text-muted)] hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-500 transition-all"
           >
-            <LogOut className="w-4 h-4 shrink-0" />
+            <LogOut className="w-3.5 h-3.5 shrink-0" />
             Deconectare
           </button>
         </form>

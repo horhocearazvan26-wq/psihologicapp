@@ -3,10 +3,10 @@ import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 
 export const metadata: Metadata = {
-  title: 'PsihologicApp — Pregătire Psihologică MAI, MApN, SRI, ANP',
+  title: 'PsihoPrep — Pregătire Psihologică MAI, MApN, SRI, ANP',
   description:
-    'Platformă de pregătire pentru probele psihologice la MAI, MApN, SRI și ANP. Teste de atenție, logică, memorie, aptitudini numerice și vocabular.',
-  keywords: ['psihologic', 'MAI', 'MApN', 'SRI', 'ANP', 'teste', 'pregătire'],
+    'Platformă premium de pregătire pentru probele psihologice la MAI, MApN, SRI și ANP. Teste de atenție, logică, memorie, aptitudini numerice și vocabular.',
+  keywords: ['psihoprep', 'psihologic', 'MAI', 'MApN', 'SRI', 'ANP', 'teste', 'pregătire'],
 }
 
 export const viewport: Viewport = {

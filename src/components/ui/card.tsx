@@ -11,8 +11,8 @@ export function Card({ className, hover, glass, gradient, ...props }: CardProps)
   return (
     <div
       className={cn(
-        'bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm',
-        hover && 'hover:shadow-md hover:-translate-y-0.5 hover:border-slate-200 dark:hover:border-slate-600 transition-all duration-200 cursor-pointer',
+        'bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-sm',
+        hover && 'hover:shadow-md hover:-translate-y-0.5 hover:border-[var(--border-strong)] transition-all duration-200 cursor-pointer',
         glass && 'backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-white/60 dark:border-white/10',
         gradient,
         className
