@@ -14,6 +14,9 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   email TEXT NOT NULL,
   full_name TEXT,
   avatar_url TEXT,
+  target_institution TEXT
+    CHECK (target_institution IN ('MAI', 'MApN', 'SRI', 'ANP')),
+  exam_date DATE,
   subscription_plan TEXT NOT NULL DEFAULT 'free'
     CHECK (subscription_plan IN ('free', 'one_institution', 'all_institutions')),
   subscribed_institution TEXT

@@ -22,7 +22,19 @@ export async function updateProfile(formData: FormData) {
     })
     .eq('id', user.id)
 
-  if (error) return { error: error.message }
+  if (error) {
+    const isMissingProfileField =
+      error.message.includes('exam_date') ||
+      error.message.includes('target_institution')
+
+    if (isMissingProfileField) {
+      return {
+        error: 'Schema Supabase nu este actualizata inca. Ruleaza migratia pentru campurile profilului si incearca din nou.',
+      }
+    }
+
+    return { error: error.message }
+  }
 
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/profile')
