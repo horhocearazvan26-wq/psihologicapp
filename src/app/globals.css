@@ -183,3 +183,113 @@ body {
   border-radius: inherit;
   pointer-events: none;
 }
+
+/* ── Glow utilities ─────────────────────────────────────── */
+.glow-indigo {
+  box-shadow: 0 0 0 1px rgba(99,102,241,0.15), 0 8px 32px -4px rgba(99,102,241,0.25), 0 2px 8px -2px rgba(99,102,241,0.15);
+}
+.glow-indigo:hover {
+  box-shadow: 0 0 0 1px rgba(99,102,241,0.25), 0 12px 40px -4px rgba(99,102,241,0.35), 0 4px 12px -2px rgba(99,102,241,0.2);
+}
+.glow-cta {
+  box-shadow: 0 4px 24px -4px rgba(99,102,241,0.5), 0 2px 8px -2px rgba(139,92,246,0.3);
+  transition: box-shadow 0.2s ease, transform 0.2s ease !important;
+}
+.glow-cta:hover {
+  box-shadow: 0 8px 36px -4px rgba(99,102,241,0.65), 0 4px 16px -2px rgba(139,92,246,0.45);
+  transform: translateY(-2px);
+}
+
+/* ── Mesh / radial gradient backgrounds ─────────────────── */
+.bg-mesh-light {
+  background-color: #f8f9ff;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(99,102,241,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(139,92,246,0.07) 0%, transparent 60%);
+}
+.dark .bg-mesh-light {
+  background-color: var(--bg-base);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(99,102,241,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(139,92,246,0.1) 0%, transparent 60%);
+}
+.bg-mesh-hero {
+  background-color: #ffffff;
+  background-image:
+    radial-gradient(ellipse 100% 70% at 50% -20%, rgba(99,102,241,0.1) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 40% at 0% 80%, rgba(139,92,246,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 100% 60%, rgba(236,72,153,0.04) 0%, transparent 50%);
+}
+.dark .bg-mesh-hero {
+  background-color: var(--bg-base);
+  background-image:
+    radial-gradient(ellipse 100% 70% at 50% -20%, rgba(99,102,241,0.15) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 40% at 0% 80%, rgba(139,92,246,0.1) 0%, transparent 50%);
+}
+
+/* ── Premium card lift ───────────────────────────────────── */
+.card-premium {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+.card-premium:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px -8px rgba(0,0,0,0.12), 0 4px 12px -4px rgba(0,0,0,0.06);
+  border-color: var(--border-strong);
+}
+
+/* ── Glass card ─────────────────────────────────────────── */
+.glass-card {
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.85);
+  box-shadow: 0 4px 24px -4px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9);
+}
+.dark .glass-card {
+  background: rgba(17,17,28,0.72);
+  border-color: rgba(255,255,255,0.07);
+  box-shadow: 0 4px 24px -4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+/* ── Shimmer button ─────────────────────────────────────── */
+@keyframes shimmer-slide {
+  from { transform: translateX(-100%) skewX(-12deg); }
+  to   { transform: translateX(220%) skewX(-12deg); }
+}
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  transform: translateX(-100%) skewX(-12deg);
+}
+.btn-shimmer:hover::after {
+  animation: shimmer-slide 0.55s ease forwards;
+}
+
+/* ── Pulse ring ─────────────────────────────────────────── */
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(99,102,241,0.4); }
+  70%  { box-shadow: 0 0 0 10px rgba(99,102,241,0); }
+  100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
+}
+.animate-pulse-ring { animation: pulse-ring 2.2s ease-in-out infinite; }
+
+/* ── Badge pill ─────────────────────────────────────────── */
+.badge-gradient {
+  background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.08));
+  border: 1px solid rgba(99,102,241,0.2);
+  color: #4338CA;
+}
+.dark .badge-gradient {
+  background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.15));
+  border-color: rgba(99,102,241,0.3);
+  color: #a5b4fc;
+}

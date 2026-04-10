@@ -150,10 +150,11 @@ export function DashboardClient({
     <div className="space-y-8 animate-fade-up">
 
       {/* ── Institution hero banner ── */}
-      <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${cfg.lightGradient} shadow-xl p-7`}>
-        {/* Decorative circles */}
-        <div className="absolute -top-12 -right-12 w-56 h-56 bg-white/5 rounded-full pointer-events-none" />
-        <div className="absolute bottom-0 right-20 w-32 h-32 bg-white/5 rounded-full pointer-events-none" />
+      <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${cfg.lightGradient} shadow-2xl p-7`}>
+        {/* Decorative circles / glow */}
+        <div className="absolute -top-16 -right-16 w-64 h-64 bg-white/8 rounded-full pointer-events-none blur-2xl" />
+        <div className="absolute bottom-0 right-20 w-40 h-40 bg-white/5 rounded-full pointer-events-none blur-xl" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
 
         <div className="relative flex items-start justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -183,7 +184,7 @@ export function DashboardClient({
             { label: 'Medie', value: instAvg > 0 ? `${instAvg.toFixed(0)}%` : '—' },
             { label: 'Categorii', value: `${completedCats}/6` },
           ].map(s => (
-            <div key={s.label} className="bg-white/10 rounded-xl px-4 py-3 text-center">
+            <div key={s.label} className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-center">
               <p className="text-white font-extrabold text-xl leading-none">{s.value}</p>
               <p className="text-white/50 text-xs mt-1">{s.label}</p>
             </div>
@@ -212,21 +213,25 @@ export function DashboardClient({
         <h2 className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-widest mb-4">Acțiuni rapide</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
-            { href: '/dashboard/simulate', icon: Play, gradient: 'from-indigo-600 to-blue-600', shadow: 'shadow-indigo-200 dark:shadow-indigo-950', title: 'Simulare Examen', sub: 'Condiții reale, cronometru' },
-            { href: '/dashboard/flashcards', icon: Layers, gradient: 'from-violet-500 to-purple-600', shadow: 'shadow-violet-200 dark:shadow-violet-950', title: 'Flashcard-uri', sub: 'Memorare rapidă' },
-            { href: '/dashboard/review', icon: TrendingUp, gradient: 'from-amber-500 to-orange-500', shadow: 'shadow-amber-200 dark:shadow-amber-950', title: 'Review Greșeli', sub: 'Revizuiește erorile' },
-          ].map(({ href, icon: Icon, gradient, shadow, title, sub }) => (
+            { href: '/dashboard/simulate',   icon: Play,       gradient: 'from-indigo-500 to-blue-600',    glowColor: 'rgba(99,102,241,0.4)',   title: 'Simulare Examen',  sub: 'Condiții reale, cronometru' },
+            { href: '/dashboard/flashcards', icon: Layers,     gradient: 'from-violet-500 to-purple-600',  glowColor: 'rgba(139,92,246,0.4)',   title: 'Flashcard-uri',    sub: 'Memorare rapidă' },
+            { href: '/dashboard/review',     icon: TrendingUp, gradient: 'from-amber-500 to-orange-500',   glowColor: 'rgba(245,158,11,0.4)',   title: 'Review Greșeli',   sub: 'Revizuiește erorile' },
+          ].map(({ href, icon: Icon, gradient, glowColor, title, sub }) => (
             <Link key={href} href={href}>
-              <div className={`relative overflow-hidden bg-gradient-to-br ${gradient} rounded-2xl p-5 text-white shadow-lg ${shadow} hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group`}>
-                <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 rounded-full pointer-events-none" />
-                <div className="flex items-center justify-between mb-3">
-                  <div className="w-10 h-10 bg-white/15 rounded-xl flex items-center justify-center">
+              <div
+                className={`relative overflow-hidden bg-gradient-to-br ${gradient} rounded-2xl p-5 text-white hover:-translate-y-1 transition-all duration-200 cursor-pointer group btn-shimmer`}
+                style={{ boxShadow: `0 8px 24px -4px ${glowColor}, 0 2px 8px -2px ${glowColor}` }}
+              >
+                <div className="absolute -top-6 -right-6 w-24 h-24 bg-white/10 rounded-full pointer-events-none blur-md" />
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
+                <div className="relative flex items-center justify-between mb-3">
+                  <div className="w-10 h-10 bg-white/20 backdrop-blur-sm border border-white/20 rounded-xl flex items-center justify-center">
                     <Icon className="w-5 h-5 text-white" />
                   </div>
                   <ChevronRight className="w-4 h-4 text-white/50 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
                 </div>
-                <p className="font-bold text-base leading-none">{title}</p>
-                <p className="text-white/60 text-xs mt-1.5">{sub}</p>
+                <p className="relative font-bold text-base leading-none">{title}</p>
+                <p className="relative text-white/60 text-xs mt-1.5">{sub}</p>
               </div>
             </Link>
           ))}
@@ -302,8 +307,8 @@ export function DashboardClient({
           ].map((stat, i) => {
             const Icon = stat.icon
             return (
-              <div key={stat.label} className={`bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] p-5 shadow-sm animate-fade-up stagger-${i + 1}`}>
-                <div className={`w-10 h-10 rounded-xl ${stat.iconBg} flex items-center justify-center mb-3`}>
+              <div key={stat.label} className={`group bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-[var(--border-strong)] transition-all duration-200 animate-fade-up stagger-${i + 1}`}>
+                <div className={`w-10 h-10 rounded-xl ${stat.iconBg} flex items-center justify-center mb-3 transition-transform duration-200 group-hover:scale-110`}>
                   <Icon className={`w-5 h-5 ${stat.iconColor}`} />
                 </div>
                 <p className="text-2xl font-extrabold text-[var(--text-primary)] leading-none">{stat.value}</p>
@@ -356,19 +361,23 @@ export function DashboardClient({
 
       {/* ── Upgrade CTA ── */}
       {subscriptionPlan === 'free' && (
-        <div className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-700 rounded-2xl p-7 shadow-xl shadow-indigo-200 dark:shadow-indigo-950">
-          <div className="absolute -right-10 -top-10 w-48 h-48 bg-white/10 rounded-full pointer-events-none" />
+        <div
+          className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-700 rounded-2xl p-7"
+          style={{ boxShadow: '0 16px 40px -8px rgba(99,102,241,0.45), 0 4px 12px -4px rgba(139,92,246,0.3)' }}
+        >
+          <div className="absolute -right-12 -top-12 w-56 h-56 bg-white/10 rounded-full pointer-events-none blur-2xl" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none" />
           <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Zap className="w-4 h-4 text-yellow-300" />
+                <Zap className="w-4 h-4 text-yellow-300 animate-pulse" />
                 <span className="text-yellow-300 text-xs font-semibold uppercase tracking-wide">Upgrade disponibil</span>
               </div>
               <h3 className="text-white font-extrabold text-xl leading-tight">Deblochează accesul complet</h3>
               <p className="text-indigo-200 text-sm mt-1.5">De la 69 lei — 200+ întrebări, simulare completă</p>
             </div>
             <Link href="/dashboard/pricing" className="shrink-0">
-              <div className="bg-white text-indigo-700 font-bold text-sm px-5 py-2.5 rounded-xl hover:bg-indigo-50 transition-colors flex items-center gap-2">
+              <div className="bg-white text-indigo-700 font-bold text-sm px-5 py-2.5 rounded-xl hover:bg-indigo-50 transition-colors flex items-center gap-2 shadow-md shadow-indigo-900/20 btn-shimmer">
                 Vezi planuri <ArrowRight className="w-4 h-4" />
               </div>
             </Link>
