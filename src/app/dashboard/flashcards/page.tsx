@@ -1,4 +1,3 @@
-import { Card, CardContent } from '@/components/ui/card'
 import { FlashcardDeck } from './flashcard-deck'
 
 const decks = [
@@ -7,7 +6,7 @@ const decks = [
     title: 'Vocabular',
     icon: '📚',
     count: 40,
-    color: 'from-rose-500 to-pink-600',
+    gradient: 'from-rose-700 to-pink-700',
     cards: [
       { front: 'Abscons', back: 'Greu de înțeles, obscur, enigmatic' },
       { front: 'Acerb', back: 'Aspru, violent, sever (critică acerbă)' },
@@ -36,7 +35,7 @@ const decks = [
     title: 'Formule Logice',
     icon: '🧠',
     count: 20,
-    color: 'from-purple-500 to-indigo-600',
+    gradient: 'from-violet-700 to-indigo-700',
     cards: [
       { front: 'Silogism categoric', back: 'Toți A sunt B. Toți B sunt C. → Toți A sunt C.' },
       { front: 'Modus Ponens', back: 'Dacă P → Q și P este adevărat, atunci Q este adevărat' },
@@ -55,7 +54,7 @@ const decks = [
     title: 'Formule Matematice',
     icon: '🔢',
     count: 20,
-    color: 'from-green-500 to-emerald-600',
+    gradient: 'from-emerald-700 to-teal-700',
     cards: [
       { front: 'Procent din număr', back: 'X% din N = (X × N) / 100' },
       { front: 'Creștere procentuală', back: '((Valoare nouă - Valoare inițială) / Valoare inițială) × 100' },
@@ -76,7 +75,7 @@ const decks = [
     title: 'Tehnici de Memorare',
     icon: '💾',
     count: 15,
-    color: 'from-amber-500 to-orange-600',
+    gradient: 'from-amber-700 to-orange-700',
     cards: [
       { front: 'Metoda palatului memoriei', back: 'Asociezi informații cu locuri dintr-un traseu mental bine cunoscut' },
       { front: 'Chunking', back: 'Gruparea informațiilor în blocuri mai mici (ex: număr telefon: 07XX-XXX-XXX)' },
@@ -92,30 +91,30 @@ const decks = [
 
 export default function FlashcardsPage() {
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-up">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Flashcard-uri</h1>
-        <p className="text-slate-500 mt-1 text-sm">Memorare rapidă prin carduri interactive</p>
+        <h1 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">Flashcard-uri</h1>
+        <p className="text-[var(--text-secondary)] mt-1.5 text-sm">Memorare rapidă prin carduri interactive</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         {decks.map((deck) => (
-          <Card key={deck.id} hover>
-            <CardContent className="p-0 overflow-hidden rounded-2xl">
-              <div className={`bg-gradient-to-br ${deck.color} p-5 text-white`}>
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="text-3xl">{deck.icon}</span>
-                  <div>
-                    <h2 className="font-bold text-lg">{deck.title}</h2>
-                    <p className="text-white/70 text-sm">{deck.count} carduri</p>
-                  </div>
+          <div key={deck.id} className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-0.5 hover:border-[var(--border-strong)] transition-all duration-200">
+            {/* Deck header */}
+            <div className={`bg-gradient-to-br ${deck.gradient} p-5`}>
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">{deck.icon}</span>
+                <div>
+                  <h2 className="font-extrabold text-white text-base leading-tight">{deck.title}</h2>
+                  <p className="text-white/60 text-xs mt-0.5">{deck.count} carduri</p>
                 </div>
               </div>
-              <div className="p-5">
-                <FlashcardDeck deck={deck} />
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+            {/* Deck content */}
+            <div className="p-5">
+              <FlashcardDeck deck={deck} />
+            </div>
+          </div>
         ))}
       </div>
     </div>
