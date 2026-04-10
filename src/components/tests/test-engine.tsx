@@ -34,8 +34,8 @@ interface Result {
 
 const TIME_PER_QUESTION = 45
 
-const btnPrimary = 'flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--text-primary)] text-[var(--text-inverse)] text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed'
-const btnSecondary = 'flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-[var(--border)] text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-muted)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed'
+const btnPrimary = 'flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-cyan-300/30 bg-[linear-gradient(135deg,#0f2e49,#12436d)] text-[var(--text-inverse)] text-sm font-semibold shadow-[0_18px_36px_-24px_rgba(15,76,129,0.72)] hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed'
+const btnSecondary = 'flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-muted)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed'
 
 export function TestEngine({ institution, category, isFullAccess, institutionLabel, categoryLabel }: TestEngineProps) {
   const router = useRouter()
@@ -45,22 +45,10 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedOptions, setSelectedOptions] = useState<Record<number, number>>({})
   const [timeLeft, setTimeLeft] = useState(0)
-  const [totalTime, setTotalTime] = useState(0)
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<{ score: number; correct: number; total: number; results: Result[] } | null>(null)
 
   const totalTimeForTest = questions.length * TIME_PER_QUESTION
-
-  useEffect(() => {
-    if (phase !== 'test' || timeLeft <= 0) return
-    const timer = setInterval(() => {
-      setTimeLeft(t => {
-        if (t <= 1) { clearInterval(timer); handleSubmit(); return 0 }
-        return t - 1
-      })
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [phase, timeLeft])
 
   async function startTest() {
     setLoading(true)
@@ -76,7 +64,6 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
       setSessionId(data.session.id)
       const t = data.questions.length * TIME_PER_QUESTION
       setTimeLeft(t)
-      setTotalTime(t)
       setPhase('test')
     } catch (err) {
       console.error(err)
@@ -102,43 +89,81 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
     setResults(data)
   }, [sessionId, questions, selectedOptions, timeLeft, totalTimeForTest])
 
+  useEffect(() => {
+    if (phase !== 'test' || timeLeft <= 0) return
+    const timer = setInterval(() => {
+      setTimeLeft(t => {
+        if (t <= 1) {
+          clearInterval(timer)
+          handleSubmit()
+          return 0
+        }
+        return t - 1
+      })
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [phase, timeLeft, handleSubmit])
+
   const answeredCount = Object.keys(selectedOptions).length
   const progress = questions.length > 0 ? ((currentIndex + 1) / questions.length) * 100 : 0
   const timerPercent = totalTimeForTest > 0 ? (timeLeft / totalTimeForTest) * 100 : 100
 
-  // INTRO
   if (phase === 'intro') {
     return (
-      <div className="max-w-lg mx-auto text-center space-y-6 py-12 animate-fade-up">
-        <div className="text-5xl">📝</div>
-        <div>
-          <h1 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">
-            {categoryLabel}
-          </h1>
-          <p className="text-[var(--text-muted)] text-sm mt-1">{institutionLabel}</p>
+      <div className="max-w-3xl mx-auto space-y-6 py-8 animate-fade-up">
+        <div className="rounded-[28px] border border-[var(--border)] bg-[linear-gradient(145deg,rgba(15,23,36,0.98),rgba(17,42,63,0.95))] px-6 py-6 text-white shadow-[0_32px_60px_-40px_rgba(15,23,42,0.85)] sm:px-8 sm:py-8">
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-100/80">
+                Exam Mode
+              </div>
+              <h1 className="mt-5 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                {categoryLabel}
+              </h1>
+              <p className="mt-2 text-sm text-slate-300">{institutionLabel}</p>
+              <p className="mt-5 max-w-lg text-sm leading-7 text-slate-300">
+                Intră într-un flux de lucru curat, concentrat și apropiat de o sesiune reală. Fără distrageri, doar întrebare, timp și ritm.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 sm:min-w-[320px]">
+              {[
+                { label: 'Întrebări', value: `${isFullAccess ? '30' : '15'} ${!isFullAccess ? 'demo' : ''}` },
+                { label: 'Timp / item', value: `${TIME_PER_QUESTION}s` },
+                { label: 'Durată totală', value: formatTime((isFullAccess ? 30 : 15) * TIME_PER_QUESTION) },
+                { label: 'Ritm', value: 'Ușor -> greu' },
+              ].map(({ label, value }) => (
+                <div key={label} className="rounded-2xl border border-white/10 bg-white/6 px-4 py-4">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">{label}</p>
+                  <p className="mt-2 text-lg font-extrabold text-white">{value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div className="bg-[var(--bg-muted)] rounded-2xl p-6 text-left space-y-3 border border-[var(--border)]">
-          {[
-            { label: 'Număr întrebări', value: `${isFullAccess ? '30' : '15'} ${!isFullAccess ? '(demo)' : ''}` },
-            { label: 'Timp per întrebare', value: `${TIME_PER_QUESTION} secunde` },
-            { label: 'Timp total', value: formatTime((isFullAccess ? 30 : 15) * TIME_PER_QUESTION) },
-            { label: 'Dificultate', value: 'Mixtă (ușor → dificil)' },
-          ].map(({ label, value }) => (
-            <div key={label} className="flex justify-between text-sm">
-              <span className="text-[var(--text-muted)]">{label}:</span>
-              <span className="font-semibold text-[var(--text-primary)]">{value}</span>
-            </div>
-          ))}
+        <div className="rounded-[26px] border border-[var(--border)] bg-[var(--bg-surface)] p-6 shadow-sm">
+          <div className="grid gap-3 text-left sm:grid-cols-2">
+            {[
+              'Răspunzi în ritmul tău, dar timpul curge continuu.',
+              'Poți naviga între întrebări înainte de finalizare.',
+              'După submit primești scor și review complet.',
+              'Modul demo rămâne limitat la 15 întrebări.',
+            ].map((item) => (
+              <div key={item} className="rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-4 text-sm text-[var(--text-secondary)]">
+                {item}
+              </div>
+            ))}
+          </div>
         </div>
 
         {!isFullAccess && (
-          <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4 text-sm text-amber-700 dark:text-amber-300">
-            Ești în modul demo. Deblochează accesul complet (30 întrebări) din secțiunea Planuri.
+          <div className="rounded-2xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-700 dark:text-amber-300">
+            Ești în modul demo. Deblochează accesul complet din secțiunea Planuri pentru toate întrebările și simulările.
           </div>
         )}
 
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row">
           <button className={cn(btnSecondary, 'flex-1')} onClick={() => router.back()}>
             <ArrowLeft className="w-4 h-4" /> Înapoi
           </button>
@@ -151,7 +176,6 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
     )
   }
 
-  // RESULTS
   if (phase === 'results') {
     const score = results?.score ?? 0
     const correct = results?.correct ?? 0
@@ -160,15 +184,16 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
     const scoreBg = score >= 80 ? 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800' : score >= 60 ? 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800' : 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800'
 
     return (
-      <div className="max-w-2xl mx-auto space-y-6 py-6 animate-fade-up">
-        {/* Score card */}
-        <div className={cn('rounded-2xl border p-8 text-center', scoreBg)}>
-          <div className="text-4xl mb-3">{score >= 80 ? '🎉' : score >= 60 ? '👍' : '💪'}</div>
-          <p className={cn('text-6xl font-extrabold tracking-tight', scoreColor)}>{score.toFixed(0)}%</p>
+      <div className="max-w-3xl mx-auto space-y-6 py-6 animate-fade-up">
+        <div className={cn('rounded-[28px] border p-8 text-center shadow-sm', scoreBg)}>
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-current/15 bg-white/40 dark:bg-white/5 text-3xl">
+            {score >= 80 ? 'A' : score >= 60 ? 'B' : 'C'}
+          </div>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--text-muted)]">Scor final</p>
+          <p className={cn('mt-3 text-6xl font-extrabold tracking-tight', scoreColor)}>{score.toFixed(0)}%</p>
           <p className="text-[var(--text-muted)] mt-2 text-sm">{correct} răspunsuri corecte din {total}</p>
         </div>
 
-        {/* Score bar */}
         <div className="w-full bg-[var(--bg-muted)] rounded-full h-2">
           <div
             className={cn('h-2 rounded-full transition-all duration-700', score >= 80 ? 'bg-green-500' : score >= 60 ? 'bg-amber-500' : 'bg-red-500')}
@@ -176,27 +201,26 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
           />
         </div>
 
-        {/* Review */}
         {results?.results && (
           <div className="space-y-3">
             <h2 className="font-bold text-[var(--text-primary)] text-base">Revizuire întrebări</h2>
             {results.results.map((r, i) => {
-              const q = questions.find(q => q.id === r.question_id)
+              const q = questions.find(question => question.id === r.question_id)
               if (!q) return null
               const isSkipped = r.selected_option === -1
               return (
                 <div
                   key={r.question_id}
                   className={cn(
-                    'rounded-2xl border p-4',
+                    'rounded-[24px] border p-5',
                     r.is_correct
                       ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20'
                       : isSkipped
-                      ? 'border-[var(--border)] bg-[var(--bg-muted)]'
-                      : 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/20'
+                        ? 'border-[var(--border)] bg-[var(--bg-muted)]'
+                        : 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/20'
                   )}
                 >
-                  <div className="flex items-start gap-2 mb-2">
+                  <div className="mb-3 flex items-start gap-3">
                     <span className="text-xs font-bold text-[var(--text-muted)] shrink-0 mt-0.5">#{i + 1}</span>
                     <p className="text-sm font-medium text-[var(--text-primary)]">{q.question_text}</p>
                   </div>
@@ -212,23 +236,23 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
                     </div>
                   )}
                   <div className="ml-5 space-y-1">
-                    {q.options.map((opt, oi) => (
+                    {q.options.map((opt, optionIndex) => (
                       <div
-                        key={oi}
+                        key={optionIndex}
                         className={cn(
                           'text-xs px-3 py-1.5 rounded-lg font-medium',
-                          oi === r.correct_answer
+                          optionIndex === r.correct_answer
                             ? 'bg-green-100 dark:bg-green-950/40 text-green-800 dark:text-green-300'
-                            : oi === r.selected_option && !r.is_correct
-                            ? 'bg-red-100 dark:bg-red-950/40 text-red-800 dark:text-red-300'
-                            : 'text-[var(--text-muted)]'
+                            : optionIndex === r.selected_option && !r.is_correct
+                              ? 'bg-red-100 dark:bg-red-950/40 text-red-800 dark:text-red-300'
+                              : 'text-[var(--text-muted)]'
                         )}
                       >
-                        {oi === r.correct_answer
+                        {optionIndex === r.correct_answer
                           ? <CheckCircle className="inline w-3 h-3 mr-1" />
-                          : oi === r.selected_option && !r.is_correct
-                          ? <XCircle className="inline w-3 h-3 mr-1" />
-                          : null}
+                          : optionIndex === r.selected_option && !r.is_correct
+                            ? <XCircle className="inline w-3 h-3 mr-1" />
+                            : null}
                         {opt}
                       </div>
                     ))}
@@ -246,13 +270,16 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
           <button className={cn(btnSecondary, 'flex-1')} onClick={() => router.push('/dashboard/tests')}>
             Toate testele
           </button>
-          <button className={cn(btnPrimary, 'flex-1')} onClick={() => {
-            setPhase('intro')
-            setSelectedOptions({})
-            setCurrentIndex(0)
-            setResults(null)
-            setQuestions([])
-          }}>
+          <button
+            className={cn(btnPrimary, 'flex-1')}
+            onClick={() => {
+              setPhase('intro')
+              setSelectedOptions({})
+              setCurrentIndex(0)
+              setResults(null)
+              setQuestions([])
+            }}
+          >
             Reia testul
           </button>
         </div>
@@ -260,26 +287,35 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
     )
   }
 
-  // TEST SCREEN
   const currentQ = questions[currentIndex]
   if (!currentQ) return null
 
   return (
-    <div className="max-w-2xl mx-auto space-y-5 py-4">
-      {/* Header */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between text-sm">
-          <span className="font-medium text-[var(--text-secondary)]">
-            Întrebarea {currentIndex + 1} din {questions.length}
-          </span>
-          <span className={cn('font-bold tabular-nums font-mono', timeLeft < 30 ? 'text-red-500 animate-pulse' : 'text-[var(--text-primary)]')}>
-            ⏱ {formatTime(timeLeft)}
-          </span>
+    <div className="max-w-4xl mx-auto space-y-5 py-4">
+      <div className="sticky top-4 z-10 rounded-[24px] border border-[var(--border)] bg-[color:rgb(249_250_248_/_0.88)] p-4 shadow-lg backdrop-blur-xl dark:bg-[color:rgb(16_25_36_/_0.88)]">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--text-muted)]">Sesiune activă</p>
+            <div className="mt-1 flex items-center gap-3">
+              <span className="text-base font-bold text-[var(--text-primary)]">
+                Întrebarea {currentIndex + 1} din {questions.length}
+              </span>
+              <span className="rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1 text-xs font-medium text-[var(--text-secondary)]">
+                {answeredCount}/{questions.length} răspunse
+              </span>
+            </div>
+          </div>
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-3 text-right">
+            <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">Timp rămas</p>
+            <span className={cn('mt-1 block font-bold tabular-nums font-mono text-xl', timeLeft < 30 ? 'text-red-500 animate-pulse' : 'text-[var(--text-primary)]')}>
+              {formatTime(timeLeft)}
+            </span>
+          </div>
         </div>
-        <div className="w-full bg-[var(--bg-muted)] rounded-full h-1.5">
-          <div className="bg-indigo-500 h-1.5 rounded-full transition-all" style={{ width: `${progress}%` }} />
+        <div className="mt-4 w-full bg-[var(--bg-muted)] rounded-full h-1.5">
+          <div className="h-1.5 rounded-full bg-[linear-gradient(90deg,#12365b,#2d7cae)] transition-all" style={{ width: `${progress}%` }} />
         </div>
-        <div className="w-full bg-[var(--bg-muted)] rounded-full h-1">
+        <div className="mt-2 w-full bg-[var(--bg-muted)] rounded-full h-1">
           <div
             className={cn('h-1 rounded-full transition-all', timerPercent > 50 ? 'bg-green-500' : timerPercent > 25 ? 'bg-amber-500' : 'bg-red-500')}
             style={{ width: `${timerPercent}%` }}
@@ -287,9 +323,17 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
         </div>
       </div>
 
-      {/* Question card */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-sm p-6 space-y-4">
-        <p className="text-base font-medium text-[var(--text-primary)] leading-relaxed">
+      <div className="rounded-[28px] border border-[var(--border)] bg-[var(--bg-surface)] p-7 shadow-sm space-y-5">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] text-sm font-bold text-[var(--text-secondary)]">
+            {String(currentIndex + 1).padStart(2, '0')}
+          </div>
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">{institutionLabel}</p>
+            <p className="text-sm font-medium text-[var(--text-secondary)]">{categoryLabel}</p>
+          </div>
+        </div>
+        <p className="text-lg font-medium text-[var(--text-primary)] leading-relaxed">
           {currentQ.question_text}
         </p>
         {currentQ.metadata?.image_url && (
@@ -305,8 +349,7 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
         )}
       </div>
 
-      {/* Options */}
-      <div className="space-y-2.5">
+      <div className="space-y-3">
         {currentQ.options.map((option, i) => {
           const isSelected = selectedOptions[currentIndex] === i
           return (
@@ -314,18 +357,20 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
               key={i}
               onClick={() => setSelectedOptions(prev => ({ ...prev, [currentIndex]: i }))}
               className={cn(
-                'w-full text-left px-5 py-4 rounded-xl border-2 transition-all duration-150 text-sm font-medium flex items-center gap-3',
+                'w-full text-left px-5 py-4 rounded-2xl border transition-all duration-150 text-sm font-medium flex items-center gap-4 shadow-sm',
                 isSelected
-                  ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300'
-                  : 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-primary)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-muted)]'
+                  ? 'border-cyan-400/40 bg-[linear-gradient(135deg,rgba(15,76,129,0.08),rgba(45,124,174,0.06))] text-[var(--text-primary)]'
+                  : 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-primary)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-elevated)]'
               )}
             >
-              <span className={cn(
-                'inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold shrink-0',
-                isSelected
-                  ? 'bg-indigo-500 text-white'
-                  : 'bg-[var(--bg-muted)] text-[var(--text-muted)]'
-              )}>
+              <span
+                className={cn(
+                  'inline-flex items-center justify-center w-8 h-8 rounded-xl text-xs font-bold shrink-0 border',
+                  isSelected
+                    ? 'border-cyan-400/30 bg-[#12365b] text-white'
+                    : 'border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text-muted)]'
+                )}
+              >
                 {String.fromCharCode(65 + i)}
               </span>
               {option}
@@ -334,7 +379,6 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
         })}
       </div>
 
-      {/* Navigation */}
       <div className="flex items-center gap-3 pt-1">
         <button
           className={btnSecondary}
@@ -345,7 +389,7 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
         </button>
 
         <div className="flex-1 text-center text-xs text-[var(--text-muted)] font-medium">
-          {answeredCount}/{questions.length} răspunse
+          Navigare liberă între itemi
         </div>
 
         {currentIndex < questions.length - 1 ? (
@@ -362,24 +406,26 @@ export function TestEngine({ institution, category, isFullAccess, institutionLab
         )}
       </div>
 
-      {/* Question dots */}
-      <div className="flex flex-wrap gap-1.5 pt-1">
-        {questions.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrentIndex(i)}
-            className={cn(
-              'w-7 h-7 rounded-lg text-xs font-semibold transition-colors',
-              i === currentIndex
-                ? 'bg-indigo-500 text-white'
-                : selectedOptions[i] !== undefined
-                ? 'bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-400'
-                : 'bg-[var(--bg-muted)] text-[var(--text-muted)] hover:bg-[var(--border-strong)]'
-            )}
-          >
-            {i + 1}
-          </button>
-        ))}
+      <div className="rounded-[24px] border border-[var(--border)] bg-[var(--bg-surface)] p-4">
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">Hartă întrebări</p>
+        <div className="flex flex-wrap gap-1.5">
+          {questions.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentIndex(i)}
+              className={cn(
+                'w-8 h-8 rounded-xl text-xs font-semibold transition-colors border',
+                i === currentIndex
+                  ? 'border-cyan-400/30 bg-[#12365b] text-white'
+                  : selectedOptions[i] !== undefined
+                    ? 'border-green-200 dark:border-green-900 bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-400'
+                    : 'border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text-muted)] hover:bg-[var(--border-strong)]'
+              )}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   )
