@@ -117,12 +117,12 @@ export default async function ReviewPage() {
                 {reviewSessions.map((session, i) => (
                   <div
                     key={session.id}
-                    className={`flex items-center gap-3 px-5 py-3.5 hover:bg-[var(--bg-muted)] transition-colors ${i < reviewSessions.length - 1 ? 'border-b border-[var(--border)]' : ''}`}
+                    className={`flex flex-col gap-3 px-5 py-3.5 transition-colors hover:bg-[var(--bg-muted)] sm:flex-row sm:items-center ${i < reviewSessions.length - 1 ? 'border-b border-[var(--border)]' : ''}`}
                   >
                     <div className="w-9 h-9 rounded-xl bg-red-50 dark:bg-red-950/40 text-red-500 flex items-center justify-center text-base shrink-0">
                       {CATEGORY_ICONS[session.category as TestCategory]}
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-[var(--text-primary)]">
                         {CATEGORY_LABELS[session.category as TestCategory]}
                         <span className="text-[var(--text-muted)] font-normal ml-1.5">— {session.institution}</span>
@@ -133,8 +133,8 @@ export default async function ReviewPage() {
                         })}
                       </p>
                     </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <div className="text-right">
+                    <div className="flex w-full items-center justify-between gap-3 shrink-0 sm:w-auto sm:justify-normal">
+                      <div className="text-left sm:text-right">
                         <p className={`text-sm font-extrabold ${getScoreColor(session.score)}`}>
                           {session.score?.toFixed(0)}%
                         </p>

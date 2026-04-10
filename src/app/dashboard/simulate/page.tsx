@@ -47,7 +47,7 @@ export default async function SimulatePage() {
       </div>
 
       {/* Stats overview */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
           { icon: ClipboardList, label: '6 probe',   sub: 'Categorii',      iconBg: 'bg-indigo-50 dark:bg-indigo-950/40', iconColor: 'text-indigo-500' },
           { icon: Clock,         label: '~90 min',   sub: 'Durată totală',  iconBg: 'bg-amber-50 dark:bg-amber-950/40',  iconColor: 'text-amber-500' },
@@ -116,7 +116,7 @@ export default async function SimulatePage() {
             {prevSims.map((sim, i) => (
               <div
                 key={i}
-                className={`flex items-center justify-between px-5 py-4 hover:bg-[var(--bg-muted)] transition-colors ${i < prevSims.length - 1 ? 'border-b border-[var(--border)]' : ''}`}
+                className={`flex flex-col gap-3 px-5 py-4 transition-colors hover:bg-[var(--bg-muted)] sm:flex-row sm:items-center sm:justify-between ${i < prevSims.length - 1 ? 'border-b border-[var(--border)]' : ''}`}
               >
                 <div className="flex items-center gap-3">
                   <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${INST_STYLES[sim.institution as Institution]?.gradient ?? 'from-slate-500 to-slate-700'} flex items-center justify-center shrink-0`}>
@@ -129,7 +129,7 @@ export default async function SimulatePage() {
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-left sm:text-right">
                   <p className={`text-base font-extrabold ${getScoreColor(sim.score)}`}>{sim.score?.toFixed(0)}%</p>
                   {sim.correct_answers != null && (
                     <p className="text-xs text-[var(--text-muted)]">{sim.correct_answers}/{sim.total_questions}</p>

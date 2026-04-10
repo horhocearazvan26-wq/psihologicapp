@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import { CATEGORY_LABELS, CATEGORY_ICONS, getScoreColor } from '@/lib/utils'
 import type { TestCategory } from '@/types'
@@ -106,16 +106,19 @@ export function DashboardClient({
   firstName, totalTests, avgScore, bestScore,
   subscriptionPlan, progressData, recentSessions, daysUntil,
 }: DashboardClientProps) {
-  const [institution, setInstitution] = useState<string | null>(null)
-  const [showPicker, setShowPicker] = useState(false)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (saved) setInstitution(saved)
-    else setShowPicker(true)
-    setMounted(true)
-  }, [])
+  const [institution, setInstitution] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null
+    return localStorage.getItem(STORAGE_KEY)
+  })
+  const [showPicker, setShowPicker] = useState(() => {
+    if (typeof window === 'undefined') return false
+    return !localStorage.getItem(STORAGE_KEY)
+  })
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
 
   function handlePickerSelect(id: string) {
     setInstitution(id)
@@ -128,7 +131,26 @@ export function DashboardClient({
     setShowPicker(true)
   }
 
-  if (!mounted) return null
+  if (!mounted) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <div className="overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--bg-surface)] p-6 shadow-sm">
+          <div className="skeleton h-6 w-36" />
+          <div className="mt-3 skeleton h-10 w-56" />
+          <div className="mt-6 grid grid-cols-3 gap-3">
+            <div className="skeleton h-20 rounded-2xl" />
+            <div className="skeleton h-20 rounded-2xl" />
+            <div className="skeleton h-20 rounded-2xl" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="skeleton h-32 rounded-2xl" />
+          <div className="skeleton h-32 rounded-2xl" />
+          <div className="skeleton h-32 rounded-2xl" />
+        </div>
+      </div>
+    )
+  }
   if (showPicker) return <InstitutionPicker onSelect={handlePickerSelect} />
 
   const inst = institution as keyof typeof INST_CONFIG
@@ -145,6 +167,13 @@ export function DashboardClient({
 
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Bună dimineața' : hour < 18 ? 'Bună ziua' : 'Bună seara'
+  const examCountdown = daysUntil == null
+    ? 'Adaugă data examenului din profil'
+    : daysUntil < 0
+      ? 'Examenul a trecut'
+      : daysUntil === 0
+        ? 'Examenul este astăzi'
+        : `${daysUntil} zile rămase`
 
   return (
     <div className="space-y-8 animate-fade-up">
@@ -156,7 +185,7 @@ export function DashboardClient({
         <div className="absolute bottom-0 right-20 w-40 h-40 bg-white/5 rounded-full pointer-events-none blur-xl" />
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
 
-        <div className="relative flex items-start justify-between gap-4">
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-4">
             <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${cfg.gradient} shadow-lg flex items-center justify-center shrink-0`}>
               {cfg.icon}
@@ -170,19 +199,19 @@ export function DashboardClient({
 
           <button
             onClick={changeInstitution}
-            className="flex items-center gap-1.5 text-white/50 hover:text-white/80 text-xs font-medium transition-colors shrink-0 mt-1"
+            className="inline-flex items-center gap-1.5 self-start rounded-full border border-white/10 bg-white/8 px-3 py-1.5 text-xs font-medium text-white/70 transition-colors hover:text-white sm:mt-1 sm:self-auto"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Schimbă</span>
+            <span>Schimbă instituția</span>
           </button>
         </div>
 
         {/* Stats inline */}
-        <div className="relative grid grid-cols-3 gap-3 mt-6">
+        <div className="relative mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
           {[
             { label: 'Teste', value: instTests.toString() },
             { label: 'Medie', value: instAvg > 0 ? `${instAvg.toFixed(0)}%` : '—' },
-            { label: 'Categorii', value: `${completedCats}/6` },
+            { label: 'Examen', value: examCountdown },
           ].map(s => (
             <div key={s.label} className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-center">
               <p className="text-white font-extrabold text-xl leading-none">{s.value}</p>
@@ -334,12 +363,12 @@ export function DashboardClient({
               return (
                 <div
                   key={session.id}
-                  className={`flex items-center gap-4 px-5 py-4 hover:bg-[var(--bg-muted)] transition-colors ${i < Math.min(instSessions.length, 5) - 1 ? 'border-b border-[var(--border)]' : ''}`}
-                >
+                className={`flex flex-col items-start gap-3 px-5 py-4 transition-colors hover:bg-[var(--bg-muted)] sm:flex-row sm:items-center sm:gap-4 ${i < Math.min(instSessions.length, 5) - 1 ? 'border-b border-[var(--border)]' : ''}`}
+              >
                   <div className={`w-10 h-10 rounded-xl ${catCfg.bg} flex items-center justify-center text-lg shrink-0`}>
                     {CATEGORY_ICONS[session.category as TestCategory]}
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-[var(--text-primary)] truncate">
                       {CATEGORY_LABELS[session.category as TestCategory]}
                     </p>
@@ -348,7 +377,7 @@ export function DashboardClient({
                       <span>{new Date(session.completed_at).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' })}</span>
                     </div>
                   </div>
-                  <div className="text-right shrink-0">
+                  <div className="w-full shrink-0 text-left sm:w-auto sm:text-right">
                     <p className={`text-sm font-extrabold ${getScoreColor(session.score)}`}>{session.score?.toFixed(0)}%</p>
                     <p className="text-xs text-[var(--text-muted)]">{session.correct_answers}/{session.total_questions}</p>
                   </div>

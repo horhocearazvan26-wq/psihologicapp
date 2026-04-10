@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { ChevronRight, Shield, Star, Eye, Scale } from 'lucide-react'
 
@@ -70,10 +70,10 @@ export function InstitutionPicker({ onSelect }: InstitutionPickerProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--bg-base)] overflow-y-auto">
-      <div className="w-full max-w-2xl py-8 animate-fade-up">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[var(--bg-base)] px-4 py-6 sm:p-6">
+      <div className="mx-auto w-full max-w-2xl animate-fade-up">
         {/* Header */}
-        <div className="text-center mb-10">
+        <div className="mb-8 text-center sm:mb-10">
           <div className="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-xs font-semibold px-3 py-1.5 rounded-full mb-5">
             <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
             Bun venit pe PsihoPrep
@@ -87,7 +87,7 @@ export function InstitutionPicker({ onSelect }: InstitutionPickerProps) {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {INSTITUTIONS.map((inst, i) => {
             const isSelected = selected === inst.id
             const isHover = hovering === inst.id
@@ -98,11 +98,11 @@ export function InstitutionPicker({ onSelect }: InstitutionPickerProps) {
                 onMouseEnter={() => setHovering(inst.id)}
                 onMouseLeave={() => setHovering(null)}
                 className={cn(
-                  'relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 cursor-pointer group',
+                  'group relative min-h-[210px] cursor-pointer overflow-hidden rounded-2xl p-6 text-left transition-all duration-300',
                   `bg-gradient-to-br ${inst.gradient}`,
                   `shadow-xl ${inst.shadowColor}`,
                   `animate-fade-up stagger-${i + 1}`,
-                  isSelected ? 'scale-95 opacity-70' : isHover ? 'scale-[1.02] -translate-y-1 shadow-2xl' : 'scale-100',
+                  isSelected ? 'scale-[0.98] opacity-80' : isHover ? 'scale-[1.02] -translate-y-1 shadow-2xl' : 'scale-100',
                 )}
               >
                 <div className="absolute -top-6 -right-6 w-28 h-28 bg-white/5 rounded-full pointer-events-none" />
@@ -117,7 +117,7 @@ export function InstitutionPicker({ onSelect }: InstitutionPickerProps) {
                 </div>
 
                 <div className={cn(
-                  'absolute right-5 bottom-5 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center transition-all duration-200',
+                  'absolute bottom-5 right-5 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 transition-all duration-200',
                   isHover ? 'bg-white/25 translate-x-0.5' : ''
                 )}>
                   <ChevronRight className="w-4 h-4 text-white" />
