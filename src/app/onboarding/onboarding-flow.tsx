@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Brain, ArrowRight, CheckCircle, Loader2, Shield, Star, Eye, Scale, Calendar, ChevronRight } from 'lucide-react'
-import { saveOnboarding } from './actions'
+import { Brain, ArrowRight, CheckCircle, Loader2, Shield, Star, Eye, Scale, Calendar, ChevronRight, CreditCard } from 'lucide-react'
+import { saveInstitution, saveOnboardingFree } from './actions'
 
 const institutions = [
   {
@@ -98,10 +98,15 @@ export function OnboardingFlow({ firstName }: OnboardingFlowProps) {
 
   function handlePlanContinue(plan: typeof plans[number]) {
     startTransition(async () => {
-      if (plan.href) {
-        await saveOnboarding(selectedInstitution!, examDate)
+      if (plan.id === 'free') {
+        // Save profile and go to dashboard (free, no payment)
+        await saveOnboardingFree(selectedInstitution!, examDate)
       } else {
-        await saveOnboarding(selectedInstitution!, examDate)
+        // Save institution first, then redirect to Stripe
+        await saveInstitution(selectedInstitution!, examDate)
+        const params = new URLSearchParams({ plan: plan.id })
+        if (plan.id === 'one_institution') params.set('institution', selectedInstitution!)
+        window.location.href = `/api/stripe/checkout?${params.toString()}`
       }
     })
   }
@@ -304,12 +309,19 @@ export function OnboardingFlow({ firstName }: OnboardingFlowProps) {
                       style={{
                         background: plan.highlight
                           ? 'linear-gradient(135deg, #818cf8, #6366f1)'
+                          : plan.id === 'all_institutions'
+                          ? 'linear-gradient(135deg, #7c3aed, #4f46e5)'
                           : 'var(--bg-muted)',
-                        color: plan.highlight ? '#fff' : 'var(--text-primary)',
-                        border: plan.highlight ? 'none' : '1px solid var(--border)',
+                        color: plan.id !== 'free' ? '#fff' : 'var(--text-primary)',
+                        border: plan.id !== 'free' ? 'none' : '1px solid var(--border)',
                       }}
                     >
-                      {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <ChevronRight className="w-4 h-4" />}
+                      {isPending
+                        ? <Loader2 className="w-4 h-4 animate-spin" />
+                        : plan.id === 'free'
+                        ? <ChevronRight className="w-4 h-4" />
+                        : <CreditCard className="w-4 h-4" />
+                      }
                       {plan.cta}
                     </button>
                   </div>
