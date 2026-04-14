@@ -180,6 +180,13 @@ export function OnboardingFlow({ firstName }: OnboardingFlowProps) {
                         outline: 'none',
                       }}
                     >
+                      {/* Institution background image */}
+                      <img
+                        src={`/images/${inst.id.toLowerCase()}.jpg`}
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none select-none"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                      />
                       <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)' }} />
                       <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full blur-2xl" style={{ background: 'rgba(255,255,255,0.08)' }} />
 

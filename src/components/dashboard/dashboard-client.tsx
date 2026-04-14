@@ -179,6 +179,13 @@ export function DashboardClient({
           boxShadow: `0 32px 64px -24px ${cfg.heroGlow}, 0 0 0 1px rgba(255,255,255,0.06)`,
         }}
       >
+        {/* Institution background image */}
+        <img
+          src={`/images/${inst.toLowerCase()}.jpg`}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-[0.18] pointer-events-none select-none"
+          onError={(e) => { e.currentTarget.style.display = 'none' }}
+        />
         {/* Decorative elements */}
         <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full blur-3xl pointer-events-none" style={{ background: 'rgba(255,255,255,0.05)' }} />
         <div className="absolute bottom-0 right-0 w-48 h-48 rounded-full blur-2xl pointer-events-none" style={{ background: 'rgba(255,255,255,0.03)' }} />

@@ -118,6 +118,13 @@ export default async function TestsPage() {
                 boxShadow: `0 20px 48px -16px ${cfg.heroGlow}, 0 0 0 1px rgba(255,255,255,0.06)`,
               }}
             >
+              {/* Institution background image */}
+              <img
+                src={`/images/${inst.toLowerCase()}.jpg`}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover opacity-[0.15] pointer-events-none select-none"
+                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+              />
               <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }} />
               <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full blur-3xl" style={{ background: 'rgba(255,255,255,0.05)' }} />
 

@@ -49,7 +49,7 @@ export function SimulationSelector({ institutions }: SimulationSelectorProps) {
               onClick={() => opt.canSimulate && setSelected(opt.inst)}
               disabled={!opt.canSimulate}
               className={cn(
-                'relative text-left rounded-2xl border-2 p-5 transition-all duration-200 group',
+                'relative text-left rounded-2xl border-2 p-5 transition-all duration-200 group overflow-hidden',
                 opt.canSimulate
                   ? isSelected
                     ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 shadow-md'
@@ -57,7 +57,14 @@ export function SimulationSelector({ institutions }: SimulationSelectorProps) {
                   : 'border-[var(--border)] bg-[var(--bg-surface)] opacity-60 cursor-not-allowed'
               )}
             >
-              <div className="flex items-center gap-4">
+              {/* Institution background image */}
+              <img
+                src={`/images/${opt.inst.toLowerCase()}.jpg`}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover opacity-[0.07] pointer-events-none select-none"
+                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+              />
+              <div className="relative flex items-center gap-4">
                 {/* Icon */}
                 <div className={cn(
                   'w-14 h-14 rounded-2xl bg-gradient-to-br flex items-center justify-center shrink-0 shadow-sm transition-transform duration-200',
