@@ -10,7 +10,6 @@ import {
   CreditCard, User, Trophy, Layers, FileText, LogOut,
   ChevronRight, FolderOpen, Sparkles, Brain,
 } from 'lucide-react'
-import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 const navGroups = [
   {
@@ -159,12 +158,7 @@ export function Sidebar({ user, onClose }: SidebarProps) {
         </div>
       )}
 
-      <div className="px-4 py-3 flex items-center justify-between border-t border-white/8">
-        <span className="text-xs text-white/54">Mod întunecat</span>
-        <ThemeToggle />
-      </div>
-
-      <div className="px-3 pb-4">
+<div className="px-3 pb-4">
         <div className="flex items-center gap-3 rounded-2xl border border-white/8 bg-white/4 px-3 py-3">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-extrabold text-sm shrink-0 shadow-md shadow-indigo-900/40">
             {user.full_name?.[0]?.toUpperCase() ?? user.email[0].toUpperCase()}

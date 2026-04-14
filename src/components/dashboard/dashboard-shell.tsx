@@ -16,7 +16,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="flex h-screen overflow-hidden relative" style={{ background: 'var(--bg-base)' }}>
+    <div className="dark flex h-screen overflow-hidden relative" style={{ background: 'var(--bg-base)' }}>
       {/* Atmospheric background blobs */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-0 left-1/3 w-[700px] h-[500px] rounded-full blur-[160px]" style={{ background: 'radial-gradient(ellipse, rgba(59,130,246,0.06) 0%, transparent 70%)' }} />

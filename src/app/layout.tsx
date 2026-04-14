@@ -1,11 +1,9 @@
 import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import Script from 'next/script'
 import './globals.css'
 import { AppMain } from '@/components/app/app-main'
 import { NavigationFeedbackProvider } from '@/components/app/navigation-feedback'
-import { ThemeProvider } from '@/components/theme-provider'
 
 export const metadata: Metadata = {
   title: 'PsihoPrep — Pregătire Psihologică MAI, MApN, SRI, ANP',
@@ -54,21 +52,9 @@ export default function RootLayout({
         className="min-h-full antialiased"
         style={{ backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)' }}
       >
-        <Script id="theme-init" strategy="beforeInteractive">
-          {`
-            try {
-              var stored = localStorage.getItem('theme');
-              var preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-              var theme = stored || preferred;
-              document.documentElement.classList.toggle('dark', theme === 'dark');
-            } catch (e) {}
-          `}
-        </Script>
-        <ThemeProvider>
-          <NavigationFeedbackProvider>
-            <AppMain>{children}</AppMain>
-          </NavigationFeedbackProvider>
-        </ThemeProvider>
+        <NavigationFeedbackProvider>
+          <AppMain>{children}</AppMain>
+        </NavigationFeedbackProvider>
         <Analytics />
         <SpeedInsights />
       </body>
