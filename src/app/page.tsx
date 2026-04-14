@@ -14,7 +14,7 @@ const institutions = [
     desc: 'Poliție, Jandarmerie, IGPF',
     gradient: 'from-blue-500 via-blue-600 to-blue-800',
     glow: 'rgba(59,130,246,0.35)',
-    ring: 'ring-blue-200 dark:ring-blue-800/60',
+    ring: 'ring-blue-200',
     questions: '300+',
     categories: 6,
   },
@@ -24,7 +24,7 @@ const institutions = [
     desc: 'Armata Română',
     gradient: 'from-emerald-400 via-emerald-600 to-teal-700',
     glow: 'rgba(16,185,129,0.35)',
-    ring: 'ring-emerald-200 dark:ring-emerald-800/60',
+    ring: 'ring-emerald-200',
     questions: '250+',
     categories: 6,
   },
@@ -34,7 +34,7 @@ const institutions = [
     desc: 'Servicii de informații',
     gradient: 'from-rose-500 via-red-600 to-red-800',
     glow: 'rgba(239,68,68,0.35)',
-    ring: 'ring-red-200 dark:ring-red-800/60',
+    ring: 'ring-red-200',
     questions: '200+',
     categories: 6,
   },
@@ -44,19 +44,19 @@ const institutions = [
     desc: 'Penitenciare',
     gradient: 'from-violet-500 via-violet-600 to-indigo-700',
     glow: 'rgba(139,92,246,0.35)',
-    ring: 'ring-violet-200 dark:ring-violet-800/60',
+    ring: 'ring-violet-200',
     questions: '200+',
     categories: 6,
   },
 ]
 
 const categories = [
-  { icon: Eye,      title: 'Atenție & Concentrare', desc: 'Toulouse-Piéron, Matrici Raven',      color: 'from-sky-400 to-blue-500',      iconBg: 'bg-sky-50 dark:bg-sky-950/40 text-sky-500' },
-  { icon: Brain,    title: 'Raționament Logic',      desc: 'Serii numerice, analogii, silogisme', color: 'from-violet-400 to-purple-600',  iconBg: 'bg-purple-50 dark:bg-purple-950/40 text-purple-500' },
-  { icon: Database, title: 'Memorie',                desc: 'Figuri, cuvinte, secvențe',           color: 'from-amber-400 to-orange-500',   iconBg: 'bg-amber-50 dark:bg-amber-950/40 text-amber-500' },
-  { icon: Hash,     title: 'Aptitudini Numerice',    desc: 'Calcul rapid, procente, probleme',    color: 'from-emerald-400 to-green-600',  iconBg: 'bg-green-50 dark:bg-green-950/40 text-green-500' },
-  { icon: BookOpen, title: 'Vocabular & Limbaj',     desc: 'Sinonime, antonime, definiții',       color: 'from-rose-400 to-pink-600',      iconBg: 'bg-rose-50 dark:bg-rose-950/40 text-rose-500' },
-  { icon: Users,    title: 'Personalitate',          desc: 'Chestionare, judecată situațională',  color: 'from-teal-400 to-cyan-600',      iconBg: 'bg-teal-50 dark:bg-teal-950/40 text-teal-500' },
+  { icon: Eye,      title: 'Atenție & Concentrare', desc: 'Toulouse-Piéron, Matrici Raven',      color: 'from-sky-400 to-blue-500',      iconBg: 'bg-sky-50 text-sky-500' },
+  { icon: Brain,    title: 'Raționament Logic',      desc: 'Serii numerice, analogii, silogisme', color: 'from-violet-400 to-purple-600',  iconBg: 'bg-purple-50 text-purple-500' },
+  { icon: Database, title: 'Memorie',                desc: 'Figuri, cuvinte, secvențe',           color: 'from-amber-400 to-orange-500',   iconBg: 'bg-amber-50 text-amber-500' },
+  { icon: Hash,     title: 'Aptitudini Numerice',    desc: 'Calcul rapid, procente, probleme',    color: 'from-emerald-400 to-green-600',  iconBg: 'bg-green-50 text-green-500' },
+  { icon: BookOpen, title: 'Vocabular & Limbaj',     desc: 'Sinonime, antonime, definiții',       color: 'from-rose-400 to-pink-600',      iconBg: 'bg-rose-50 text-rose-500' },
+  { icon: Users,    title: 'Personalitate',          desc: 'Chestionare, judecată situațională',  color: 'from-teal-400 to-cyan-600',      iconBg: 'bg-teal-50 text-teal-500' },
 ]
 
 const features = [
@@ -124,32 +124,32 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[var(--bg-base)]">
+    <div className="min-h-screen bg-white">
 
       {/* ── Navbar ── */}
-      <nav className="sticky top-0 z-50 border-b border-slate-100/80 dark:border-[var(--border)] bg-white/80 dark:bg-[var(--bg-base)]/80 backdrop-blur-xl">
+      <nav className="sticky top-0 z-50 border-b border-slate-100/80 bg-white/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="interactive-press flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-md shadow-indigo-200/50 dark:shadow-indigo-900/50">
+            <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-md shadow-indigo-200/50">
               <Brain className="w-5 h-5 text-white" />
             </div>
-            <span className="font-extrabold text-slate-900 dark:text-[var(--text-primary)] text-lg tracking-tight">PsihoPrep</span>
+            <span className="font-extrabold text-slate-900 text-lg tracking-tight">PsihoPrep</span>
           </Link>
-          <div className="hidden sm:flex items-center gap-6 text-sm font-medium text-slate-500 dark:text-[var(--text-muted)]">
-            <a href="#features" className="interactive-press hover:text-slate-900 dark:hover:text-[var(--text-primary)] transition-colors">Funcționalități</a>
-            <a href="#institutions" className="interactive-press hover:text-slate-900 dark:hover:text-[var(--text-primary)] transition-colors">Instituții</a>
-            <a href="#pricing" className="interactive-press hover:text-slate-900 dark:hover:text-[var(--text-primary)] transition-colors">Prețuri</a>
+          <div className="hidden sm:flex items-center gap-6 text-sm font-medium text-slate-500">
+            <a href="#features" className="interactive-press hover:text-slate-900 transition-colors">Funcționalități</a>
+            <a href="#institutions" className="interactive-press hover:text-slate-900 transition-colors">Instituții</a>
+            <a href="#pricing" className="interactive-press hover:text-slate-900 transition-colors">Prețuri</a>
           </div>
           <div className="flex items-center gap-2.5">
             <Link
               href="/auth/login"
-              className="interactive-press px-4 py-2 text-sm font-medium text-slate-600 dark:text-[var(--text-secondary)] hover:text-slate-900 dark:hover:text-[var(--text-primary)] transition-colors"
+              className="interactive-press px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
             >
               Intră în cont
             </Link>
             <Link
               href="/auth/register"
-              className="interactive-press interactive-glow px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-indigo-200/50 dark:shadow-indigo-900/30 btn-shimmer"
+              className="interactive-press interactive-glow px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-indigo-200/50 btn-shimmer"
             >
               Înregistrare gratuită
             </Link>
@@ -173,7 +173,7 @@ export default async function HomePage() {
             Platforma nr. 1 de pregătire psihologică din România
           </div>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 dark:text-[var(--text-primary)] leading-[1.05] mb-5 tracking-tight">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 leading-[1.05] mb-5 tracking-tight">
             Trece proba psihologică
             <br />
             <span className="gradient-text">
@@ -181,7 +181,7 @@ export default async function HomePage() {
             </span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-slate-500 dark:text-[var(--text-muted)] max-w-2xl mx-auto mb-9 leading-relaxed">
+          <p className="text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto mb-9 leading-relaxed">
             Sute de întrebări per categorie, simulare cu cronometru real, flashcard-uri
             și statistici detaliate. Tot ce ai nevoie pentru a trece din prima.
           </p>
@@ -196,13 +196,13 @@ export default async function HomePage() {
             </Link>
             <a
               href="#pricing"
-              className="interactive-press inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-slate-700 dark:text-[var(--text-primary)] bg-white dark:bg-[var(--bg-surface)] border border-slate-200 dark:border-[var(--border)] rounded-2xl hover:bg-slate-50 dark:hover:bg-[var(--bg-muted)] transition-colors shadow-sm"
+              className="interactive-press inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-slate-700 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 transition-colors shadow-sm"
             >
               Vezi prețuri
             </a>
           </div>
 
-          <p className="text-sm text-slate-400 dark:text-[var(--text-muted)] flex items-center justify-center gap-2 mb-14">
+          <p className="text-sm text-slate-400 flex items-center justify-center gap-2 mb-14">
             <CheckCircle className="w-4 h-4 text-emerald-500" />
             Nu necesită card de credit · 15 întrebări demo gratuite
           </p>
@@ -212,13 +212,13 @@ export default async function HomePage() {
         <div className="relative max-w-2xl mx-auto">
           <div className="glass-card rounded-2xl px-6 py-5 grid grid-cols-3 gap-4 text-center">
             {[
-              { value: '1,000+', label: 'Întrebări în baza de date', accent: 'text-indigo-600 dark:text-indigo-400' },
-              { value: '4',      label: 'Instituții acoperite',       accent: 'text-violet-600 dark:text-violet-400' },
-              { value: '6',      label: 'Categorii per instituție',   accent: 'text-purple-600 dark:text-purple-400' },
+              { value: '1,000+', label: 'Întrebări în baza de date', accent: 'text-indigo-600' },
+              { value: '4',      label: 'Instituții acoperite',       accent: 'text-violet-600' },
+              { value: '6',      label: 'Categorii per instituție',   accent: 'text-purple-600' },
             ].map((stat) => (
               <div key={stat.label} className="space-y-1">
                 <p className={`text-2xl font-extrabold tracking-tight ${stat.accent}`}>{stat.value}</p>
-                <p className="text-xs text-slate-500 dark:text-[var(--text-muted)] font-medium leading-tight">{stat.label}</p>
+                <p className="text-xs text-slate-500 font-medium leading-tight">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -229,10 +229,10 @@ export default async function HomePage() {
       <section id="institutions" className="py-24 px-6 bg-mesh-light">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-[var(--text-primary)] tracking-tight mb-3">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
               Teste specifice fiecărei instituții
             </h2>
-            <p className="text-slate-500 dark:text-[var(--text-muted)] max-w-xl mx-auto">
+            <p className="text-slate-500 max-w-xl mx-auto">
               Fiecare instituție are propriile standarde. Pregătirea noastră este adaptată exact.
             </p>
           </div>
@@ -241,7 +241,7 @@ export default async function HomePage() {
             {institutions.map((inst) => (
               <div
                 key={inst.abbr}
-                className="group relative bg-white dark:bg-[var(--bg-surface)] rounded-2xl p-6 cursor-pointer card-premium overflow-hidden"
+                className="group relative bg-white rounded-2xl p-6 cursor-pointer card-premium overflow-hidden"
                 style={{ '--glow-color': inst.glow } as React.CSSProperties}
               >
                 {/* Subtle top gradient */}
@@ -253,14 +253,14 @@ export default async function HomePage() {
                 >
                   <span className="text-white font-extrabold text-lg tracking-tight">{inst.abbr}</span>
                 </div>
-                <h3 className="font-extrabold text-sm text-slate-900 dark:text-[var(--text-primary)] mb-0.5">{inst.abbr}</h3>
-                <p className="text-xs font-medium text-slate-600 dark:text-[var(--text-secondary)] mb-1 leading-snug">{inst.name}</p>
-                <p className="text-xs text-slate-400 dark:text-[var(--text-muted)] mb-4">{inst.desc}</p>
+                <h3 className="font-extrabold text-sm text-slate-900 mb-0.5">{inst.abbr}</h3>
+                <p className="text-xs font-medium text-slate-600 mb-1 leading-snug">{inst.name}</p>
+                <p className="text-xs text-slate-400 mb-4">{inst.desc}</p>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/8 text-slate-500 dark:text-white/50">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
                     {inst.questions} întrebări
                   </span>
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/8 text-slate-500 dark:text-white/50">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
                     {inst.categories} categorii
                   </span>
                 </div>
@@ -271,13 +271,13 @@ export default async function HomePage() {
       </section>
 
       {/* ── Categories ── */}
-      <section className="py-24 px-6 bg-white dark:bg-[var(--bg-base)]">
+      <section className="py-24 px-6 bg-white">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-[var(--text-primary)] tracking-tight mb-3">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
               6 categorii de teste complete
             </h2>
-            <p className="text-slate-500 dark:text-[var(--text-muted)] max-w-xl mx-auto">
+            <p className="text-slate-500 max-w-xl mx-auto">
               Acoperim toate tipurile de probe psihologice folosite în selecția pentru instituțiile publice.
             </p>
           </div>
@@ -286,12 +286,12 @@ export default async function HomePage() {
             {categories.map((cat) => {
               const Icon = cat.icon
               return (
-                <div key={cat.title} className="group bg-white dark:bg-[var(--bg-surface)] rounded-2xl border border-slate-100 dark:border-[var(--border)] p-6 card-premium">
+                <div key={cat.title} className="group bg-white rounded-2xl border border-slate-100 p-6 card-premium">
                   <div className={`w-12 h-12 rounded-xl ${cat.iconBg} flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110`}>
                     <Icon className="w-6 h-6" />
                   </div>
-                  <h3 className="font-bold text-slate-800 dark:text-[var(--text-primary)] mb-1.5 tracking-tight">{cat.title}</h3>
-                  <p className="text-sm text-slate-500 dark:text-[var(--text-muted)]">{cat.desc}</p>
+                  <h3 className="font-bold text-slate-800 mb-1.5 tracking-tight">{cat.title}</h3>
+                  <p className="text-sm text-slate-500">{cat.desc}</p>
                   {/* Bottom gradient line on hover */}
                   <div className={`absolute bottom-0 inset-x-0 h-0.5 bg-gradient-to-r ${cat.color} opacity-0 group-hover:opacity-100 transition-opacity rounded-b-2xl`} />
                 </div>
@@ -346,10 +346,10 @@ export default async function HomePage() {
       <section className="py-24 px-6 bg-mesh-light">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-[var(--text-primary)] tracking-tight mb-3">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
               Ce spun candidații admiși
             </h2>
-            <p className="text-slate-500 dark:text-[var(--text-muted)]">Peste 500 de candidați s-au pregătit cu PsihoPrep</p>
+            <p className="text-slate-500">Peste 500 de candidați s-au pregătit cu PsihoPrep</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -367,14 +367,14 @@ export default async function HomePage() {
                   </div>
                   <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full text-white bg-gradient-to-r ${t.instColor}`}>{t.institution}</span>
                 </div>
-                <p className="text-slate-700 dark:text-[var(--text-secondary)] text-sm leading-relaxed flex-1 mb-5">&ldquo;{t.text}&rdquo;</p>
-                <div className="flex items-center gap-3 pt-4 border-t border-slate-100 dark:border-white/[0.07]">
+                <p className="text-slate-700 text-sm leading-relaxed flex-1 mb-5">&ldquo;{t.text}&rdquo;</p>
+                <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${t.instColor} flex items-center justify-center text-white text-sm font-extrabold shrink-0 shadow-sm`}>
                     {t.initials}
                   </div>
                   <div>
-                    <p className="font-bold text-slate-800 dark:text-[var(--text-primary)] text-sm">{t.name}</p>
-                    <p className="text-xs text-slate-500 dark:text-[var(--text-muted)]">{t.role}</p>
+                    <p className="font-bold text-slate-800 text-sm">{t.name}</p>
+                    <p className="text-xs text-slate-500">{t.role}</p>
                   </div>
                 </div>
               </div>
@@ -384,13 +384,13 @@ export default async function HomePage() {
       </section>
 
       {/* ── Pricing ── */}
-      <section id="pricing" className="py-24 px-6 bg-white dark:bg-[var(--bg-base)]">
+      <section id="pricing" className="py-24 px-6 bg-white">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-[var(--text-primary)] tracking-tight mb-3">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
               Prețuri simple, plată unică
             </h2>
-            <p className="text-slate-500 dark:text-[var(--text-muted)] max-w-md mx-auto">
+            <p className="text-slate-500 max-w-md mx-auto">
               Fără abonament lunar. Plătești o singură dată și ai acces pe viață.
             </p>
           </div>
@@ -401,10 +401,10 @@ export default async function HomePage() {
                 key={plan.name}
                 className={`relative rounded-2xl p-8 flex flex-col transition-all duration-200 ${
                   plan.highlight
-                    ? 'bg-gradient-to-b from-indigo-600 to-violet-700 text-white scale-105 shadow-2xl shadow-indigo-300/30 dark:shadow-indigo-900/40'
+                    ? 'bg-gradient-to-b from-indigo-600 to-violet-700 text-white scale-105 shadow-2xl shadow-indigo-300/30'
                     : plan.highlight2
-                    ? 'bg-gradient-to-b from-slate-900 to-slate-800 dark:from-[var(--bg-panel)] dark:to-[var(--bg-panel-muted)] text-white border border-slate-700 shadow-xl shadow-slate-900/20'
-                    : 'bg-white dark:bg-[var(--bg-surface)] border border-slate-100 dark:border-[var(--border)] shadow-sm card-premium'
+                    ? 'bg-gradient-to-b from-slate-900 to-slate-800 text-white border border-slate-700 shadow-xl shadow-slate-900/20'
+                    : 'bg-white border border-slate-100 shadow-sm card-premium'
                 }`}
               >
                 {plan.badge && (
@@ -414,7 +414,7 @@ export default async function HomePage() {
                         ? 'bg-white text-indigo-700'
                         : plan.highlight2
                         ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-white'
-                        : 'bg-slate-900 dark:bg-[var(--text-primary)] text-white dark:text-[var(--text-inverse)]'
+                        : 'bg-slate-900 text-white'
                     }`}>
                       {plan.badge}
                     </span>
@@ -422,17 +422,17 @@ export default async function HomePage() {
                 )}
 
                 <div className="mb-6">
-                  <h3 className={`font-bold text-lg mb-2 ${plan.highlight || plan.highlight2 ? 'text-white' : 'text-slate-800 dark:text-[var(--text-primary)]'}`}>{plan.name}</h3>
+                  <h3 className={`font-bold text-lg mb-2 ${plan.highlight || plan.highlight2 ? 'text-white' : 'text-slate-800'}`}>{plan.name}</h3>
                   <div className="flex items-end gap-1 mb-1">
-                    <span className={`text-4xl font-extrabold tracking-tight ${plan.highlight || plan.highlight2 ? 'text-white' : 'text-slate-900 dark:text-[var(--text-primary)]'}`}>{plan.price}</span>
-                    {plan.period && <span className={`mb-1 font-semibold ${plan.highlight ? 'text-indigo-200' : plan.highlight2 ? 'text-slate-300' : 'text-slate-400 dark:text-[var(--text-muted)]'}`}>{plan.period}</span>}
+                    <span className={`text-4xl font-extrabold tracking-tight ${plan.highlight || plan.highlight2 ? 'text-white' : 'text-slate-900'}`}>{plan.price}</span>
+                    {plan.period && <span className={`mb-1 font-semibold ${plan.highlight ? 'text-indigo-200' : plan.highlight2 ? 'text-slate-300' : 'text-slate-400'}`}>{plan.period}</span>}
                   </div>
-                  <p className={`text-sm ${plan.highlight ? 'text-indigo-200' : plan.highlight2 ? 'text-slate-300' : 'text-slate-500 dark:text-[var(--text-muted)]'}`}>{plan.desc}</p>
+                  <p className={`text-sm ${plan.highlight ? 'text-indigo-200' : plan.highlight2 ? 'text-slate-300' : 'text-slate-500'}`}>{plan.desc}</p>
                 </div>
 
                 <ul className="space-y-2.5 mb-8 flex-1">
                   {plan.features.map((f) => (
-                    <li key={f} className={`flex items-start gap-2.5 text-sm ${plan.highlight ? 'text-indigo-100' : plan.highlight2 ? 'text-slate-200' : 'text-slate-600 dark:text-[var(--text-secondary)]'}`}>
+                    <li key={f} className={`flex items-start gap-2.5 text-sm ${plan.highlight ? 'text-indigo-100' : plan.highlight2 ? 'text-slate-200' : 'text-slate-600'}`}>
                       <CheckCircle className={`w-4 h-4 shrink-0 mt-0.5 ${plan.highlight ? 'text-indigo-200' : plan.highlight2 ? 'text-amber-400' : 'text-emerald-500'}`} />
                       {f}
                     </li>
@@ -445,7 +445,7 @@ export default async function HomePage() {
                       ? 'bg-white text-indigo-700 hover:bg-indigo-50 shadow-md'
                       : plan.highlight2
                       ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-white hover:opacity-90 shadow-md shadow-amber-500/30'
-                      : 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:opacity-90 shadow-md shadow-indigo-200/50 dark:shadow-indigo-900/30'
+                      : 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:opacity-90 shadow-md shadow-indigo-200/50'
                   }`}>
                     {plan.cta}
                   </div>
@@ -454,7 +454,7 @@ export default async function HomePage() {
             ))}
           </div>
 
-          <p className="text-center text-sm text-slate-400 dark:text-[var(--text-muted)] mt-8 flex items-center justify-center gap-4 flex-wrap">
+          <p className="text-center text-sm text-slate-400 mt-8 flex items-center justify-center gap-4 flex-wrap">
             <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5 text-emerald-500" /> Garanție 7 zile</span>
             <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5 text-slate-400" /> Plată securizată prin Stripe</span>
             <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5 text-slate-400" /> Fără costuri ascunse</span>
@@ -493,9 +493,9 @@ export default async function HomePage() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-slate-100 dark:border-[var(--border)] bg-white dark:bg-[var(--bg-base)]">
+      <footer className="border-t border-slate-100 bg-white">
         {/* Trust bar */}
-        <div className="border-b border-slate-100 dark:border-[var(--border)] py-4 px-6">
+        <div className="border-b border-slate-100 py-4 px-6">
           <div className="max-w-5xl mx-auto flex items-center justify-center gap-6 flex-wrap">
             {[
               { icon: Shield, text: 'Garanție 7 zile', color: 'text-emerald-500' },
@@ -503,7 +503,7 @@ export default async function HomePage() {
               { icon: CheckCircle, text: 'Acces instant', color: 'text-blue-500' },
               { icon: Users, text: '500+ candidați pregătiți', color: 'text-violet-500' },
             ].map(({ icon: Icon, text, color }) => (
-              <span key={text} className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-[var(--text-muted)] font-medium">
+              <span key={text} className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
                 <Icon className={`w-3.5 h-3.5 ${color}`} />
                 {text}
               </span>
@@ -516,15 +516,15 @@ export default async function HomePage() {
               <div className="w-7 h-7 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center">
                 <Brain className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="font-bold text-slate-700 dark:text-[var(--text-secondary)] text-sm">PsihoPrep</span>
+              <span className="font-bold text-slate-700 text-sm">PsihoPrep</span>
             </div>
-            <p className="text-sm text-slate-400 dark:text-[var(--text-muted)]">
+            <p className="text-sm text-slate-400">
               © {new Date().getFullYear()} PsihoPrep. Toate drepturile rezervate.
             </p>
-            <div className="flex items-center gap-4 text-sm text-slate-400 dark:text-[var(--text-muted)]">
-              <a href="#" className="hover:text-slate-600 dark:hover:text-[var(--text-secondary)] transition-colors">Termeni</a>
-              <a href="#" className="hover:text-slate-600 dark:hover:text-[var(--text-secondary)] transition-colors">Confidențialitate</a>
-              <a href="#" className="hover:text-slate-600 dark:hover:text-[var(--text-secondary)] transition-colors">Contact</a>
+            <div className="flex items-center gap-4 text-sm text-slate-400">
+              <a href="#" className="hover:text-slate-600 transition-colors">Termeni</a>
+              <a href="#" className="hover:text-slate-600 transition-colors">Confidențialitate</a>
+              <a href="#" className="hover:text-slate-600 transition-colors">Contact</a>
             </div>
           </div>
         </div>

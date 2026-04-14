@@ -63,12 +63,12 @@ const INST_CONFIG = {
 }
 
 const CAT_CONFIG: Record<TestCategory, { bg: string; text: string; glow: string }> = {
-  attention:   { bg: 'bg-sky-500/10',       text: 'text-sky-400',     glow: 'rgba(14,165,233,0.15)' },
-  logic:       { bg: 'bg-purple-500/10',    text: 'text-purple-400',  glow: 'rgba(168,85,247,0.15)' },
-  memory:      { bg: 'bg-amber-500/10',     text: 'text-amber-400',   glow: 'rgba(245,158,11,0.15)' },
-  numerical:   { bg: 'bg-emerald-500/10',   text: 'text-emerald-400', glow: 'rgba(16,185,129,0.15)' },
-  vocabulary:  { bg: 'bg-rose-500/10',      text: 'text-rose-400',    glow: 'rgba(244,63,94,0.15)' },
-  personality: { bg: 'bg-teal-500/10',      text: 'text-teal-400',    glow: 'rgba(20,184,166,0.15)' },
+  attention:   { bg: 'bg-indigo-500/10', text: 'text-indigo-400', glow: 'rgba(99,102,241,0.15)' },
+  logic:       { bg: 'bg-indigo-500/10', text: 'text-indigo-400', glow: 'rgba(99,102,241,0.15)' },
+  memory:      { bg: 'bg-indigo-500/10', text: 'text-indigo-400', glow: 'rgba(99,102,241,0.15)' },
+  numerical:   { bg: 'bg-indigo-500/10', text: 'text-indigo-400', glow: 'rgba(99,102,241,0.15)' },
+  vocabulary:  { bg: 'bg-indigo-500/10', text: 'text-indigo-400', glow: 'rgba(99,102,241,0.15)' },
+  personality: { bg: 'bg-indigo-500/10', text: 'text-indigo-400', glow: 'rgba(99,102,241,0.15)' },
 }
 
 const categories: TestCategory[] = ['attention', 'logic', 'memory', 'numerical', 'vocabulary', 'personality']
@@ -288,7 +288,6 @@ export function DashboardClient({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {categories.map((cat, i) => {
             const progress = instProgress.find(p => p.category === cat)
-            const catCfg = CAT_CONFIG[cat]
             const href = cat === 'attention'
               ? `/dashboard/tests/${inst.toLowerCase()}/attention`
               : `/dashboard/tests/${inst.toLowerCase()}/${cat}`
@@ -296,41 +295,54 @@ export function DashboardClient({
             return (
               <Link key={cat} href={href}>
                 <div
-                  className={`group relative overflow-hidden dash-card rounded-2xl p-5 cursor-pointer hover:-translate-y-1 animate-fade-up stagger-${(i % 4) + 1}`}
+                  className={`group relative overflow-hidden rounded-2xl cursor-pointer hover:-translate-y-1 transition-all duration-200 animate-fade-up stagger-${(i % 4) + 1}`}
+                  style={{
+                    background: 'linear-gradient(145deg, #0f1e38 0%, #0a1528 60%, #071020 100%)',
+                    boxShadow: '0 4px 24px -8px rgba(0,0,0,0.6), 0 0 0 1px rgba(99,102,241,0.12), inset 0 1px 0 rgba(255,255,255,0.06)',
+                  }}
                 >
-                  {/* Subtle top accent */}
-                  <div className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${cfg.progress} opacity-40`} />
+                  {/* 3D top shine */}
+                  <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(165,180,252,0.35), transparent)' }} />
+                  {/* Subtle glow on hover */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.08) 0%, transparent 70%)' }} />
 
-                  <div className="flex items-start gap-3.5 mb-4">
-                    <div className={`w-11 h-11 rounded-xl ${catCfg.bg} flex items-center justify-center text-xl shrink-0 transition-transform duration-200 group-hover:scale-110`}
-                      style={{ boxShadow: progress?.tests_taken ? `0 0 16px ${catCfg.glow}` : 'none' }}>
-                      {CATEGORY_ICONS[cat]}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-sm leading-tight" style={{ color: 'var(--text-primary)' }}>{CATEGORY_LABELS[cat]}</h3>
-                      {progress && progress.tests_taken > 0 ? (
-                        <div className="mt-2 space-y-1.5">
-                          <div className="flex justify-between text-xs">
-                            <span style={{ color: 'var(--text-muted)' }}>{progress.tests_taken} teste</span>
-                            <span className={`font-extrabold ${getScoreColor(progress.average_score)}`}>
-                              {progress.average_score.toFixed(0)}%
-                            </span>
-                          </div>
-                          <div className="w-full rounded-full h-1" style={{ background: 'var(--bg-muted)' }}>
-                            <div
-                              className={`bg-gradient-to-r ${cfg.progress} h-1 rounded-full transition-all`}
-                              style={{ width: `${Math.min(progress.average_score, 100)}%` }}
-                            />
-                          </div>
+                  <div className="relative p-5 pb-4">
+                    {/* Large title as visual element */}
+                    <h3
+                      className="text-xl font-extrabold tracking-tight leading-tight mb-1 transition-all duration-200 group-hover:opacity-90"
+                      style={{
+                        background: 'linear-gradient(135deg, #a5b4fc 0%, #818cf8 50%, #6366f1 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                      }}
+                    >
+                      {CATEGORY_LABELS[cat]}
+                    </h3>
+
+                    {progress && progress.tests_taken > 0 ? (
+                      <div className="mt-3 space-y-1.5">
+                        <div className="flex justify-between text-xs">
+                          <span style={{ color: 'var(--text-muted)' }}>{progress.tests_taken} teste</span>
+                          <span className={`font-extrabold ${getScoreColor(progress.average_score)}`}>
+                            {progress.average_score.toFixed(0)}%
+                          </span>
                         </div>
-                      ) : (
-                        <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Neîncercat</p>
-                      )}
+                        <div className="w-full rounded-full h-1" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                          <div
+                            className={`bg-gradient-to-r ${cfg.progress} h-1 rounded-full transition-all`}
+                            style={{ width: `${Math.min(progress.average_score, 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Neîncercat</p>
+                    )}
+
+                    <div className="flex items-center justify-between mt-4 pt-3" style={{ borderTop: '1px solid rgba(99,102,241,0.12)' }}>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-400/60">Începe</span>
+                      <ChevronRight className="w-3.5 h-3.5 text-indigo-400/60 group-hover:text-indigo-300 group-hover:translate-x-0.5 transition-all" />
                     </div>
-                  </div>
-                  <div className={`flex items-center justify-between text-xs font-semibold py-2 px-3.5 rounded-xl ${catCfg.bg} ${catCfg.text} group-hover:opacity-80 transition-opacity`}>
-                    <span>Începe testul</span>
-                    <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </div>
               </Link>

@@ -52,7 +52,7 @@ export default function RootLayout({
     <html lang="ro" className="h-full" suppressHydrationWarning>
       <body
         className="min-h-full antialiased"
-        style={{ backgroundColor: '#f7f8f6', color: '#101923' }}
+        style={{ backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)' }}
       >
         <Script id="theme-init" strategy="beforeInteractive">
           {`
