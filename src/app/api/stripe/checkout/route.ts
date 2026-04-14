@@ -50,7 +50,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.redirect(session.url!)
   } catch (error) {
-    console.error('Stripe checkout error:', error)
-    return NextResponse.json({ error: 'Eroare la crearea sesiunii de plată' }, { status: 500 })
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Stripe checkout error:', message)
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
