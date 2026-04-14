@@ -13,6 +13,8 @@ const institutions = [
     gradient: 'from-blue-500 via-blue-600 to-blue-800',
     glow: 'rgba(59,130,246,0.35)',
     ring: 'ring-blue-200 dark:ring-blue-800/60',
+    questions: '300+',
+    categories: 6,
   },
   {
     abbr: 'MApN',
@@ -21,6 +23,8 @@ const institutions = [
     gradient: 'from-emerald-400 via-emerald-600 to-teal-700',
     glow: 'rgba(16,185,129,0.35)',
     ring: 'ring-emerald-200 dark:ring-emerald-800/60',
+    questions: '250+',
+    categories: 6,
   },
   {
     abbr: 'SRI',
@@ -29,6 +33,8 @@ const institutions = [
     gradient: 'from-rose-500 via-red-600 to-red-800',
     glow: 'rgba(239,68,68,0.35)',
     ring: 'ring-red-200 dark:ring-red-800/60',
+    questions: '200+',
+    categories: 6,
   },
   {
     abbr: 'ANP',
@@ -37,6 +43,8 @@ const institutions = [
     gradient: 'from-violet-500 via-violet-600 to-indigo-700',
     glow: 'rgba(139,92,246,0.35)',
     ring: 'ring-violet-200 dark:ring-violet-800/60',
+    questions: '200+',
+    categories: 6,
   },
 ]
 
@@ -50,18 +58,18 @@ const categories = [
 ]
 
 const features = [
-  { icon: Zap,       title: 'Teste adaptive',       desc: 'Dificultatea crește pe măsură ce progresezi',    color: 'text-yellow-500', bg: 'bg-yellow-50 dark:bg-yellow-950/40' },
-  { icon: Clock,     title: 'Simulare reală',        desc: 'Cronometru strict, condiții de examen real',     color: 'text-blue-500',   bg: 'bg-blue-50 dark:bg-blue-950/40' },
-  { icon: TrendingUp,title: 'Statistici detaliate',  desc: 'Grafice de progres, scor per categorie',         color: 'text-green-500',  bg: 'bg-green-50 dark:bg-green-950/40' },
-  { icon: Award,     title: 'Flashcard-uri',         desc: 'Memorare rapidă pentru vocabular și formule',    color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-950/40' },
-  { icon: Shield,    title: 'Actualizat constant',   desc: 'Banca de întrebări actualizată periodic',        color: 'text-red-500',    bg: 'bg-red-50 dark:bg-red-950/40' },
-  { icon: Lock,      title: 'Plată unică',           desc: 'Fără abonament. Acces pe viață.',                color: 'text-slate-500',  bg: 'bg-slate-50 dark:bg-slate-950/40' },
+  { icon: Zap,       title: 'Teste adaptive',       desc: 'Dificultatea crește pe măsură ce progresezi',    color: 'text-yellow-400', bg: 'bg-yellow-500/10',  metric: '6 niveluri' },
+  { icon: Clock,     title: 'Simulare reală',        desc: 'Cronometru strict, condiții de examen real',     color: 'text-blue-400',   bg: 'bg-blue-500/10',    metric: 'Timer exact' },
+  { icon: TrendingUp,title: 'Statistici detaliate',  desc: 'Grafice de progres, scor per categorie',         color: 'text-green-400',  bg: 'bg-green-500/10',   metric: '10+ grafice' },
+  { icon: Award,     title: 'Flashcard-uri',         desc: 'Memorare rapidă pentru vocabular și formule',    color: 'text-purple-400', bg: 'bg-purple-500/10',  metric: '500+ carduri' },
+  { icon: Shield,    title: 'Actualizat constant',   desc: 'Banca de întrebări actualizată periodic',        color: 'text-rose-400',   bg: 'bg-rose-500/10',    metric: 'Mereu fresh' },
+  { icon: Lock,      title: 'Plată unică',           desc: 'Fără abonament. Acces pe viață.',                color: 'text-slate-400',  bg: 'bg-slate-500/10',   metric: 'Forever ∞' },
 ]
 
 const testimonials = [
-  { name: 'Alexandru M.', role: 'Admis MAI 2024',  text: 'Am trecut proba psihologică din prima. Testele de pe platformă sunt foarte similare cu cele reale.', rating: 5 },
-  { name: 'Ioana P.',     role: 'Admisă MApN 2024', text: 'Simularea de examen m-a ajutat enorm. Știam exact ce să aștept și cum să gestionez timpul.',          rating: 5 },
-  { name: 'Mihai C.',     role: 'Admis ANP 2023',   text: 'Toulouse-Piéron era cea mai dificilă probă. Cu ajutorul platformei am obținut 87%.',                  rating: 5 },
+  { name: 'Alexandru M.', initials: 'AM', role: 'Admis MAI 2024',  institution: 'MAI', instColor: 'from-blue-500 to-blue-700', text: 'Am trecut proba psihologică din prima. Testele de pe platformă sunt foarte similare cu cele reale.', rating: 5 },
+  { name: 'Ioana P.',     initials: 'IP', role: 'Admisă MApN 2024', institution: 'MApN', instColor: 'from-emerald-500 to-teal-600', text: 'Simularea de examen m-a ajutat enorm. Știam exact ce să aștept și cum să gestionez timpul.',          rating: 5 },
+  { name: 'Mihai C.',     initials: 'MC', role: 'Admis ANP 2023',   institution: 'ANP', instColor: 'from-violet-500 to-indigo-600', text: 'Toulouse-Piéron era cea mai dificilă probă. Cu ajutorul platformei am obținut 87%.',                  rating: 5 },
 ]
 
 const pricingPlans = [
@@ -74,6 +82,7 @@ const pricingPlans = [
     cta: 'Înregistrare gratuită',
     href: '/auth/register',
     highlight: false,
+    highlight2: false,
     badge: null,
   },
   {
@@ -85,6 +94,7 @@ const pricingPlans = [
     cta: 'Cumpără acum — 69 lei',
     href: '/auth/register',
     highlight: true,
+    highlight2: false,
     badge: 'Popular',
   },
   {
@@ -96,6 +106,7 @@ const pricingPlans = [
     cta: 'Cumpără acum — 119 lei',
     href: '/auth/register',
     highlight: false,
+    highlight2: true,
     badge: 'Best value',
   },
 ]
@@ -136,20 +147,22 @@ export default function HomePage() {
       </nav>
 
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden bg-mesh-hero pt-24 pb-32 px-6">
+      <section className="relative overflow-hidden bg-mesh-hero pt-20 pb-28 px-6">
         {/* Extra radial blobs */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] pointer-events-none -z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-indigo-100/40 via-violet-50/20 to-transparent rounded-full blur-3xl" />
+          <div className="absolute inset-0 bg-gradient-to-b from-indigo-100/50 via-violet-50/30 to-transparent rounded-full blur-3xl" />
         </div>
+        <div className="absolute top-20 right-10 w-72 h-72 bg-violet-200/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-10 w-56 h-56 bg-indigo-200/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative max-w-4xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 badge-gradient text-sm font-semibold px-4 py-2 rounded-full mb-8">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 badge-gradient text-xs font-bold px-4 py-2 rounded-full mb-7 tracking-wide uppercase">
+            <Sparkles className="w-3 h-3" />
             Platforma nr. 1 de pregătire psihologică din România
           </div>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 dark:text-[var(--text-primary)] leading-[1.05] mb-6 tracking-tight">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 dark:text-[var(--text-primary)] leading-[1.05] mb-5 tracking-tight">
             Trece proba psihologică
             <br />
             <span className="gradient-text">
@@ -157,15 +170,15 @@ export default function HomePage() {
             </span>
           </h1>
 
-          <p className="text-xl text-slate-500 dark:text-[var(--text-muted)] max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-lg sm:text-xl text-slate-500 dark:text-[var(--text-muted)] max-w-2xl mx-auto mb-9 leading-relaxed">
             Sute de întrebări per categorie, simulare cu cronometru real, flashcard-uri
             și statistici detaliate. Tot ce ai nevoie pentru a trece din prima.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-6">
             <Link
               href="/auth/register"
-              className="inline-flex items-center gap-2 px-8 py-4 text-base font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl glow-cta btn-shimmer"
+              className="inline-flex items-center gap-2 px-8 py-4 text-base font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl glow-cta btn-shimmer shadow-lg shadow-indigo-500/25"
             >
               Începe gratuit
               <ArrowRight className="w-5 h-5" />
@@ -178,23 +191,23 @@ export default function HomePage() {
             </a>
           </div>
 
-          <p className="text-sm text-slate-400 dark:text-[var(--text-muted)] flex items-center justify-center gap-2">
+          <p className="text-sm text-slate-400 dark:text-[var(--text-muted)] flex items-center justify-center gap-2 mb-14">
             <CheckCircle className="w-4 h-4 text-emerald-500" />
             Nu necesită card de credit · 15 întrebări demo gratuite
           </p>
         </div>
 
         {/* Stats glass bar */}
-        <div className="relative max-w-2xl mx-auto mt-16">
-          <div className="glass-card rounded-2xl px-8 py-6 grid grid-cols-3 gap-6 text-center">
+        <div className="relative max-w-2xl mx-auto">
+          <div className="glass-card rounded-2xl px-6 py-5 grid grid-cols-3 gap-4 text-center">
             {[
-              { value: '1,000+', label: 'Întrebări în baza de date' },
-              { value: '4',      label: 'Instituții acoperite' },
-              { value: '6',      label: 'Categorii per instituție' },
+              { value: '1,000+', label: 'Întrebări în baza de date', accent: 'text-indigo-600 dark:text-indigo-400' },
+              { value: '4',      label: 'Instituții acoperite',       accent: 'text-violet-600 dark:text-violet-400' },
+              { value: '6',      label: 'Categorii per instituție',   accent: 'text-purple-600 dark:text-purple-400' },
             ].map((stat) => (
-              <div key={stat.label}>
-                <p className="text-2xl font-extrabold text-slate-900 dark:text-[var(--text-primary)] tracking-tight">{stat.value}</p>
-                <p className="text-xs text-slate-500 dark:text-[var(--text-muted)] mt-1 font-medium">{stat.label}</p>
+              <div key={stat.label} className="space-y-1">
+                <p className={`text-2xl font-extrabold tracking-tight ${stat.accent}`}>{stat.value}</p>
+                <p className="text-xs text-slate-500 dark:text-[var(--text-muted)] font-medium leading-tight">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -221,17 +234,25 @@ export default function HomePage() {
                 style={{ '--glow-color': inst.glow } as React.CSSProperties}
               >
                 {/* Subtle top gradient */}
-                <div className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${inst.gradient} opacity-60`} />
+                <div className={`absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r ${inst.gradient} opacity-80`} />
 
                 <div
                   className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${inst.gradient} flex items-center justify-center mb-4 shadow-lg transition-transform duration-300 group-hover:scale-110`}
                   style={{ boxShadow: `0 8px 20px -4px ${inst.glow}` }}
                 >
-                  <span className="text-white font-extrabold text-lg">{inst.abbr}</span>
+                  <span className="text-white font-extrabold text-lg tracking-tight">{inst.abbr}</span>
                 </div>
-                <h3 className="font-extrabold text-sm text-slate-900 dark:text-[var(--text-primary)] mb-1">{inst.abbr}</h3>
-                <p className="text-xs font-medium text-slate-600 dark:text-[var(--text-secondary)] mb-1">{inst.name}</p>
-                <p className="text-xs text-slate-400 dark:text-[var(--text-muted)]">{inst.desc}</p>
+                <h3 className="font-extrabold text-sm text-slate-900 dark:text-[var(--text-primary)] mb-0.5">{inst.abbr}</h3>
+                <p className="text-xs font-medium text-slate-600 dark:text-[var(--text-secondary)] mb-1 leading-snug">{inst.name}</p>
+                <p className="text-xs text-slate-400 dark:text-[var(--text-muted)] mb-4">{inst.desc}</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/8 text-slate-500 dark:text-white/50">
+                    {inst.questions} întrebări
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/8 text-slate-500 dark:text-white/50">
+                    {inst.categories} categorii
+                  </span>
+                </div>
               </div>
             ))}
           </div>
@@ -295,8 +316,11 @@ export default function HomePage() {
                   key={f.title}
                   className="group relative bg-white/[0.04] border border-white/[0.08] rounded-2xl p-6 hover:bg-white/[0.07] hover:border-white/[0.14] transition-all duration-200"
                 >
-                  <div className={`w-11 h-11 rounded-xl ${f.bg} flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110`}>
-                    <Icon className={`w-5 h-5 ${f.color}`} />
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`w-11 h-11 rounded-xl ${f.bg} flex items-center justify-center transition-transform duration-300 group-hover:scale-110`}>
+                      <Icon className={`w-5 h-5 ${f.color}`} />
+                    </div>
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/[0.08] text-white/50">{f.metric}</span>
                   </div>
                   <h3 className="font-bold text-white mb-1.5 tracking-tight">{f.title}</h3>
                   <p className="text-sm text-slate-400 leading-relaxed">{f.desc}</p>
@@ -321,18 +345,21 @@ export default function HomePage() {
             {testimonials.map((t, i) => (
               <div
                 key={t.name}
-                className="group glass-card rounded-2xl p-6 hover:-translate-y-1 transition-all duration-200"
+                className="group glass-card rounded-2xl p-6 hover:-translate-y-1 transition-all duration-200 flex flex-col"
                 style={{ animationDelay: `${i * 0.1}s` }}
               >
-                <div className="flex gap-1 mb-4">
-                  {Array.from({ length: t.rating }).map((_, j) => (
-                    <Star key={j} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  ))}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: t.rating }).map((_, j) => (
+                      <Star key={j} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full text-white bg-gradient-to-r ${t.instColor}`}>{t.institution}</span>
                 </div>
-                <p className="text-slate-700 dark:text-[var(--text-secondary)] text-sm leading-relaxed mb-5">&ldquo;{t.text}&rdquo;</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white text-xs font-bold">
-                    {t.name[0]}
+                <p className="text-slate-700 dark:text-[var(--text-secondary)] text-sm leading-relaxed flex-1 mb-5">&ldquo;{t.text}&rdquo;</p>
+                <div className="flex items-center gap-3 pt-4 border-t border-slate-100 dark:border-white/[0.07]">
+                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${t.instColor} flex items-center justify-center text-white text-sm font-extrabold shrink-0 shadow-sm`}>
+                    {t.initials}
                   </div>
                   <div>
                     <p className="font-bold text-slate-800 dark:text-[var(--text-primary)] text-sm">{t.name}</p>
@@ -364,6 +391,8 @@ export default function HomePage() {
                 className={`relative rounded-2xl p-8 flex flex-col transition-all duration-200 ${
                   plan.highlight
                     ? 'bg-gradient-to-b from-indigo-600 to-violet-700 text-white scale-105 shadow-2xl shadow-indigo-300/30 dark:shadow-indigo-900/40'
+                    : plan.highlight2
+                    ? 'bg-gradient-to-b from-slate-900 to-slate-800 dark:from-[var(--bg-panel)] dark:to-[var(--bg-panel-muted)] text-white border border-slate-700 shadow-xl shadow-slate-900/20'
                     : 'bg-white dark:bg-[var(--bg-surface)] border border-slate-100 dark:border-[var(--border)] shadow-sm card-premium'
                 }`}
               >
@@ -372,6 +401,8 @@ export default function HomePage() {
                     <span className={`text-xs font-bold px-4 py-1.5 rounded-full shadow-md ${
                       plan.highlight
                         ? 'bg-white text-indigo-700'
+                        : plan.highlight2
+                        ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-white'
                         : 'bg-slate-900 dark:bg-[var(--text-primary)] text-white dark:text-[var(--text-inverse)]'
                     }`}>
                       {plan.badge}
@@ -380,18 +411,18 @@ export default function HomePage() {
                 )}
 
                 <div className="mb-6">
-                  <h3 className={`font-bold text-lg mb-2 ${plan.highlight ? 'text-white' : 'text-slate-800 dark:text-[var(--text-primary)]'}`}>{plan.name}</h3>
+                  <h3 className={`font-bold text-lg mb-2 ${plan.highlight || plan.highlight2 ? 'text-white' : 'text-slate-800 dark:text-[var(--text-primary)]'}`}>{plan.name}</h3>
                   <div className="flex items-end gap-1 mb-1">
-                    <span className={`text-4xl font-extrabold tracking-tight ${plan.highlight ? 'text-white' : 'text-slate-900 dark:text-[var(--text-primary)]'}`}>{plan.price}</span>
-                    {plan.period && <span className={`mb-1 font-semibold ${plan.highlight ? 'text-indigo-200' : 'text-slate-400 dark:text-[var(--text-muted)]'}`}>{plan.period}</span>}
+                    <span className={`text-4xl font-extrabold tracking-tight ${plan.highlight || plan.highlight2 ? 'text-white' : 'text-slate-900 dark:text-[var(--text-primary)]'}`}>{plan.price}</span>
+                    {plan.period && <span className={`mb-1 font-semibold ${plan.highlight ? 'text-indigo-200' : plan.highlight2 ? 'text-slate-300' : 'text-slate-400 dark:text-[var(--text-muted)]'}`}>{plan.period}</span>}
                   </div>
-                  <p className={`text-sm ${plan.highlight ? 'text-indigo-200' : 'text-slate-500 dark:text-[var(--text-muted)]'}`}>{plan.desc}</p>
+                  <p className={`text-sm ${plan.highlight ? 'text-indigo-200' : plan.highlight2 ? 'text-slate-300' : 'text-slate-500 dark:text-[var(--text-muted)]'}`}>{plan.desc}</p>
                 </div>
 
                 <ul className="space-y-2.5 mb-8 flex-1">
                   {plan.features.map((f) => (
-                    <li key={f} className={`flex items-start gap-2.5 text-sm ${plan.highlight ? 'text-indigo-100' : 'text-slate-600 dark:text-[var(--text-secondary)]'}`}>
-                      <CheckCircle className={`w-4 h-4 shrink-0 mt-0.5 ${plan.highlight ? 'text-indigo-200' : 'text-emerald-500'}`} />
+                    <li key={f} className={`flex items-start gap-2.5 text-sm ${plan.highlight ? 'text-indigo-100' : plan.highlight2 ? 'text-slate-200' : 'text-slate-600 dark:text-[var(--text-secondary)]'}`}>
+                      <CheckCircle className={`w-4 h-4 shrink-0 mt-0.5 ${plan.highlight ? 'text-indigo-200' : plan.highlight2 ? 'text-amber-400' : 'text-emerald-500'}`} />
                       {f}
                     </li>
                   ))}
@@ -401,6 +432,8 @@ export default function HomePage() {
                   <div className={`w-full py-3 rounded-xl text-sm font-bold text-center transition-all duration-200 btn-shimmer ${
                     plan.highlight
                       ? 'bg-white text-indigo-700 hover:bg-indigo-50 shadow-md'
+                      : plan.highlight2
+                      ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-white hover:opacity-90 shadow-md shadow-amber-500/30'
                       : 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:opacity-90 shadow-md shadow-indigo-200/50 dark:shadow-indigo-900/30'
                   }`}>
                     {plan.cta}
@@ -449,21 +482,39 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-slate-100 dark:border-[var(--border)] py-10 px-6 bg-white dark:bg-[var(--bg-base)]">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center">
-              <Brain className="w-3.5 h-3.5 text-white" />
-            </div>
-            <span className="font-bold text-slate-700 dark:text-[var(--text-secondary)] text-sm">PsihoPrep</span>
+      <footer className="border-t border-slate-100 dark:border-[var(--border)] bg-white dark:bg-[var(--bg-base)]">
+        {/* Trust bar */}
+        <div className="border-b border-slate-100 dark:border-[var(--border)] py-4 px-6">
+          <div className="max-w-5xl mx-auto flex items-center justify-center gap-6 flex-wrap">
+            {[
+              { icon: Shield, text: 'Garanție 7 zile', color: 'text-emerald-500' },
+              { icon: Lock, text: 'Plată Stripe securizată', color: 'text-slate-400' },
+              { icon: CheckCircle, text: 'Acces instant', color: 'text-blue-500' },
+              { icon: Users, text: '500+ candidați pregătiți', color: 'text-violet-500' },
+            ].map(({ icon: Icon, text, color }) => (
+              <span key={text} className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-[var(--text-muted)] font-medium">
+                <Icon className={`w-3.5 h-3.5 ${color}`} />
+                {text}
+              </span>
+            ))}
           </div>
-          <p className="text-sm text-slate-400 dark:text-[var(--text-muted)]">
-            © {new Date().getFullYear()} PsihoPrep. Toate drepturile rezervate.
-          </p>
-          <div className="flex items-center gap-4 text-sm text-slate-400 dark:text-[var(--text-muted)]">
-            <a href="#" className="hover:text-slate-600 dark:hover:text-[var(--text-secondary)] transition-colors">Termeni</a>
-            <a href="#" className="hover:text-slate-600 dark:hover:text-[var(--text-secondary)] transition-colors">Confidențialitate</a>
-            <a href="#" className="hover:text-slate-600 dark:hover:text-[var(--text-secondary)] transition-colors">Contact</a>
+        </div>
+        <div className="py-8 px-6">
+          <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center">
+                <Brain className="w-3.5 h-3.5 text-white" />
+              </div>
+              <span className="font-bold text-slate-700 dark:text-[var(--text-secondary)] text-sm">PsihoPrep</span>
+            </div>
+            <p className="text-sm text-slate-400 dark:text-[var(--text-muted)]">
+              © {new Date().getFullYear()} PsihoPrep. Toate drepturile rezervate.
+            </p>
+            <div className="flex items-center gap-4 text-sm text-slate-400 dark:text-[var(--text-muted)]">
+              <a href="#" className="hover:text-slate-600 dark:hover:text-[var(--text-secondary)] transition-colors">Termeni</a>
+              <a href="#" className="hover:text-slate-600 dark:hover:text-[var(--text-secondary)] transition-colors">Confidențialitate</a>
+              <a href="#" className="hover:text-slate-600 dark:hover:text-[var(--text-secondary)] transition-colors">Contact</a>
+            </div>
           </div>
         </div>
       </footer>

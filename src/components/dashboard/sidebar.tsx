@@ -12,15 +12,25 @@ import {
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 
-const navItems = [
-  { href: '/dashboard', label: 'Acasă', icon: LayoutDashboard, exact: true },
-  { href: '/dashboard/tests', label: 'Teste', icon: BookOpen },
-  { href: '/dashboard/simulate', label: 'Simulare', icon: ClipboardList },
-  { href: '/dashboard/flashcards', label: 'Flashcard-uri', icon: Layers },
-  { href: '/dashboard/review', label: 'Greșeli', icon: FileText },
-  { href: '/dashboard/materiale', label: 'Materiale PDF', icon: FolderOpen },
-  { href: '/dashboard/progress', label: 'Progres', icon: BarChart3 },
-  { href: '/dashboard/achievements', label: 'Realizări', icon: Trophy },
+const navGroups = [
+  {
+    label: 'Principal',
+    items: [
+      { href: '/dashboard', label: 'Acasă', icon: LayoutDashboard, exact: true },
+      { href: '/dashboard/progress', label: 'Progres', icon: BarChart3 },
+      { href: '/dashboard/achievements', label: 'Realizări', icon: Trophy },
+    ],
+  },
+  {
+    label: 'Pregătire',
+    items: [
+      { href: '/dashboard/tests', label: 'Teste', icon: BookOpen },
+      { href: '/dashboard/simulate', label: 'Simulare', icon: ClipboardList },
+      { href: '/dashboard/flashcards', label: 'Flashcard-uri', icon: Layers },
+      { href: '/dashboard/review', label: 'Greșeli', icon: FileText },
+      { href: '/dashboard/materiale', label: 'Materiale PDF', icon: FolderOpen },
+    ],
+  },
 ]
 
 const bottomItems = [
@@ -69,33 +79,40 @@ export function Sidebar({ user, onClose }: SidebarProps) {
         </Link>
       </div>
 
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {navItems.map((item) => {
-          const active = isActive(item.href, item.exact)
-          const Icon = item.icon
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onClose}
-              className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group relative border',
-                active
-                  ? 'border-white/14 bg-white/10 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
-                  : 'border-transparent text-white/62 hover:bg-white/6 hover:text-white'
-              )}
-            >
-              {active && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-0.5 rounded-r-full bg-cyan-300 shadow-[0_0_10px_rgba(103,232,249,0.6)]" />
-              )}
-              <Icon className={cn('w-4 h-4 shrink-0 transition-colors', active ? 'text-cyan-200' : 'text-white/34 group-hover:text-white/70')} />
-              <span className="flex-1">{item.label}</span>
-              {active && <ChevronRight className="w-3 h-3 text-cyan-200 shrink-0" />}
-            </Link>
-          )
-        })}
+      <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-5">
+        {navGroups.map((group) => (
+          <div key={group.label}>
+            <p className="px-3 mb-1.5 text-[10px] font-bold tracking-widest uppercase text-white/28">{group.label}</p>
+            <div className="space-y-0.5">
+              {group.items.map((item) => {
+                const active = isActive(item.href, item.exact)
+                const Icon = item.icon
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={onClose}
+                    className={cn(
+                      'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group relative border',
+                      active
+                        ? 'border-white/14 bg-white/10 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
+                        : 'border-transparent text-white/55 hover:bg-white/6 hover:text-white'
+                    )}
+                  >
+                    {active && (
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-0.5 rounded-r-full bg-cyan-300 shadow-[0_0_10px_rgba(103,232,249,0.6)]" />
+                    )}
+                    <Icon className={cn('w-4 h-4 shrink-0 transition-colors', active ? 'text-cyan-200' : 'text-white/34 group-hover:text-white/70')} />
+                    <span className="flex-1">{item.label}</span>
+                    {active && <ChevronRight className="w-3 h-3 text-cyan-200 shrink-0" />}
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        ))}
 
-        <div className="pt-4 mt-4 border-t border-white/8 space-y-1">
+        <div className="border-t border-white/8 pt-4 space-y-0.5">
           {bottomItems.map((item) => {
             const active = isActive(item.href)
             const Icon = item.icon
@@ -108,13 +125,13 @@ export function Sidebar({ user, onClose }: SidebarProps) {
                   'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group relative border',
                   active
                     ? 'border-white/14 bg-white/10 text-white'
-                    : 'border-transparent text-white/62 hover:bg-white/6 hover:text-white'
+                    : 'border-transparent text-white/55 hover:bg-white/6 hover:text-white'
                 )}
               >
                 {active && (
                   <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-0.5 rounded-r-full bg-cyan-300 shadow-[0_0_10px_rgba(103,232,249,0.6)]" />
                 )}
-                <Icon className={cn('w-4 h-4 shrink-0', active ? 'text-cyan-200' : 'text-white/34')} />
+                <Icon className={cn('w-4 h-4 shrink-0', active ? 'text-cyan-200' : 'text-white/34 group-hover:text-white/60')} />
                 <span className="flex-1">{item.label}</span>
               </Link>
             )
@@ -149,7 +166,7 @@ export function Sidebar({ user, onClose }: SidebarProps) {
 
       <div className="px-3 pb-4">
         <div className="flex items-center gap-3 rounded-2xl border border-white/8 bg-white/4 px-3 py-3">
-          <div className="w-9 h-9 rounded-xl border border-white/10 bg-white/8 flex items-center justify-center text-white font-bold text-sm shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-extrabold text-sm shrink-0 shadow-md shadow-indigo-900/40">
             {user.full_name?.[0]?.toUpperCase() ?? user.email[0].toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">

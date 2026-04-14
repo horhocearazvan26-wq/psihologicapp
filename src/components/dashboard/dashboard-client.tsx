@@ -329,14 +329,16 @@ export function DashboardClient({
         <h2 className="text-base font-bold text-[var(--text-primary)] mb-5">Statistici generale</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { icon: BookOpen, label: 'Teste totale',     value: totalTests.toString(),                         iconBg: 'bg-blue-50 dark:bg-blue-950/40',   iconColor: 'text-blue-500' },
-            { icon: Target,   label: 'Scor mediu',       value: avgScore > 0 ? `${avgScore.toFixed(0)}%` : '—', iconBg: 'bg-green-50 dark:bg-green-950/40', iconColor: 'text-green-500' },
-            { icon: Trophy,   label: 'Cel mai bun scor', value: bestScore > 0 ? `${bestScore.toFixed(0)}%` : '—', iconBg: 'bg-amber-50 dark:bg-amber-950/40', iconColor: 'text-amber-500' },
-            { icon: Flame,    label: 'Plan',             value: subscriptionPlan === 'free' ? 'Gratuit' : subscriptionPlan === 'one_institution' ? '1 Inst.' : 'Complet', iconBg: 'bg-violet-50 dark:bg-violet-950/40', iconColor: 'text-violet-500' },
+            { icon: BookOpen, label: 'Teste totale',     value: totalTests.toString(),                           iconBg: 'bg-blue-50 dark:bg-blue-950/40',    iconColor: 'text-blue-500',   accent: 'from-blue-500/10 to-transparent',    bar: 'bg-blue-500' },
+            { icon: Target,   label: 'Scor mediu',       value: avgScore > 0 ? `${avgScore.toFixed(0)}%` : '—',  iconBg: 'bg-green-50 dark:bg-green-950/40',  iconColor: 'text-green-500',  accent: 'from-green-500/10 to-transparent',   bar: 'bg-green-500' },
+            { icon: Trophy,   label: 'Cel mai bun scor', value: bestScore > 0 ? `${bestScore.toFixed(0)}%` : '—',iconBg: 'bg-amber-50 dark:bg-amber-950/40',  iconColor: 'text-amber-500',  accent: 'from-amber-500/10 to-transparent',   bar: 'bg-amber-500' },
+            { icon: Flame,    label: 'Plan activ',       value: subscriptionPlan === 'free' ? 'Gratuit' : subscriptionPlan === 'one_institution' ? '1 Inst.' : 'Complet', iconBg: 'bg-violet-50 dark:bg-violet-950/40', iconColor: 'text-violet-500', accent: 'from-violet-500/10 to-transparent', bar: 'bg-violet-500' },
           ].map((stat, i) => {
             const Icon = stat.icon
             return (
-              <div key={stat.label} className={`group bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-[var(--border-strong)] transition-all duration-200 animate-fade-up stagger-${i + 1}`}>
+              <div key={stat.label} className={`group relative bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-[var(--border-strong)] transition-all duration-200 overflow-hidden animate-fade-up stagger-${i + 1}`}>
+                {/* Subtle accent gradient top */}
+                <div className={`absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r ${stat.accent.replace('to-transparent', 'to-' + stat.bar.replace('bg-', '') + '/30')}`} />
                 <div className={`w-10 h-10 rounded-xl ${stat.iconBg} flex items-center justify-center mb-3 transition-transform duration-200 group-hover:scale-110`}>
                   <Icon className={`w-5 h-5 ${stat.iconColor}`} />
                 </div>
