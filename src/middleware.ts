@@ -31,6 +31,12 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
+  if (pathname === '/' && user) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/dashboard'
+    return NextResponse.redirect(url)
+  }
+
   // Protected routes — require authentication
   if (pathname.startsWith('/dashboard') && !pathname.startsWith('/payment') && !user) {
     const url = request.nextUrl.clone()

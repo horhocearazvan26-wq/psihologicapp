@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: 'PsihoPrep',
     description:
       'Platformă de pregătire pentru probele psihologice MAI, MApN, SRI și ANP.',
-    start_url: '/',
+    start_url: '/dashboard',
     scope: '/',
     display: 'standalone',
     orientation: 'portrait',
