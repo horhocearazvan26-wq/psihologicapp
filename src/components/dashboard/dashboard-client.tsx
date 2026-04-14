@@ -257,28 +257,56 @@ export function DashboardClient({
 
       {/* ── Quick actions ── */}
       <div>
+        <style>{`
+          @keyframes floatGlow {
+            0%, 100% { transform: translate(0px, 0px) scale(1); opacity: 0.7; }
+            33%       { transform: translate(18px, -12px) scale(1.15); opacity: 1; }
+            66%       { transform: translate(-10px, 14px) scale(0.9); opacity: 0.6; }
+          }
+          @keyframes shimmerSweep {
+            0%   { transform: translateX(-120%) skewX(-20deg); }
+            100% { transform: translateX(320%) skewX(-20deg); }
+          }
+          .action-card-glow { animation: floatGlow 4s ease-in-out infinite; }
+          .action-card-glow-2 { animation: floatGlow 4s ease-in-out infinite 1.3s; }
+          .action-card-glow-3 { animation: floatGlow 4s ease-in-out infinite 2.6s; }
+          .action-card-shimmer { animation: shimmerSweep 3.5s ease-in-out infinite; }
+          .action-card-shimmer-2 { animation: shimmerSweep 3.5s ease-in-out infinite 1.2s; }
+          .action-card-shimmer-3 { animation: shimmerSweep 3.5s ease-in-out infinite 2.4s; }
+        `}</style>
         <p className="text-[10px] font-bold tracking-widest uppercase mb-4" style={{ color: 'var(--text-muted)' }}>Acțiuni rapide</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
-            { href: '/dashboard/simulate',   icon: Play,       gradient: 'from-indigo-600 to-blue-700',    glow: 'rgba(99,102,241,0.45)',   title: 'Simulare Examen',  sub: 'Condiții reale, cronometru' },
-            { href: '/dashboard/flashcards', icon: Layers,     gradient: 'from-violet-600 to-purple-700',  glow: 'rgba(139,92,246,0.45)',   title: 'Flashcard-uri',    sub: 'Memorare rapidă' },
-            { href: '/dashboard/review',     icon: TrendingUp, gradient: 'from-amber-600 to-orange-600',   glow: 'rgba(245,158,11,0.45)',   title: 'Review Greșeli',   sub: 'Revizuiește erorile' },
-          ].map(({ href, icon: Icon, gradient, glow, title, sub }) => (
+            { href: '/dashboard/simulate',   icon: Play,       color: 'rgba(99,102,241,1)',  glow: 'rgba(99,102,241,0.35)',  iconBg: 'rgba(99,102,241,0.15)',  glowClass: 'action-card-glow',   shimmerClass: 'action-card-shimmer',   title: 'Simulare Examen', sub: 'Condiții reale, cronometru' },
+            { href: '/dashboard/flashcards', icon: Layers,     color: 'rgba(139,92,246,1)',  glow: 'rgba(139,92,246,0.35)',  iconBg: 'rgba(139,92,246,0.15)',  glowClass: 'action-card-glow-2', shimmerClass: 'action-card-shimmer-2', title: 'Flashcard-uri',   sub: 'Memorare rapidă' },
+            { href: '/dashboard/review',     icon: TrendingUp, color: 'rgba(245,158,11,1)',  glow: 'rgba(245,158,11,0.35)',  iconBg: 'rgba(245,158,11,0.15)',  glowClass: 'action-card-glow-3', shimmerClass: 'action-card-shimmer-3', title: 'Review Greșeli',  sub: 'Revizuiește erorile' },
+          ].map(({ href, icon: Icon, color, glow, iconBg, glowClass, shimmerClass, title, sub }) => (
             <Link key={href} href={href}>
               <div
-                className={`relative overflow-hidden bg-gradient-to-br ${gradient} rounded-2xl p-5 text-white cursor-pointer group btn-shimmer hover:-translate-y-1 transition-all duration-200`}
-                style={{ boxShadow: `0 12px 32px -8px ${glow}` }}
+                className="relative overflow-hidden rounded-2xl p-5 cursor-pointer group hover:-translate-y-1 transition-all duration-200"
+                style={{
+                  background: 'rgba(255,255,255,0.04)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  boxShadow: '0 8px 32px -8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)',
+                }}
               >
-                <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full blur-xl" style={{ background: 'rgba(255,255,255,0.08)' }} />
-                <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)' }} />
+                {/* Floating glow blob */}
+                <div className={`${glowClass} absolute -top-8 -left-8 w-32 h-32 rounded-full blur-2xl pointer-events-none`} style={{ background: glow }} />
+                {/* Shimmer sweep */}
+                <div className={`${shimmerClass} absolute inset-y-0 w-12 pointer-events-none`} style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)' }} />
+                {/* Top shine */}
+                <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent)' }} />
+
                 <div className="relative flex items-center justify-between mb-4">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-white/20" style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)' }}>
-                    <Icon className="w-5 h-5 text-white" />
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: iconBg, border: `1px solid ${color}30` }}>
+                    <Icon className="w-5 h-5" style={{ color }} />
                   </div>
-                  <ChevronRight className="w-4 h-4 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                  <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-white/60 group-hover:translate-x-0.5 transition-all" />
                 </div>
-                <p className="relative font-bold text-base leading-tight">{title}</p>
-                <p className="relative text-white/55 text-xs mt-1">{sub}</p>
+                <p className="relative font-bold text-base leading-tight text-white">{title}</p>
+                <p className="relative text-white/40 text-xs mt-1">{sub}</p>
               </div>
             </Link>
           ))}
