@@ -93,7 +93,7 @@ export function Sidebar({ user, onClose }: SidebarProps) {
                     href={item.href}
                     onClick={onClose}
                     className={cn(
-                      'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group relative border',
+                      'interactive-press interactive-glow flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group relative border',
                       active
                         ? 'border-white/14 bg-white/10 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
                         : 'border-transparent text-white/55 hover:bg-white/6 hover:text-white'
@@ -122,7 +122,7 @@ export function Sidebar({ user, onClose }: SidebarProps) {
                 href={item.href}
                 onClick={onClose}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group relative border',
+                  'interactive-press interactive-glow flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group relative border',
                   active
                     ? 'border-white/14 bg-white/10 text-white'
                     : 'border-transparent text-white/55 hover:bg-white/6 hover:text-white'
@@ -143,7 +143,7 @@ export function Sidebar({ user, onClose }: SidebarProps) {
         <div className="px-3 pb-3">
           <Link href="/dashboard/pricing" onClick={onClose}>
             <div
-              className="relative overflow-hidden rounded-2xl border border-cyan-400/20 bg-[linear-gradient(145deg,rgba(10,19,31,0.98),rgba(15,44,65,0.94))] p-4 cursor-pointer hover:-translate-y-0.5 transition-all duration-200 btn-shimmer"
+              className="interactive-press relative overflow-hidden rounded-2xl border border-cyan-400/20 bg-[linear-gradient(145deg,rgba(10,19,31,0.98),rgba(15,44,65,0.94))] p-4 cursor-pointer hover:-translate-y-0.5 transition-all duration-200 btn-shimmer"
               style={{ boxShadow: '0 18px 30px -24px rgba(34,211,238,0.45)' }}
             >
               <div className="absolute -top-6 -right-6 h-20 w-20 rounded-full bg-cyan-400/10 blur-xl" />
@@ -177,7 +177,7 @@ export function Sidebar({ user, onClose }: SidebarProps) {
         <form action={signOut}>
           <button
             type="submit"
-            className="mt-2 w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-white/56 hover:bg-red-500/10 hover:text-red-200 transition-all"
+            className="interactive-press mt-2 w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-white/56 hover:bg-red-500/10 hover:text-red-200 transition-all"
           >
             <LogOut className="w-3.5 h-3.5 shrink-0" />
             Deconectare

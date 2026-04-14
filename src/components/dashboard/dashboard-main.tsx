@@ -1,0 +1,27 @@
+'use client'
+
+import { AnimatePresence, motion } from 'framer-motion'
+import { usePathname } from 'next/navigation'
+
+interface DashboardMainProps {
+  children: React.ReactNode
+}
+
+export function DashboardMain({ children }: DashboardMainProps) {
+  const pathname = usePathname()
+
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={pathname}
+        initial={{ opacity: 0, y: 16, filter: 'blur(10px)' }}
+        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        exit={{ opacity: 0, y: -10, filter: 'blur(8px)' }}
+        transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+        className="dashboard-page-shell"
+      >
+        {children}
+      </motion.div>
+    </AnimatePresence>
+  )
+}

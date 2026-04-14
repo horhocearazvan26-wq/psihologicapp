@@ -1,7 +1,9 @@
 'use client'
 
+import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { Menu, Brain } from 'lucide-react'
+import { DashboardMain } from './dashboard-main'
 import { Sidebar } from './sidebar'
 import type { UserProfile } from '@/types'
 
@@ -22,22 +24,30 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         <div className="absolute top-1/2 left-0 w-[300px] h-[300px] rounded-full blur-[120px]" style={{ background: 'radial-gradient(ellipse, rgba(34,211,238,0.025) 0%, transparent 70%)' }} />
       </div>
 
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-20 bg-black/70 backdrop-blur-sm md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            className="fixed inset-0 z-20 bg-black/70 backdrop-blur-sm md:hidden"
+            onClick={() => setSidebarOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+          />
+        )}
+      </AnimatePresence>
 
-      <div
+      <motion.div
+        animate={sidebarOpen ? { x: 0 } : { x: '-100%' }}
+        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
         className={[
-          'fixed inset-y-0 left-0 z-30 transition-transform duration-300 ease-in-out',
+          'fixed inset-y-0 left-0 z-30 will-change-transform',
           'md:relative md:translate-x-0 md:z-auto',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+          'md:!transform-none',
         ].join(' ')}
       >
         <Sidebar user={user} onClose={() => setSidebarOpen(false)} />
-      </div>
+      </motion.div>
 
       <div className="flex flex-col flex-1 overflow-hidden min-w-0 relative z-10">
         {/* Mobile header */}
@@ -45,7 +55,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           <button
             aria-label="Deschide meniu"
             onClick={() => setSidebarOpen(true)}
-            className="w-9 h-9 flex items-center justify-center rounded-xl text-white/70 hover:bg-white/8 transition-colors"
+            className="interactive-press interactive-glow w-9 h-9 flex items-center justify-center rounded-xl text-white/70 hover:bg-white/8 transition-colors"
           >
             <Menu className="w-5 h-5" />
           </button>
@@ -59,7 +69,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
 
         <main className="flex-1 overflow-y-auto relative">
           <div className="relative max-w-6xl mx-auto px-4 py-6 md:px-8 md:py-10">
-            {children}
+            <DashboardMain>{children}</DashboardMain>
           </div>
         </main>
       </div>
