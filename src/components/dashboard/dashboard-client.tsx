@@ -293,9 +293,9 @@ export function DashboardClient({
                 }}
               >
                 {/* Floating glow blob */}
-                <div className={`${glowClass} absolute -top-8 -left-8 w-32 h-32 rounded-full blur-2xl pointer-events-none`} style={{ background: glow }} />
+                <div className={`${glowClass} absolute -top-4 -left-4 w-20 h-20 rounded-full blur-3xl pointer-events-none opacity-50`} style={{ background: glow }} />
                 {/* Shimmer sweep */}
-                <div className={`${shimmerClass} absolute inset-y-0 w-12 pointer-events-none`} style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)' }} />
+                <div className={`${shimmerClass} absolute inset-y-0 w-8 pointer-events-none`} style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent)' }} />
                 {/* Top shine */}
                 <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent)' }} />
 
