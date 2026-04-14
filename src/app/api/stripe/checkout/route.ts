@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
         plan,
         institution: institution ?? '',
       },
-      success_url: `${appUrl}/dashboard/pricing/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${appUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/dashboard/pricing`,
     })
 

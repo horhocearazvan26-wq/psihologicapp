@@ -32,7 +32,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Protected routes — require authentication
-  if (pathname.startsWith('/dashboard') && !user) {
+  if (pathname.startsWith('/dashboard') && !pathname.startsWith('/payment') && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth/login'
     url.searchParams.set('redirectTo', pathname)
