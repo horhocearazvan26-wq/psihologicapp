@@ -60,7 +60,11 @@
 }
 
 * { box-sizing: border-box; }
-html { height: 100%; scroll-behavior: smooth; }
+html {
+  height: 100%;
+  scroll-behavior: smooth;
+  background: #f7f8f6;
+}
 
 body {
   min-height: 100%;

@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#4f46e5',
+  themeColor: '#f7f8f6',
 }
 
 export default function RootLayout({
@@ -30,7 +30,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ro" className="h-full" suppressHydrationWarning>
-      <body className="min-h-full antialiased">
+      <body
+        className="min-h-full antialiased"
+        style={{ backgroundColor: '#f7f8f6', color: '#101923' }}
+      >
         <ThemeProvider>
           {children}
         </ThemeProvider>
