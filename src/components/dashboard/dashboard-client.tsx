@@ -100,19 +100,20 @@ interface DashboardClientProps {
   progressData: ProgressEntry[]
   recentSessions: Session[]
   daysUntil: number | null
+  initialInstitution: string | null
 }
 
 export function DashboardClient({
   firstName, totalTests, avgScore, bestScore,
-  subscriptionPlan, progressData, recentSessions, daysUntil,
+  subscriptionPlan, progressData, recentSessions, daysUntil, initialInstitution,
 }: DashboardClientProps) {
   const [institution, setInstitution] = useState<string | null>(() => {
     if (typeof window === 'undefined') return null
-    return localStorage.getItem(STORAGE_KEY)
+    return localStorage.getItem(STORAGE_KEY) ?? initialInstitution
   })
   const [showPicker, setShowPicker] = useState(() => {
     if (typeof window === 'undefined') return false
-    return !localStorage.getItem(STORAGE_KEY)
+    return !(localStorage.getItem(STORAGE_KEY) ?? initialInstitution)
   })
   const mounted = useSyncExternalStore(
     () => () => {},

@@ -38,6 +38,11 @@ export default async function DashboardPage() {
       progressData={progressData ?? []}
       recentSessions={recentSessions ?? []}
       daysUntil={daysUntil}
+      initialInstitution={
+        profile?.subscribed_institution ??
+        profile?.target_institution ??
+        null
+      }
     />
   )
 }

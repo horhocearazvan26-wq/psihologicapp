@@ -1,9 +1,11 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import {
   Eye, Brain, Database, Hash, BookOpen, Users,
   CheckCircle, Shield, Clock, Award, ArrowRight, Star,
   TrendingUp, Zap, Lock, Sparkles,
 } from 'lucide-react'
+import { createClient } from '@/lib/supabase/server'
 
 const institutions = [
   {
@@ -111,7 +113,16 @@ const pricingPlans = [
   },
 ]
 
-export default function HomePage() {
+export default async function HomePage() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (user) {
+    redirect('/dashboard')
+  }
+
   return (
     <div className="min-h-screen bg-white dark:bg-[var(--bg-base)]">
 
