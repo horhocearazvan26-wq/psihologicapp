@@ -129,27 +129,27 @@ export default async function HomePage() {
       {/* ── Navbar ── */}
       <nav className="sticky top-0 z-50 border-b border-slate-100/80 dark:border-[var(--border)] bg-white/80 dark:bg-[var(--bg-base)]/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
+          <Link href="/" className="interactive-press flex items-center gap-2.5">
             <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-md shadow-indigo-200/50 dark:shadow-indigo-900/50">
               <Brain className="w-5 h-5 text-white" />
             </div>
             <span className="font-extrabold text-slate-900 dark:text-[var(--text-primary)] text-lg tracking-tight">PsihoPrep</span>
           </Link>
           <div className="hidden sm:flex items-center gap-6 text-sm font-medium text-slate-500 dark:text-[var(--text-muted)]">
-            <a href="#features" className="hover:text-slate-900 dark:hover:text-[var(--text-primary)] transition-colors">Funcționalități</a>
-            <a href="#institutions" className="hover:text-slate-900 dark:hover:text-[var(--text-primary)] transition-colors">Instituții</a>
-            <a href="#pricing" className="hover:text-slate-900 dark:hover:text-[var(--text-primary)] transition-colors">Prețuri</a>
+            <a href="#features" className="interactive-press hover:text-slate-900 dark:hover:text-[var(--text-primary)] transition-colors">Funcționalități</a>
+            <a href="#institutions" className="interactive-press hover:text-slate-900 dark:hover:text-[var(--text-primary)] transition-colors">Instituții</a>
+            <a href="#pricing" className="interactive-press hover:text-slate-900 dark:hover:text-[var(--text-primary)] transition-colors">Prețuri</a>
           </div>
           <div className="flex items-center gap-2.5">
             <Link
               href="/auth/login"
-              className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-[var(--text-secondary)] hover:text-slate-900 dark:hover:text-[var(--text-primary)] transition-colors"
+              className="interactive-press px-4 py-2 text-sm font-medium text-slate-600 dark:text-[var(--text-secondary)] hover:text-slate-900 dark:hover:text-[var(--text-primary)] transition-colors"
             >
               Intră în cont
             </Link>
             <Link
               href="/auth/register"
-              className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-indigo-200/50 dark:shadow-indigo-900/30 btn-shimmer"
+              className="interactive-press interactive-glow px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-indigo-200/50 dark:shadow-indigo-900/30 btn-shimmer"
             >
               Înregistrare gratuită
             </Link>
@@ -189,14 +189,14 @@ export default async function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-6">
             <Link
               href="/auth/register"
-              className="inline-flex items-center gap-2 px-8 py-4 text-base font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl glow-cta btn-shimmer shadow-lg shadow-indigo-500/25"
+              className="interactive-press interactive-glow inline-flex items-center gap-2 px-8 py-4 text-base font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl glow-cta btn-shimmer shadow-lg shadow-indigo-500/25"
             >
               Începe gratuit
               <ArrowRight className="w-5 h-5" />
             </Link>
             <a
               href="#pricing"
-              className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-slate-700 dark:text-[var(--text-primary)] bg-white dark:bg-[var(--bg-surface)] border border-slate-200 dark:border-[var(--border)] rounded-2xl hover:bg-slate-50 dark:hover:bg-[var(--bg-muted)] transition-colors shadow-sm"
+              className="interactive-press inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-slate-700 dark:text-[var(--text-primary)] bg-white dark:bg-[var(--bg-surface)] border border-slate-200 dark:border-[var(--border)] rounded-2xl hover:bg-slate-50 dark:hover:bg-[var(--bg-muted)] transition-colors shadow-sm"
             >
               Vezi prețuri
             </a>

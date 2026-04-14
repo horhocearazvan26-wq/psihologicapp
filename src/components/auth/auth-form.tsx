@@ -100,7 +100,7 @@ export function AuthForm({ mode }: AuthFormProps) {
               type="button"
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="relative z-10 w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-[var(--border)] rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--bg-muted)] transition-colors text-sm font-medium text-[var(--text-primary)] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="interactive-press interactive-glow relative z-10 w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-[var(--border)] rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--bg-muted)] transition-colors text-sm font-medium text-[var(--text-primary)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -169,7 +169,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50 shadow-lg shadow-indigo-200 dark:shadow-indigo-950/40"
+            className="interactive-press interactive-glow w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50 shadow-lg shadow-indigo-200 dark:shadow-indigo-950/40"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
             {mode === 'login' && 'Intră în cont'}

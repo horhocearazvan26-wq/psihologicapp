@@ -21,10 +21,9 @@ interface InstitutionOption {
 
 interface SimulationSelectorProps {
   institutions: InstitutionOption[]
-  userId: string
 }
 
-export function SimulationSelector({ institutions, userId }: SimulationSelectorProps) {
+export function SimulationSelector({ institutions }: SimulationSelectorProps) {
   const [selected, setSelected] = useState<Institution | null>(null)
   const [running, setRunning] = useState(false)
 

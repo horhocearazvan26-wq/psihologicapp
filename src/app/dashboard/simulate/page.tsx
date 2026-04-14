@@ -6,6 +6,10 @@ import { ClipboardList, Clock, Target, AlertTriangle, Shield, Star, Eye, Scale }
 import { getScoreColor } from '@/lib/utils'
 
 const institutions: Institution[] = ['MAI', 'MApN', 'SRI', 'ANP']
+const SIMULATION_CATEGORY_COUNT = 5
+const QUESTIONS_PER_CATEGORY = 30
+const TOTAL_QUESTIONS = SIMULATION_CATEGORY_COUNT * QUESTIONS_PER_CATEGORY
+const TOTAL_MINUTES = Math.round((TOTAL_QUESTIONS * 45) / 60)
 
 const INST_STYLES: Record<Institution, {
   gradient: string; border: string; bg: string; text: string; icon: React.ReactNode
@@ -50,9 +54,9 @@ export default async function SimulatePage() {
       {/* Stats overview */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { icon: ClipboardList, label: '6 probe',        sub: 'Categorii',      iconBg: 'bg-indigo-500/10', iconColor: 'text-indigo-400', topBar: 'from-indigo-500 to-indigo-400' },
-          { icon: Clock,         label: '~90 min',        sub: 'Durată totală',  iconBg: 'bg-amber-500/10',  iconColor: 'text-amber-400',  topBar: 'from-amber-500 to-amber-400' },
-          { icon: Target,        label: '180 întrebări',  sub: 'Total probe',    iconBg: 'bg-emerald-500/10',iconColor: 'text-emerald-400',topBar: 'from-emerald-500 to-emerald-400' },
+          { icon: ClipboardList, label: `${SIMULATION_CATEGORY_COUNT} probe`,    sub: 'Categorii',      iconBg: 'bg-indigo-500/10', iconColor: 'text-indigo-400', topBar: 'from-indigo-500 to-indigo-400' },
+          { icon: Clock,         label: `~${TOTAL_MINUTES} min`,                 sub: 'Durată totală',  iconBg: 'bg-amber-500/10',  iconColor: 'text-amber-400',  topBar: 'from-amber-500 to-amber-400' },
+          { icon: Target,        label: `${TOTAL_QUESTIONS} întrebări`,          sub: 'Total probe',    iconBg: 'bg-emerald-500/10',iconColor: 'text-emerald-400',topBar: 'from-emerald-500 to-emerald-400' },
         ].map((item) => {
           const Icon = item.icon
           return (
@@ -95,7 +99,7 @@ export default async function SimulatePage() {
         <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
         <div className="text-sm text-amber-300/80">
           <strong className="font-semibold text-amber-300">Atenție:</strong> Odată pornită simularea nu o poți întrerupe fără a pierde progresul.
-          Asigură-te că ai cel puțin <strong>90 de minute</strong> disponibile.
+          Asigură-te că ai cel puțin <strong>{TOTAL_MINUTES} de minute</strong> disponibile.
         </div>
       </div>
 
@@ -112,7 +116,6 @@ export default async function SimulatePage() {
           text: INST_STYLES[inst].text,
           icon: INST_STYLES[inst].icon,
         }))}
-        userId={user!.id}
       />
 
       {/* Previous simulations */}

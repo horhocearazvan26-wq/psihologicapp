@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { cn, formatTime, CATEGORY_LABELS, CATEGORY_ICONS, getScoreColor } from '@/lib/utils'
 import type { Institution, TestCategory } from '@/types'
 import { CheckCircle, Clock, ChevronRight, Trophy, ArrowLeft, ArrowRight, Loader2 } from 'lucide-react'
 
-const CATEGORIES: TestCategory[] = ['attention', 'logic', 'memory', 'numerical', 'vocabulary', 'personality']
+const CATEGORIES: TestCategory[] = ['logic', 'memory', 'numerical', 'vocabulary', 'personality']
 const TIME_PER_QUESTION = 45
 const QUESTIONS_PER_CATEGORY = 30
 
@@ -44,15 +44,18 @@ export function SimulationRunner({ institution, onBack }: SimulationRunnerProps)
   const [loading, setLoading] = useState(false)
   const [categoryResults, setCategoryResults] = useState<CategoryResult[]>([])
   const [lastResult, setLastResult] = useState<{ score: number; correct: number; total: number } | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const currentCategory = CATEGORIES[categoryIndex]
   const totalTime = QUESTIONS_PER_CATEGORY * TIME_PER_QUESTION
+
+  const handleSubmitRef = useRef<() => void>(() => {})
 
   useEffect(() => {
     if (phase !== 'test') return
     const timer = setInterval(() => {
       setTimeLeft(t => {
-        if (t <= 1) { clearInterval(timer); handleSubmit(); return 0 }
+        if (t <= 1) { clearInterval(timer); handleSubmitRef.current(); return 0 }
         return t - 1
       })
     }, 1000)
@@ -61,6 +64,7 @@ export function SimulationRunner({ institution, onBack }: SimulationRunnerProps)
 
   async function startCategory() {
     setLoading(true)
+    setError(null)
     try {
       const res = await fetch('/api/tests/session', {
         method: 'POST',
@@ -68,7 +72,10 @@ export function SimulationRunner({ institution, onBack }: SimulationRunnerProps)
         body: JSON.stringify({ institution, category: currentCategory, is_simulation: true }),
       })
       const data = await res.json()
-      if (data.error) throw new Error(data.error)
+      if (!res.ok || data.error) throw new Error(data.error ?? 'Nu am putut porni simularea.')
+      if (!Array.isArray(data.questions) || data.questions.length === 0) {
+        throw new Error(`Nu există întrebări disponibile pentru proba ${CATEGORY_LABELS[currentCategory]}.`)
+      }
       setQuestions(data.questions)
       setSessionId(data.session.id)
       setTimeLeft(data.questions.length * TIME_PER_QUESTION)
@@ -77,6 +84,7 @@ export function SimulationRunner({ institution, onBack }: SimulationRunnerProps)
       setPhase('test')
     } catch (err) {
       console.error(err)
+      setError(err instanceof Error ? err.message : 'A apărut o eroare la pornirea simulării.')
     } finally {
       setLoading(false)
     }
@@ -98,6 +106,9 @@ export function SimulationRunner({ institution, onBack }: SimulationRunnerProps)
     setLastResult({ score: data.score, correct: data.correct, total: data.total })
     setCategoryResults(prev => [...prev, { category: currentCategory, score: data.score, correct: data.correct, total: data.total }])
   }, [sessionId, questions, selectedOptions, timeLeft, currentCategory, totalTime])
+
+  // Keep ref in sync with latest handleSubmit so the timer closure always has the latest version
+  useEffect(() => { handleSubmitRef.current = handleSubmit }, [handleSubmit])
 
   function nextCategory() {
     if (categoryIndex < CATEGORIES.length - 1) {
@@ -158,6 +169,12 @@ export function SimulationRunner({ institution, onBack }: SimulationRunnerProps)
             </div>
           ))}
         </div>
+
+        {error && (
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+            {error}
+          </div>
+        )}
 
         <div className="flex gap-3">
           {categoryIndex === 0 && (
