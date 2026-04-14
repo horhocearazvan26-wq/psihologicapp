@@ -14,7 +14,7 @@ export async function signInWithEmail(formData: FormData) {
     return { error: error.message }
   }
 
-  redirect('/dashboard')
+  redirect('/onboarding')
 }
 
 export async function signUpWithEmail(formData: FormData) {
@@ -34,6 +34,13 @@ export async function signUpWithEmail(formData: FormData) {
 
   if (error) {
     return { error: error.message }
+  }
+
+  // If auto-confirmed (no email verification), redirect directly to onboarding
+  // If email confirmation is required, show success message
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session) {
+    redirect('/onboarding')
   }
 
   return { success: 'Verifică-ți emailul pentru a confirma contul.' }
