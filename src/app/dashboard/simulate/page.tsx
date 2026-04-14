@@ -40,27 +40,29 @@ export default async function SimulatePage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">Simulare Examen</h1>
-        <p className="text-[var(--text-secondary)] mt-1.5 text-sm">
+        <p className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>Pregătire avansată</p>
+        <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>Simulare Examen</h1>
+        <p className="mt-1.5 text-sm" style={{ color: 'var(--text-secondary)' }}>
           Condiții reale — toate probele în ordine, cronometru strict
         </p>
       </div>
 
       {/* Stats overview */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-3 gap-4">
         {[
-          { icon: ClipboardList, label: '6 probe',   sub: 'Categorii',      iconBg: 'bg-indigo-50 dark:bg-indigo-950/40', iconColor: 'text-indigo-500' },
-          { icon: Clock,         label: '~90 min',   sub: 'Durată totală',  iconBg: 'bg-amber-50 dark:bg-amber-950/40',  iconColor: 'text-amber-500' },
-          { icon: Target,        label: '180 întrebări', sub: 'Total probe', iconBg: 'bg-green-50 dark:bg-green-950/40',  iconColor: 'text-green-500' },
+          { icon: ClipboardList, label: '6 probe',        sub: 'Categorii',      iconBg: 'bg-indigo-500/10', iconColor: 'text-indigo-400', topBar: 'from-indigo-500 to-indigo-400' },
+          { icon: Clock,         label: '~90 min',        sub: 'Durată totală',  iconBg: 'bg-amber-500/10',  iconColor: 'text-amber-400',  topBar: 'from-amber-500 to-amber-400' },
+          { icon: Target,        label: '180 întrebări',  sub: 'Total probe',    iconBg: 'bg-emerald-500/10',iconColor: 'text-emerald-400',topBar: 'from-emerald-500 to-emerald-400' },
         ].map((item) => {
           const Icon = item.icon
           return (
-            <div key={item.label} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-4 sm:p-5 text-center shadow-sm">
+            <div key={item.label} className="relative dash-card overflow-hidden rounded-2xl p-5 text-center">
+              <div className={`absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r ${item.topBar} opacity-60`} />
               <div className={`w-10 h-10 rounded-xl ${item.iconBg} flex items-center justify-center mx-auto mb-3`}>
                 <Icon className={`w-5 h-5 ${item.iconColor}`} />
               </div>
-              <p className="font-extrabold text-[var(--text-primary)] text-base leading-none">{item.label}</p>
-              <p className="text-xs text-[var(--text-muted)] mt-1.5">{item.sub}</p>
+              <p className="font-extrabold text-base leading-none tracking-tight" style={{ color: 'var(--text-primary)' }}>{item.label}</p>
+              <p className="text-xs mt-1.5" style={{ color: 'var(--text-muted)' }}>{item.sub}</p>
             </div>
           )
         })}
@@ -68,15 +70,17 @@ export default async function SimulatePage() {
 
       {/* Best score banner */}
       {bestSim !== null && (
-        <div className={`flex items-center gap-4 p-4 rounded-2xl border ${
-          bestSim >= 80 ? 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800' :
-          bestSim >= 60 ? 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800' :
-          'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800'
-        }`}>
-          <div className={`text-3xl font-extrabold ${getScoreColor(bestSim)}`}>{bestSim.toFixed(0)}%</div>
+        <div
+          className="flex items-center gap-5 p-5 rounded-2xl border"
+          style={{
+            background: bestSim >= 80 ? 'rgba(16,185,129,0.06)' : bestSim >= 60 ? 'rgba(245,158,11,0.06)' : 'rgba(239,68,68,0.06)',
+            borderColor: bestSim >= 80 ? 'rgba(16,185,129,0.2)' : bestSim >= 60 ? 'rgba(245,158,11,0.2)' : 'rgba(239,68,68,0.2)',
+          }}
+        >
+          <div className={`text-4xl font-extrabold tracking-tight shrink-0 ${getScoreColor(bestSim)}`}>{bestSim.toFixed(0)}%</div>
           <div>
-            <p className="text-sm font-bold text-[var(--text-primary)]">Cel mai bun scor la simulare</p>
-            <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+            <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Cel mai bun scor la simulare</p>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
               {bestSim >= 80 ? 'Excelent! Ești pe drumul cel bun.' : bestSim >= 60 ? 'Bun! Mai ai loc de îmbunătățire.' : 'Continuă să exersezi, vei progresa!'}
             </p>
           </div>
@@ -84,11 +88,14 @@ export default async function SimulatePage() {
       )}
 
       {/* Warning */}
-      <div className="flex items-start gap-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-2xl p-4">
-        <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-        <div className="text-sm text-amber-700 dark:text-amber-300">
-          <strong className="font-semibold">Atenție:</strong> Odată pornită simularea nu o poți întrerupe fără a pierde progresul.
-          Asigură-te că ai cel puțin <strong>90 de minute</strong> disponibile și nu vei fi deranjat.
+      <div
+        className="flex items-start gap-3.5 rounded-2xl p-4 border"
+        style={{ background: 'rgba(245,158,11,0.06)', borderColor: 'rgba(245,158,11,0.2)' }}
+      >
+        <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+        <div className="text-sm text-amber-300/80">
+          <strong className="font-semibold text-amber-300">Atenție:</strong> Odată pornită simularea nu o poți întrerupe fără a pierde progresul.
+          Asigură-te că ai cel puțin <strong>90 de minute</strong> disponibile.
         </div>
       </div>
 
@@ -111,20 +118,21 @@ export default async function SimulatePage() {
       {/* Previous simulations */}
       {prevSims && prevSims.length > 0 && (
         <div>
-          <h2 className="text-base font-bold text-[var(--text-primary)] mb-4">Simulări anterioare</h2>
-          <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] overflow-hidden shadow-sm">
+          <h2 className="text-sm font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Simulări anterioare</h2>
+          <div className="dash-card rounded-2xl overflow-hidden">
             {prevSims.map((sim, i) => (
               <div
                 key={i}
-                className={`flex flex-col gap-3 px-5 py-4 transition-colors hover:bg-[var(--bg-muted)] sm:flex-row sm:items-center sm:justify-between ${i < prevSims.length - 1 ? 'border-b border-[var(--border)]' : ''}`}
+                className={`flex flex-col gap-3 px-5 py-4 transition-colors hover:bg-white/[0.02] sm:flex-row sm:items-center sm:justify-between ${i < prevSims.length - 1 ? 'border-b' : ''}`}
+                style={{ borderColor: 'var(--border)' }}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${INST_STYLES[sim.institution as Institution]?.gradient ?? 'from-slate-500 to-slate-700'} flex items-center justify-center shrink-0`}>
+                  <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${INST_STYLES[sim.institution as Institution]?.gradient ?? 'from-slate-600 to-slate-800'} flex items-center justify-center shrink-0 shadow-md`}>
                     <span className="text-white font-bold text-xs">{sim.institution}</span>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-[var(--text-primary)]">{sim.institution}</p>
-                    <p className="text-xs text-[var(--text-muted)]">
+                    <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{sim.institution}</p>
+                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
                       {new Date(sim.completed_at).toLocaleDateString('ro-RO', { day: 'numeric', month: 'long', year: 'numeric' })}
                     </p>
                   </div>
@@ -132,7 +140,7 @@ export default async function SimulatePage() {
                 <div className="text-left sm:text-right">
                   <p className={`text-base font-extrabold ${getScoreColor(sim.score)}`}>{sim.score?.toFixed(0)}%</p>
                   {sim.correct_answers != null && (
-                    <p className="text-xs text-[var(--text-muted)]">{sim.correct_answers}/{sim.total_questions}</p>
+                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{sim.correct_answers}/{sim.total_questions}</p>
                   )}
                 </div>
               </div>

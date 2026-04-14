@@ -69,25 +69,27 @@ export default async function AchievementsPage() {
   return (
     <div className="space-y-8 animate-fade-up">
       <div>
-        <h1 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">Realizările mele</h1>
-        <p className="text-[var(--text-secondary)] mt-1.5 text-sm">
+        <p className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>Gamification</p>
+        <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>Realizările mele</h1>
+        <p className="mt-1.5 text-sm" style={{ color: 'var(--text-secondary)' }}>
           {earned.length} din {achievements.length} deblocate
         </p>
       </div>
 
       {/* Progress bar */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-sm p-5">
-        <div className="flex justify-between text-sm mb-3">
-          <span className="font-semibold text-[var(--text-primary)]">{earned.length} / {achievements.length} realizări</span>
-          <span className="text-[var(--text-muted)]">{pct}%</span>
+      <div className="dash-card rounded-2xl p-6 relative overflow-hidden">
+        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 opacity-60" />
+        <div className="flex justify-between text-sm mb-4">
+          <span className="font-bold" style={{ color: 'var(--text-primary)' }}>{earned.length} / {achievements.length} realizări</span>
+          <span className="font-extrabold text-indigo-400">{pct}%</span>
         </div>
-        <div className="w-full bg-[var(--bg-muted)] rounded-full h-2.5">
+        <div className="w-full rounded-full h-2.5" style={{ background: 'var(--bg-muted)' }}>
           <div
-            className="bg-gradient-to-r from-indigo-500 to-violet-500 h-2.5 rounded-full transition-all duration-700"
-            style={{ width: `${pct}%` }}
+            className="bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-400 h-2.5 rounded-full transition-all duration-700"
+            style={{ width: `${pct}%`, boxShadow: '0 0 12px rgba(99,102,241,0.4)' }}
           />
         </div>
-        <div className="flex justify-between text-xs text-[var(--text-muted)] mt-2">
+        <div className="flex justify-between text-xs mt-2" style={{ color: 'var(--text-muted)' }}>
           <span>Începător</span>
           <span>Expert</span>
         </div>
@@ -96,18 +98,23 @@ export default async function AchievementsPage() {
       {/* Earned */}
       {earned.length > 0 && (
         <div>
-          <h2 className="text-base font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-500 rounded-full" />
+          <h2 className="text-sm font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+            <span className="w-2 h-2 bg-emerald-400 rounded-full shadow-[0_0_6px_rgba(52,211,153,0.6)]" />
             Deblocate ({earned.length})
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {earned.map((ach) => (
-              <div key={ach.id} className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-sm p-5 text-center hover:shadow-md hover:-translate-y-0.5 hover:border-[var(--border-strong)] transition-all duration-200">
+              <div
+                key={ach.id}
+                className="dash-card rounded-2xl p-5 text-center hover:-translate-y-1 transition-all duration-200 relative overflow-hidden"
+                style={{ boxShadow: '0 0 0 1px rgba(99,102,241,0.15), 0 8px 24px -8px rgba(0,0,0,0.5)' }}
+              >
+                <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-indigo-500 to-violet-500 opacity-50" />
                 <div className={cn('w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl', ach.bg)}>
                   {ach.icon}
                 </div>
-                <p className={cn('font-bold text-sm mb-1', ach.color)}>{ach.title}</p>
-                <p className="text-xs text-[var(--text-muted)] leading-snug">{ach.desc}</p>
+                <p className={cn('font-extrabold text-sm mb-1', ach.color)}>{ach.title}</p>
+                <p className="text-xs leading-snug" style={{ color: 'var(--text-muted)' }}>{ach.desc}</p>
               </div>
             ))}
           </div>
@@ -117,18 +124,18 @@ export default async function AchievementsPage() {
       {/* Locked */}
       {locked.length > 0 && (
         <div>
-          <h2 className="text-base font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
-            <span className="w-2 h-2 bg-[var(--border-strong)] rounded-full" />
+          <h2 className="text-sm font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+            <span className="w-2 h-2 rounded-full" style={{ background: 'var(--border-strong)' }} />
             Blocate ({locked.length})
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {locked.map((ach) => (
-              <div key={ach.id} className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-sm p-5 text-center opacity-50">
-                <div className="w-14 h-14 rounded-2xl bg-[var(--bg-muted)] flex items-center justify-center mx-auto mb-3 text-2xl grayscale">
+              <div key={ach.id} className="dash-card rounded-2xl p-5 text-center opacity-35">
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl grayscale" style={{ background: 'var(--bg-muted)' }}>
                   {ach.icon}
                 </div>
-                <p className="font-bold text-sm text-[var(--text-muted)] mb-1">{ach.title}</p>
-                <p className="text-xs text-[var(--text-muted)] leading-snug">{ach.desc}</p>
+                <p className="font-bold text-sm mb-1" style={{ color: 'var(--text-muted)' }}>{ach.title}</p>
+                <p className="text-xs leading-snug" style={{ color: 'var(--text-muted)' }}>{ach.desc}</p>
               </div>
             ))}
           </div>
@@ -136,10 +143,10 @@ export default async function AchievementsPage() {
       )}
 
       {earned.length === 0 && (
-        <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-sm p-16 text-center">
+        <div className="dash-card rounded-2xl p-16 text-center">
           <div className="text-5xl mb-4">🏆</div>
-          <h3 className="text-base font-bold text-[var(--text-primary)]">Nicio realizare deblocată încă</h3>
-          <p className="text-[var(--text-muted)] text-sm mt-2 max-w-sm mx-auto">
+          <h3 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>Nicio realizare deblocată încă</h3>
+          <p className="text-sm mt-2 max-w-sm mx-auto" style={{ color: 'var(--text-muted)' }}>
             Completează primul test pentru a începe să câștigi realizări!
           </p>
         </div>

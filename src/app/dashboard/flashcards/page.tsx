@@ -93,20 +93,30 @@ export default function FlashcardsPage() {
   return (
     <div className="space-y-8 animate-fade-up">
       <div>
-        <h1 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">Flashcard-uri</h1>
-        <p className="text-[var(--text-secondary)] mt-1.5 text-sm">Memorare rapidă prin carduri interactive</p>
+        <p className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>Memorare</p>
+        <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>Flashcard-uri</h1>
+        <p className="mt-1.5 text-sm" style={{ color: 'var(--text-secondary)' }}>Memorare rapidă prin carduri interactive</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         {decks.map((deck) => (
-          <div key={deck.id} className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-0.5 hover:border-[var(--border-strong)] transition-all duration-200">
+          <div
+            key={deck.id}
+            className="dash-card overflow-hidden hover:-translate-y-1 transition-all duration-200"
+            style={{ boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 16px 32px -16px rgba(0,0,0,0.6)' }}
+          >
             {/* Deck header */}
-            <div className={`bg-gradient-to-br ${deck.gradient} p-5`}>
-              <div className="flex items-center gap-3">
+            <div
+              className={`bg-gradient-to-br ${deck.gradient} p-5 relative overflow-hidden`}
+              style={{ boxShadow: 'inset 0 -1px 0 rgba(0,0,0,0.2)' }}
+            >
+              <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)' }} />
+              <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full blur-2xl" style={{ background: 'rgba(255,255,255,0.1)' }} />
+              <div className="relative flex items-center gap-3">
                 <span className="text-3xl">{deck.icon}</span>
                 <div>
                   <h2 className="font-extrabold text-white text-base leading-tight">{deck.title}</h2>
-                  <p className="text-white/60 text-xs mt-0.5">{deck.count} carduri</p>
+                  <p className="text-white/50 text-xs mt-0.5 font-medium">{deck.count} carduri</p>
                 </div>
               </div>
             </div>

@@ -47,13 +47,18 @@ export default async function ProfilePage() {
   return (
     <div className="space-y-8 max-w-2xl animate-fade-up">
       <div>
-        <h1 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">Profilul meu</h1>
-        <p className="text-[var(--text-secondary)] mt-1.5 text-sm">Gestionează informațiile tale de cont</p>
+        <p className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>Cont</p>
+        <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>Profilul meu</h1>
+        <p className="mt-1.5 text-sm" style={{ color: 'var(--text-secondary)' }}>Gestionează informațiile tale de cont</p>
       </div>
 
       {/* Avatar + plan */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-sm p-6 flex items-center gap-5">
-        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-extrabold text-3xl shadow-lg shrink-0">
+      <div className="dash-card relative overflow-hidden rounded-2xl p-6 flex items-center gap-5">
+        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-indigo-500 to-violet-500 opacity-40" />
+        <div
+          className="w-20 h-20 rounded-2xl flex items-center justify-center text-white font-extrabold text-3xl shrink-0"
+          style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', boxShadow: '0 8px 24px -8px rgba(99,102,241,0.5)' }}
+        >
           {initial}
         </div>
         <div className="flex-1 min-w-0">
@@ -80,26 +85,26 @@ export default async function ProfilePage() {
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { icon: BookOpen,  label: 'Teste completate', value: totalTests.toString() },
-          { icon: Target,    label: 'Scor mediu',        value: avgScore > 0 ? `${avgScore.toFixed(0)}%` : '—' },
-          { icon: Calendar,  label: 'Examen în',         value: daysUntil !== null ? (daysUntil > 0 ? `${daysUntil} zile` : 'Trecut') : '—' },
+          { icon: BookOpen, label: 'Teste', value: totalTests.toString(), iconBg: 'bg-blue-500/10', iconColor: 'text-blue-400' },
+          { icon: Target,   label: 'Medie',  value: avgScore > 0 ? `${avgScore.toFixed(0)}%` : '—', iconBg: 'bg-emerald-500/10', iconColor: 'text-emerald-400' },
+          { icon: Calendar, label: 'Examen', value: daysUntil !== null ? (daysUntil > 0 ? `${daysUntil}z` : 'Trecut') : '—', iconBg: 'bg-amber-500/10', iconColor: 'text-amber-400' },
         ].map((stat) => {
           const Icon = stat.icon
           return (
-            <div key={stat.label} className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-sm p-4 text-center">
-              <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 flex items-center justify-center mx-auto mb-2.5">
-                <Icon className="w-4.5 h-4.5 text-indigo-500" />
+            <div key={stat.label} className="dash-card rounded-2xl p-4 text-center">
+              <div className={`w-9 h-9 rounded-xl ${stat.iconBg} flex items-center justify-center mx-auto mb-2.5`}>
+                <Icon className={`w-4 h-4 ${stat.iconColor}`} />
               </div>
-              <p className="text-lg font-extrabold text-[var(--text-primary)] leading-none">{stat.value}</p>
-              <p className="text-xs text-[var(--text-muted)] mt-1">{stat.label}</p>
+              <p className="text-lg font-extrabold leading-none" style={{ color: 'var(--text-primary)' }}>{stat.value}</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{stat.label}</p>
             </div>
           )
         })}
       </div>
 
       {/* Edit form */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-sm p-6">
-        <h3 className="font-bold text-[var(--text-primary)] mb-5">Editează profilul</h3>
+      <div className="dash-card rounded-2xl p-6">
+        <h3 className="font-bold mb-5" style={{ color: 'var(--text-primary)' }}>Editează profilul</h3>
         <ProfileForm
           initialName={profile?.full_name ?? ''}
           initialInstitution={(profile?.target_institution as Institution) ?? null}
@@ -108,8 +113,8 @@ export default async function ProfilePage() {
       </div>
 
       {/* Account info */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-sm p-6 space-y-3">
-        <h3 className="font-bold text-[var(--text-primary)] mb-2">Informații cont</h3>
+      <div className="dash-card rounded-2xl p-6 space-y-3">
+        <h3 className="font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Informații cont</h3>
         {[
           { label: 'Email', value: user!.email },
           { label: 'Plan', value: planLabel[currentPlan] },
@@ -119,9 +124,9 @@ export default async function ProfilePage() {
           }] : []),
           { label: 'Cont creat', value: new Date(user!.created_at).toLocaleDateString('ro-RO', { day: 'numeric', month: 'long', year: 'numeric' }) },
         ].map((row) => (
-          <div key={row.label} className="flex justify-between text-sm border-b border-[var(--border)] pb-3 last:border-0 last:pb-0">
-            <span className="text-[var(--text-muted)]">{row.label}</span>
-            <span className="font-medium text-[var(--text-primary)] text-right">{row.value}</span>
+          <div key={row.label} className="flex justify-between text-sm border-b pb-3 last:border-0 last:pb-0" style={{ borderColor: 'var(--border)' }}>
+            <span style={{ color: 'var(--text-muted)' }}>{row.label}</span>
+            <span className="font-medium text-right" style={{ color: 'var(--text-primary)' }}>{row.value}</span>
           </div>
         ))}
       </div>
