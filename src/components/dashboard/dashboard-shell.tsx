@@ -32,14 +32,14 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
+            transition={{ duration: 0.14, ease: 'easeOut' }}
           />
         )}
       </AnimatePresence>
 
       <motion.div
         animate={sidebarOpen ? { x: 0 } : { x: '-100%' }}
-        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
         className={[
           'fixed inset-y-0 left-0 z-30 will-change-transform',
           'md:relative md:translate-x-0 md:z-auto',

@@ -14,10 +14,10 @@ export function DashboardMain({ children }: DashboardMainProps) {
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
         key={pathname}
-        initial={{ opacity: 0, y: 16, filter: 'blur(10px)' }}
+        initial={{ opacity: 0, y: 10, filter: 'blur(6px)' }}
         animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-        exit={{ opacity: 0, y: -10, filter: 'blur(8px)' }}
-        transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+        exit={{ opacity: 0, y: -6, filter: 'blur(4px)' }}
+        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
         className="dashboard-page-shell"
       >
         {children}
