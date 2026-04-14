@@ -90,7 +90,7 @@ export function InstitutionPicker({ onSelect }: InstitutionPickerProps) {
               >
                 {/* Full-bleed image */}
                 <img
-                  src={`/images/${inst.id.toLowerCase()}.jpg`}
+                  src={`/images/${inst.id.toLowerCase()}.png`}
                   alt={inst.label}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
