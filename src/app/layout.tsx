@@ -14,6 +14,23 @@ export const metadata: Metadata = {
     capable: true,
     title: 'PsihoPrep',
     statusBarStyle: 'default',
+    startupImage: [
+      {
+        url: '/api/startup-images/1170x2532',
+        media:
+          '(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+      },
+      {
+        url: '/api/startup-images/1179x2556',
+        media:
+          '(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+      },
+      {
+        url: '/api/startup-images/1290x2796',
+        media:
+          '(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+      },
+    ],
   },
 }
 
