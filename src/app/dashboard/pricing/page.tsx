@@ -1,9 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
-import Link from 'next/link'
-import type { Institution } from '@/types'
-import { CheckCircle, Star, Zap, Shield, Clock, ArrowRight } from 'lucide-react'
-
-const institutions: Institution[] = ['MAI', 'MApN', 'SRI', 'ANP']
+import { CheckoutButton } from '@/components/dashboard/checkout-button'
+import { CheckCircle, Star, Shield, Clock } from 'lucide-react'
+import type { SubscriptionPlan } from '@/types'
 
 const features = {
   free: [
@@ -47,7 +45,7 @@ export default async function PricingPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user!.id).single()
-  const currentPlan = profile?.subscription_plan ?? 'free'
+  const currentPlan: SubscriptionPlan = profile?.subscription_plan ?? 'free'
 
   return (
     <div className="space-y-12 animate-fade-up">
@@ -115,20 +113,6 @@ export default async function PricingPage() {
           </div>
           <p className="text-xs text-[var(--text-muted)] mb-5">Plată unică · Acces pe viață</p>
 
-          {currentPlan === 'free' && (
-            <div className="mb-5">
-              <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">Selectează instituția:</label>
-              <select
-                id="institution-select"
-                className="w-full border border-[var(--border)] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-[var(--bg-base)] text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-colors"
-              >
-                {institutions.map((inst) => (
-                  <option key={inst} value={inst}>{inst}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
           <ul className="space-y-2.5 mb-7">
             {features.one.map((f) => (
               <li key={f} className="flex items-start gap-2 text-sm text-[var(--text-secondary)]">
@@ -138,16 +122,16 @@ export default async function PricingPage() {
             ))}
           </ul>
 
-          {currentPlan === 'free' ? (
-            <Link href="/api/stripe/checkout?plan=one_institution">
-              <div className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-bold hover:opacity-90 transition-opacity shadow-lg shadow-indigo-200 dark:shadow-indigo-950/50">
-                <Zap className="w-4 h-4" /> Cumpără acum — 69 lei
-              </div>
-            </Link>
-          ) : (
+          {currentPlan === 'all_institutions' ? (
             <button disabled className="w-full py-2.5 rounded-xl bg-[var(--bg-muted)] text-sm font-semibold text-[var(--text-muted)] opacity-60 cursor-not-allowed">
-              {currentPlan === 'one_institution' ? 'Plan curent' : 'Inclus în planul tău'}
+              Inclus în planul tău
             </button>
+          ) : currentPlan === 'one_institution' ? (
+            <button disabled className="w-full py-2.5 rounded-xl bg-[var(--bg-muted)] text-sm font-semibold text-[var(--text-muted)] opacity-60 cursor-not-allowed">
+              Plan curent
+            </button>
+          ) : (
+            <CheckoutButton plan="one_institution" currentPlan={currentPlan} />
           )}
         </div>
 
@@ -173,22 +157,12 @@ export default async function PricingPage() {
             ))}
           </ul>
 
-          {currentPlan === 'free' ? (
-            <Link href="/api/stripe/checkout?plan=all_institutions">
-              <div className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-[var(--border-strong)] text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-muted)] transition-colors">
-                Cumpără acum — 119 lei <ArrowRight className="w-4 h-4" />
-              </div>
-            </Link>
-          ) : currentPlan === 'one_institution' ? (
-            <Link href="/api/stripe/checkout?plan=all_institutions">
-              <div className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-[var(--border-strong)] text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-muted)] transition-colors">
-                Upgrade la Toate — 119 lei <ArrowRight className="w-4 h-4" />
-              </div>
-            </Link>
-          ) : (
+          {currentPlan === 'all_institutions' ? (
             <button disabled className="w-full py-2.5 rounded-xl bg-[var(--bg-muted)] text-sm font-semibold text-[var(--text-muted)] opacity-60 cursor-not-allowed">
               Plan curent
             </button>
+          ) : (
+            <CheckoutButton plan="all_institutions" currentPlan={currentPlan} />
           )}
         </div>
       </div>
