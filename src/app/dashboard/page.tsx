@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { DashboardClient } from '@/components/dashboard/dashboard-client'
 
@@ -7,7 +8,25 @@ function getDaysUntilExam(examDate: string | null): number | null {
   return Math.ceil(diff / (1000 * 60 * 60 * 24))
 }
 
-export default async function DashboardPage() {
+function DashboardSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="h-44 rounded-3xl bg-white/5 animate-pulse" />
+      <div className="grid grid-cols-3 gap-3">
+        <div className="h-28 rounded-2xl bg-white/5 animate-pulse" />
+        <div className="h-28 rounded-2xl bg-white/5 animate-pulse" />
+        <div className="h-28 rounded-2xl bg-white/5 animate-pulse" />
+      </div>
+      <div className="space-y-2">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-16 rounded-2xl bg-white/5 animate-pulse" />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+async function DashboardContent() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -45,5 +64,13 @@ export default async function DashboardPage() {
         null
       }
     />
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<DashboardSkeleton />}>
+      <DashboardContent />
+    </Suspense>
   )
 }
