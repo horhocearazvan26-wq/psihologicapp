@@ -176,12 +176,12 @@ export function DashboardClient({
         className="relative overflow-hidden rounded-3xl p-7 shadow-2xl"
         style={{
           background: cfg.heroBg,
-          boxShadow: `0 32px 64px -24px ${cfg.heroGlow}, 0 0 0 1px rgba(255,255,255,0.06)`,
+          boxShadow: `0 32px 64px -24px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06)`,
         }}
       >
         {/* Full-bleed institution image */}
         <img
-          src={`/images/${inst.toLowerCase()}.jpg`}
+          src={`/images/${inst.toLowerCase()}.png`}
           alt=""
           className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700"
           onError={(e) => { e.currentTarget.style.display = 'none' }}

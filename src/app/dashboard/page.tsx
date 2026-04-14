@@ -11,11 +11,12 @@ export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user!.id).single()
-  const { data: recentSessions } = await supabase
-    .from('test_sessions').select('*').eq('user_id', user!.id).eq('completed', true)
-    .order('completed_at', { ascending: false }).limit(10)
-  const { data: progressData } = await supabase.from('user_progress').select('*').eq('user_id', user!.id)
+  const [{ data: profile }, { data: recentSessions }, { data: progressData }] = await Promise.all([
+    supabase.from('profiles').select('*').eq('id', user!.id).single(),
+    supabase.from('test_sessions').select('*').eq('user_id', user!.id).eq('completed', true)
+      .order('completed_at', { ascending: false }).limit(10),
+    supabase.from('user_progress').select('*').eq('user_id', user!.id),
+  ])
 
   const totalTests = progressData?.reduce((s, p) => s + p.tests_taken, 0) ?? 0
   const avgScore = progressData?.length

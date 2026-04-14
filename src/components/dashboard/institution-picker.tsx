@@ -83,8 +83,8 @@ export function InstitutionPicker({ onSelect }: InstitutionPickerProps) {
                   aspectRatio: '3/4',
                   background: inst.gradient,
                   boxShadow: isSelected
-                    ? `0 0 0 3px rgba(255,255,255,0.7), 0 24px 48px -12px ${inst.glow}`
-                    : `0 8px 32px -8px ${inst.glow}`,
+                    ? `0 0 0 3px rgba(255,255,255,0.85), 0 24px 48px -12px rgba(0,0,0,0.6)`
+                    : `0 8px 32px -8px rgba(0,0,0,0.5)`,
                   outline: 'none',
                 }}
               >
