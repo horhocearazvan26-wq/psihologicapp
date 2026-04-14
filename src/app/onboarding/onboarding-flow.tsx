@@ -163,49 +163,47 @@ export function OnboardingFlow({ firstName }: OnboardingFlowProps) {
               </div>
 
               {/* Institution grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+              <div className="grid grid-cols-2 gap-4 mb-8">
                 {institutions.map((inst) => {
-                  const Icon = inst.icon
                   const selected = selectedInstitution === inst.id
                   return (
                     <button
                       key={inst.id}
                       onClick={() => setSelectedInstitution(inst.id)}
-                      className="relative overflow-hidden rounded-2xl p-5 text-left transition-all duration-200 hover:-translate-y-0.5 group"
+                      className="relative overflow-hidden rounded-2xl text-left transition-all duration-200 hover:-translate-y-1 group"
                       style={{
+                        aspectRatio: '3/4',
                         background: inst.gradient,
                         boxShadow: selected
-                          ? `0 0 0 2px rgba(255,255,255,0.4), 0 20px 40px -12px ${inst.glow}`
-                          : `0 8px 24px -8px ${inst.glow}`,
+                          ? `0 0 0 3px rgba(255,255,255,0.7), 0 24px 48px -12px ${inst.glow}`
+                          : `0 8px 32px -8px ${inst.glow}`,
                         outline: 'none',
                       }}
                     >
-                      {/* Institution background image */}
+                      {/* Full-bleed background image */}
                       <img
                         src={`/images/${inst.id.toLowerCase()}.jpg`}
-                        alt=""
-                        className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none select-none"
+                        alt={inst.label}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
                       />
-                      <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)' }} />
-                      <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full blur-2xl" style={{ background: 'rgba(255,255,255,0.08)' }} />
 
+                      {/* Dark gradient overlay — bottom heavy */}
+                      <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.1) 100%)' }} />
+
+                      {/* Selected ring indicator */}
                       {selected && (
-                        <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                          <CheckCircle className="w-4 h-4 text-white" />
+                        <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-lg">
+                          <CheckCircle className="w-4 h-4 text-indigo-600" />
                         </div>
                       )}
 
-                      <div className="relative flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-white/20" style={{ background: 'rgba(255,255,255,0.15)' }}>
-                          <Icon className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <p className="text-white font-extrabold text-lg leading-none">{inst.label}</p>
-                        </div>
+                      {/* Bottom content */}
+                      <div className="absolute inset-x-0 bottom-0 p-4">
+                        <p className="text-white font-extrabold text-2xl leading-none tracking-tight drop-shadow-lg">{inst.label}</p>
+                        <p className="text-white/70 text-xs mt-1 leading-snug font-medium">{inst.fullName}</p>
+                        <p className="text-white/45 text-[10px] mt-0.5">{inst.sub}</p>
                       </div>
-                      <p className="relative text-white/70 text-xs font-medium leading-snug">{inst.fullName}</p>
-                      <p className="relative text-white/45 text-xs mt-0.5">{inst.sub}</p>
                     </button>
                   )
                 })}

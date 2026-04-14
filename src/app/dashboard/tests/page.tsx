@@ -112,21 +112,23 @@ export default async function TestsPage() {
           <div key={inst} className={`animate-fade-up stagger-${instIdx + 1}`}>
             {/* Institution hero header */}
             <div
-              className="relative overflow-hidden rounded-2xl p-6 mb-4"
+              className="relative overflow-hidden rounded-2xl p-6 mb-4 group"
               style={{
                 background: cfg.heroBg,
                 boxShadow: `0 20px 48px -16px ${cfg.heroGlow}, 0 0 0 1px rgba(255,255,255,0.06)`,
+                minHeight: '120px',
               }}
             >
-              {/* Institution background image */}
+              {/* Full-bleed background image */}
               <img
                 src={`/images/${inst.toLowerCase()}.jpg`}
                 alt=""
-                className="absolute inset-0 w-full h-full object-cover opacity-[0.15] pointer-events-none select-none"
+                className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
               />
+              {/* Gradient overlay */}
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.15) 100%)' }} />
               <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }} />
-              <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full blur-3xl" style={{ background: 'rgba(255,255,255,0.05)' }} />
 
               <div className="relative flex items-center gap-5">
                 <div

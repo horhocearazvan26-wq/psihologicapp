@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import type { Institution } from '@/types'
-import { Lock, Play, ChevronRight } from 'lucide-react'
+import { Lock, Play, ChevronRight, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import { SimulationRunner } from './simulation-runner'
 
@@ -40,7 +40,7 @@ export function SimulationSelector({ institutions }: SimulationSelectorProps) {
     <div className="space-y-5">
       <h2 className="text-base font-bold text-[var(--text-primary)]">Alege instituția</h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {institutions.map((opt) => {
           const isSelected = selected === opt.inst
           return (
@@ -49,59 +49,48 @@ export function SimulationSelector({ institutions }: SimulationSelectorProps) {
               onClick={() => opt.canSimulate && setSelected(opt.inst)}
               disabled={!opt.canSimulate}
               className={cn(
-                'relative text-left rounded-2xl border-2 p-5 transition-all duration-200 group overflow-hidden',
-                opt.canSimulate
-                  ? isSelected
-                    ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 shadow-md'
-                    : 'border-[var(--border)] bg-[var(--bg-surface)] hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-md cursor-pointer'
-                  : 'border-[var(--border)] bg-[var(--bg-surface)] opacity-60 cursor-not-allowed'
+                'relative overflow-hidden rounded-2xl transition-all duration-200 group text-left',
+                opt.canSimulate ? 'cursor-pointer hover:-translate-y-1' : 'cursor-not-allowed opacity-50'
               )}
+              style={{
+                aspectRatio: '3/4',
+                background: `linear-gradient(135deg, ${opt.gradient.includes('blue') ? '#0c2d6b,#1550cc' : opt.gradient.includes('emerald') ? '#065040,#0f9070' : opt.gradient.includes('red') ? '#5c0d0d,#a01c1c' : '#2d1b6b,#5b35c7'})`,
+                boxShadow: isSelected ? '0 0 0 3px rgba(255,255,255,0.6), 0 16px 40px -12px rgba(0,0,0,0.5)' : '0 8px 24px -8px rgba(0,0,0,0.4)',
+              }}
             >
-              {/* Institution background image */}
+              {/* Full-bleed image */}
               <img
                 src={`/images/${opt.inst.toLowerCase()}.jpg`}
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover opacity-[0.07] pointer-events-none select-none"
+                alt={opt.label}
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
               />
-              <div className="relative flex items-center gap-4">
-                {/* Icon */}
-                <div className={cn(
-                  'w-14 h-14 rounded-2xl bg-gradient-to-br flex items-center justify-center shrink-0 shadow-sm transition-transform duration-200',
-                  opt.gradient,
-                  isSelected ? 'scale-105' : ''
-                )}>
-                  <span className="text-white font-extrabold text-sm">{opt.inst}</span>
-                </div>
+              {/* Gradient overlay */}
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.3) 55%, rgba(0,0,0,0.1) 100%)' }} />
 
-                {/* Text */}
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-[var(--text-primary)] text-base leading-none">{opt.label}</p>
-                  <p className="text-xs text-[var(--text-secondary)] mt-1 leading-snug">{opt.fullName}</p>
-                </div>
-
-                {/* Radio / lock */}
-                {opt.canSimulate ? (
-                  <div className={cn(
-                    'w-6 h-6 rounded-full border-2 shrink-0 flex items-center justify-center transition-all',
-                    isSelected ? 'border-indigo-500 bg-indigo-500' : 'border-[var(--border-strong)]'
-                  )}>
-                    {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+              {/* Lock or selected badge */}
+              <div className="absolute top-2.5 right-2.5">
+                {!opt.canSimulate ? (
+                  <div className="w-6 h-6 rounded-full bg-black/50 flex items-center justify-center">
+                    <Lock className="w-3 h-3 text-white/70" />
                   </div>
-                ) : (
-                  <Lock className="w-4 h-4 text-[var(--text-muted)] shrink-0" />
-                )}
+                ) : isSelected ? (
+                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-md">
+                    <CheckCircle className="w-4 h-4 text-indigo-600" />
+                  </div>
+                ) : null}
               </div>
 
-              {/* Upgrade nudge */}
-              {!opt.canSimulate && (
-                <div className={cn('mt-4 flex items-center justify-between text-xs rounded-xl px-3 py-2', opt.bg)}>
-                  <span className={opt.text}>Necesită plan plătit</span>
-                  <Link href="/dashboard/pricing" onClick={e => e.stopPropagation()}>
-                    <span className={cn('font-bold underline', opt.text)}>Upgrade →</span>
+              {/* Bottom content */}
+              <div className="absolute inset-x-0 bottom-0 p-3">
+                <p className="text-white font-extrabold text-xl leading-none tracking-tight">{opt.label}</p>
+                <p className="text-white/60 text-[10px] mt-1 leading-snug">{opt.fullName}</p>
+                {!opt.canSimulate && (
+                  <Link href="/dashboard/pricing" onClick={e => e.stopPropagation()} className="inline-block mt-2">
+                    <span className="text-[10px] font-bold text-white/80 underline">Upgrade →</span>
                   </Link>
-                </div>
-              )}
+                )}
+              </div>
             </button>
           )
         })}
