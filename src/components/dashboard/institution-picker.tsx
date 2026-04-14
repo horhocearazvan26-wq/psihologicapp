@@ -1,57 +1,42 @@
 'use client'
 
 import { useState } from 'react'
-import { cn } from '@/lib/utils'
-import { ChevronRight, Shield, Star, Eye, Scale } from 'lucide-react'
+import { CheckCircle } from 'lucide-react'
 
 export const STORAGE_KEY = 'psihoprep_institution'
 
-interface Inst {
-  id: string
-  label: string
-  fullName: string
-  description: string
-  gradient: string
-  shadowColor: string
-  icon: React.ReactNode
-}
-
-const INSTITUTIONS: Inst[] = [
+const INSTITUTIONS = [
   {
     id: 'MAI',
     label: 'MAI',
     fullName: 'Ministerul Afacerilor Interne',
     description: 'Poliție, Jandarmerie, IGSU, Poliție de Frontieră',
-    gradient: 'from-blue-900 via-blue-800 to-blue-700',
-    shadowColor: 'shadow-blue-900/60',
-    icon: <Shield className="w-8 h-8 text-blue-200" />,
+    gradient: 'linear-gradient(135deg, #0c2d6b 0%, #1246a8 50%, #1a5fc7 100%)',
+    glow: 'rgba(59,130,246,0.4)',
   },
   {
     id: 'MApN',
     label: 'MApN',
     fullName: 'Ministerul Apărării Naționale',
     description: 'Armata Română, Forțe Terestre, Navale, Aeriene',
-    gradient: 'from-emerald-900 via-emerald-800 to-teal-700',
-    shadowColor: 'shadow-emerald-900/60',
-    icon: <Star className="w-8 h-8 text-emerald-200" />,
+    gradient: 'linear-gradient(135deg, #065040 0%, #0d7a5e 50%, #0f9070 100%)',
+    glow: 'rgba(16,185,129,0.4)',
   },
   {
     id: 'SRI',
     label: 'SRI',
     fullName: 'Serviciul Român de Informații',
     description: 'Intelligence, Contrainformații, Securitate Națională',
-    gradient: 'from-red-950 via-red-900 to-rose-800',
-    shadowColor: 'shadow-red-900/60',
-    icon: <Eye className="w-8 h-8 text-red-200" />,
+    gradient: 'linear-gradient(135deg, #5c0d0d 0%, #8b1515 50%, #a01c1c 100%)',
+    glow: 'rgba(239,68,68,0.4)',
   },
   {
     id: 'ANP',
     label: 'ANP',
     fullName: 'Administrația Națională a Penitenciarelor',
     description: 'Ofițer penitenciar, Agent penitenciar',
-    gradient: 'from-violet-950 via-violet-900 to-indigo-800',
-    shadowColor: 'shadow-violet-900/60',
-    icon: <Scale className="w-8 h-8 text-violet-200" />,
+    gradient: 'linear-gradient(135deg, #2d1b6b 0%, #4c2ba8 50%, #5b35c7 100%)',
+    glow: 'rgba(139,92,246,0.4)',
   },
 ]
 
@@ -61,7 +46,6 @@ interface InstitutionPickerProps {
 
 export function InstitutionPicker({ onSelect }: InstitutionPickerProps) {
   const [selected, setSelected] = useState<string | null>(null)
-  const [hovering, setHovering] = useState<string | null>(null)
 
   function handleSelect(id: string) {
     setSelected(id)
@@ -70,57 +54,62 @@ export function InstitutionPicker({ onSelect }: InstitutionPickerProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[var(--bg-base)] px-4 py-6 sm:p-6">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[var(--bg-base)] px-4 py-8 sm:p-8">
       <div className="mx-auto w-full max-w-2xl animate-fade-up">
         {/* Header */}
-        <div className="mb-8 text-center sm:mb-10">
-          <div className="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-xs font-semibold px-3 py-1.5 rounded-full mb-5">
-            <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
-            Bun venit pe PsihoPrep
+        <div className="mb-8 text-center">
+          <div className="inline-flex items-center gap-2 bg-indigo-500/10 text-indigo-400 text-xs font-semibold px-3 py-1.5 rounded-full mb-5 border border-indigo-500/20">
+            <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse" />
+            Schimbă instituția
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-[var(--text-primary)] tracking-tight leading-tight">
             Pentru ce instituție<br className="hidden sm:block" /> te pregătești?
           </h1>
-          <p className="text-[var(--text-secondary)] mt-3 text-base">
+          <p className="text-[var(--text-secondary)] mt-3 text-sm">
             Vom personaliza testele și materialele pentru tine
           </p>
         </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {/* Cards — 2×2 portrait grid */}
+        <div className="grid grid-cols-2 gap-4">
           {INSTITUTIONS.map((inst, i) => {
             const isSelected = selected === inst.id
-            const isHover = hovering === inst.id
             return (
               <button
                 key={inst.id}
                 onClick={() => handleSelect(inst.id)}
-                onMouseEnter={() => setHovering(inst.id)}
-                onMouseLeave={() => setHovering(null)}
-                className={cn(
-                  'group relative min-h-[210px] cursor-pointer overflow-hidden rounded-2xl p-6 text-left transition-all duration-300',
-                  `bg-gradient-to-br ${inst.gradient}`,
-                  `shadow-xl ${inst.shadowColor}`,
-                  `animate-fade-up stagger-${i + 1}`,
-                  isSelected ? 'scale-[0.98] opacity-80' : isHover ? 'scale-[1.02] -translate-y-1 shadow-2xl' : 'scale-100',
-                )}
+                className={`group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-200 hover:-translate-y-1 animate-fade-up stagger-${i + 1} text-left`}
+                style={{
+                  aspectRatio: '3/4',
+                  background: inst.gradient,
+                  boxShadow: isSelected
+                    ? `0 0 0 3px rgba(255,255,255,0.7), 0 24px 48px -12px ${inst.glow}`
+                    : `0 8px 32px -8px ${inst.glow}`,
+                  outline: 'none',
+                }}
               >
-                <div className="absolute -top-6 -right-6 w-28 h-28 bg-white/5 rounded-full pointer-events-none" />
-                <div className="absolute -bottom-8 -right-2 w-36 h-36 bg-white/5 rounded-full pointer-events-none" />
+                {/* Full-bleed image */}
+                <img
+                  src={`/images/${inst.id.toLowerCase()}.jpg`}
+                  alt={inst.label}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                />
+                {/* Gradient overlay */}
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.3) 55%, rgba(0,0,0,0.1) 100%)' }} />
 
-                <div className="mb-4">{inst.icon}</div>
+                {/* Selected badge */}
+                {isSelected && (
+                  <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-lg">
+                    <CheckCircle className="w-4 h-4 text-indigo-600" />
+                  </div>
+                )}
 
-                <div className="relative">
-                  <p className="text-white font-extrabold text-xl tracking-tight leading-none mb-1">{inst.label}</p>
-                  <p className="text-white/55 text-xs font-medium leading-snug mb-2">{inst.fullName}</p>
-                  <p className="text-white/35 text-xs leading-relaxed">{inst.description}</p>
-                </div>
-
-                <div className={cn(
-                  'absolute bottom-5 right-5 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 transition-all duration-200',
-                  isHover ? 'bg-white/25 translate-x-0.5' : ''
-                )}>
-                  <ChevronRight className="w-4 h-4 text-white" />
+                {/* Bottom content */}
+                <div className="absolute inset-x-0 bottom-0 p-4">
+                  <p className="text-white font-extrabold text-2xl leading-none tracking-tight drop-shadow-lg">{inst.label}</p>
+                  <p className="text-white/70 text-xs mt-1 leading-snug font-medium">{inst.fullName}</p>
+                  <p className="text-white/45 text-[10px] mt-0.5">{inst.description}</p>
                 </div>
               </button>
             )
