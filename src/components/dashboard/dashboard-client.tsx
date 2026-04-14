@@ -257,56 +257,31 @@ export function DashboardClient({
 
       {/* ── Quick actions ── */}
       <div>
-        <style>{`
-          @keyframes floatGlow {
-            0%, 100% { transform: translate(0px, 0px) scale(1); opacity: 0.7; }
-            33%       { transform: translate(18px, -12px) scale(1.15); opacity: 1; }
-            66%       { transform: translate(-10px, 14px) scale(0.9); opacity: 0.6; }
-          }
-          @keyframes shimmerSweep {
-            0%   { transform: translateX(-120%) skewX(-20deg); }
-            100% { transform: translateX(320%) skewX(-20deg); }
-          }
-          .action-card-glow { animation: floatGlow 4s ease-in-out infinite; }
-          .action-card-glow-2 { animation: floatGlow 4s ease-in-out infinite 1.3s; }
-          .action-card-glow-3 { animation: floatGlow 4s ease-in-out infinite 2.6s; }
-          .action-card-shimmer { animation: shimmerSweep 3.5s ease-in-out infinite; }
-          .action-card-shimmer-2 { animation: shimmerSweep 3.5s ease-in-out infinite 1.2s; }
-          .action-card-shimmer-3 { animation: shimmerSweep 3.5s ease-in-out infinite 2.4s; }
-        `}</style>
         <p className="text-[10px] font-bold tracking-widest uppercase mb-4" style={{ color: 'var(--text-muted)' }}>Acțiuni rapide</p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-3">
           {[
-            { href: '/dashboard/simulate',   icon: Play,       color: 'rgba(99,102,241,1)',  glow: 'rgba(99,102,241,0.35)',  iconBg: 'rgba(99,102,241,0.15)',  glowClass: 'action-card-glow',   shimmerClass: 'action-card-shimmer',   title: 'Simulare Examen', sub: 'Condiții reale, cronometru' },
-            { href: '/dashboard/flashcards', icon: Layers,     color: 'rgba(139,92,246,1)',  glow: 'rgba(139,92,246,0.35)',  iconBg: 'rgba(139,92,246,0.15)',  glowClass: 'action-card-glow-2', shimmerClass: 'action-card-shimmer-2', title: 'Flashcard-uri',   sub: 'Memorare rapidă' },
-            { href: '/dashboard/review',     icon: TrendingUp, color: 'rgba(245,158,11,1)',  glow: 'rgba(245,158,11,0.35)',  iconBg: 'rgba(245,158,11,0.15)',  glowClass: 'action-card-glow-3', shimmerClass: 'action-card-shimmer-3', title: 'Review Greșeli',  sub: 'Revizuiește erorile' },
-          ].map(({ href, icon: Icon, color, glow, iconBg, glowClass, shimmerClass, title, sub }) => (
+            { href: '/dashboard/simulate',   icon: Play,       title: 'Simulare',  sub: 'Condiții reale' },
+            { href: '/dashboard/flashcards', icon: Layers,     title: 'Flashcards', sub: 'Memorare' },
+            { href: '/dashboard/review',     icon: TrendingUp, title: 'Review',    sub: 'Greșeli' },
+          ].map(({ href, icon: Icon, title, sub }) => (
             <Link key={href} href={href}>
               <div
-                className="relative overflow-hidden rounded-2xl p-5 cursor-pointer group hover:-translate-y-1 transition-all duration-200"
+                className="group flex flex-col items-center gap-3 py-5 px-3 rounded-2xl cursor-pointer transition-all duration-200 hover:bg-white/[0.05] text-center"
                 style={{
-                  background: 'rgba(255,255,255,0.04)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  boxShadow: '0 8px 32px -8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)',
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.07)',
                 }}
               >
-                {/* Floating glow blob */}
-                <div className={`${glowClass} absolute -top-4 -left-4 w-20 h-20 rounded-full blur-3xl pointer-events-none opacity-50`} style={{ background: glow }} />
-                {/* Shimmer sweep */}
-                <div className={`${shimmerClass} absolute inset-y-0 w-8 pointer-events-none`} style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent)' }} />
-                {/* Top shine */}
-                <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent)' }} />
-
-                <div className="relative flex items-center justify-between mb-4">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: iconBg, border: `1px solid ${color}30` }}>
-                    <Icon className="w-5 h-5" style={{ color }} />
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-white/60 group-hover:translate-x-0.5 transition-all" />
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center transition-transform duration-200 group-hover:scale-110"
+                  style={{ background: 'rgba(255,255,255,0.08)' }}
+                >
+                  <Icon className="w-5 h-5 text-white/70" />
                 </div>
-                <p className="relative font-bold text-base leading-tight text-white">{title}</p>
-                <p className="relative text-white/40 text-xs mt-1">{sub}</p>
+                <div>
+                  <p className="font-semibold text-sm text-white leading-tight">{title}</p>
+                  <p className="text-[11px] text-white/30 mt-0.5">{sub}</p>
+                </div>
               </div>
             </Link>
           ))}
@@ -322,65 +297,51 @@ export function DashboardClient({
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        <div className="flex flex-col gap-2">
           {categories.map((cat, i) => {
             const progress = instProgress.find(p => p.category === cat)
             const href = cat === 'attention'
               ? `/dashboard/tests/${inst.toLowerCase()}/attention`
               : `/dashboard/tests/${inst.toLowerCase()}/${cat}`
+            const hasProgress = progress && progress.tests_taken > 0
 
             return (
               <Link key={cat} href={href}>
                 <div
-                  className={`group relative overflow-hidden rounded-2xl cursor-pointer hover:-translate-y-1 transition-all duration-200 animate-fade-up stagger-${(i % 4) + 1}`}
+                  className={`group relative flex items-center gap-4 px-5 py-4 rounded-2xl cursor-pointer transition-all duration-200 hover:bg-white/[0.04] animate-fade-up stagger-${(i % 4) + 1}`}
                   style={{
-                    background: 'linear-gradient(145deg, #0f1e38 0%, #0a1528 60%, #071020 100%)',
-                    boxShadow: '0 4px 24px -8px rgba(0,0,0,0.6), 0 0 0 1px rgba(99,102,241,0.12), inset 0 1px 0 rgba(255,255,255,0.06)',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.07)',
                   }}
                 >
-                  {/* 3D top shine */}
-                  <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(165,180,252,0.35), transparent)' }} />
-                  {/* Subtle glow on hover */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.08) 0%, transparent 70%)' }} />
+                  {/* Icon */}
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-lg"
+                    style={{ background: 'rgba(255,255,255,0.06)' }}
+                  >
+                    {CATEGORY_ICONS[cat]}
+                  </div>
 
-                  <div className="relative p-5 pb-4">
-                    {/* Large title as visual element */}
-                    <h3
-                      className="text-xl font-extrabold tracking-tight leading-tight mb-1 transition-all duration-200 group-hover:opacity-90"
-                      style={{
-                        background: 'linear-gradient(135deg, #a5b4fc 0%, #818cf8 50%, #6366f1 100%)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text',
-                      }}
-                    >
-                      {CATEGORY_LABELS[cat]}
-                    </h3>
-
-                    {progress && progress.tests_taken > 0 ? (
-                      <div className="mt-3 space-y-1.5">
-                        <div className="flex justify-between text-xs">
-                          <span style={{ color: 'var(--text-muted)' }}>{progress.tests_taken} teste</span>
-                          <span className={`font-extrabold ${getScoreColor(progress.average_score)}`}>
-                            {progress.average_score.toFixed(0)}%
-                          </span>
-                        </div>
-                        <div className="w-full rounded-full h-1" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                  {/* Text */}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-[15px] text-white leading-tight">{CATEGORY_LABELS[cat]}</p>
+                    {hasProgress ? (
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <div className="flex-1 h-[3px] rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
                           <div
-                            className={`bg-gradient-to-r ${cfg.progress} h-1 rounded-full transition-all`}
+                            className="h-full rounded-full bg-white/40 transition-all duration-700"
                             style={{ width: `${Math.min(progress.average_score, 100)}%` }}
                           />
                         </div>
+                        <span className="text-xs font-semibold text-white/50 shrink-0">{progress.average_score.toFixed(0)}%</span>
                       </div>
                     ) : (
-                      <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Neîncercat</p>
+                      <p className="text-xs mt-0.5 text-white/25">Neîncercat</p>
                     )}
-
-                    <div className="flex items-center justify-between mt-4 pt-3" style={{ borderTop: '1px solid rgba(99,102,241,0.12)' }}>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-400/60">Începe</span>
-                      <ChevronRight className="w-3.5 h-3.5 text-indigo-400/60 group-hover:text-indigo-300 group-hover:translate-x-0.5 transition-all" />
-                    </div>
                   </div>
+
+                  {/* Chevron */}
+                  <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-white/50 group-hover:translate-x-0.5 transition-all shrink-0" />
                 </div>
               </Link>
             )
