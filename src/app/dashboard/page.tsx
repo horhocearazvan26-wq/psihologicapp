@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
+import { getProfile } from '@/lib/supabase/queries'
 import { DashboardClient } from '@/components/dashboard/dashboard-client'
 
 function getDaysUntilExam(examDate: string | null): number | null {
@@ -30,8 +31,8 @@ async function DashboardContent() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const [{ data: profile }, { data: recentSessions }, { data: progressData }] = await Promise.all([
-    supabase.from('profiles').select('*').eq('id', user!.id).single(),
+  const [profile, { data: recentSessions }, { data: progressData }] = await Promise.all([
+    getProfile(user!.id),   // returns cached result — no extra DB call
     supabase.from('test_sessions').select('*').eq('user_id', user!.id).eq('completed', true)
       .order('completed_at', { ascending: false }).limit(10),
     supabase.from('user_progress').select('*').eq('user_id', user!.id),

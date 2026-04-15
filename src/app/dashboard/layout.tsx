@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getProfile } from '@/lib/supabase/queries'
 import { DashboardShell } from '@/components/dashboard/dashboard-shell'
 import type { UserProfile } from '@/types'
 
@@ -15,11 +16,7 @@ export default async function DashboardLayout({
     redirect('/auth/login')
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
+  const profile = await getProfile(user.id)
 
   const userProfile: UserProfile = profile ?? {
     id: user.id,

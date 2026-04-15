@@ -8,13 +8,20 @@ export async function signInWithEmail(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  const { data: { user }, error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) {
     return { error: error.message }
   }
 
-  redirect('/onboarding')
+  // Skip the /onboarding round-trip for returning users
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('target_institution')
+    .eq('id', user!.id)
+    .single()
+
+  redirect(profile?.target_institution ? '/dashboard' : '/onboarding')
 }
 
 export async function signUpWithEmail(formData: FormData) {
