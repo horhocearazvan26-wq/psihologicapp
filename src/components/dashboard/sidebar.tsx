@@ -57,7 +57,7 @@ export function Sidebar({ user, onClose }: SidebarProps) {
   const plan = PLAN_CONFIG[user.subscription_plan as keyof typeof PLAN_CONFIG] ?? PLAN_CONFIG.free
 
   return (
-    <aside className="w-72 flex flex-col h-screen bg-[var(--bg-panel)] text-white border-r border-white/8 shrink-0 shadow-[18px_0_40px_-30px_rgba(15,23,42,0.75)]">
+    <aside className="w-72 flex flex-col h-[100dvh] bg-[var(--bg-panel)] text-white border-r border-white/8 shrink-0 shadow-[18px_0_40px_-30px_rgba(15,23,42,0.75)]">
       <div className="px-5 py-5 border-b border-white/8">
         <Link href="/dashboard" onClick={onClose} className="flex items-center gap-3 group">
           <div
@@ -158,7 +158,7 @@ export function Sidebar({ user, onClose }: SidebarProps) {
         </div>
       )}
 
-<div className="px-3 pb-4">
+      <div className="px-3" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
         <div className="flex items-center gap-3 rounded-2xl border border-white/8 bg-white/4 px-3 py-3">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-extrabold text-sm shrink-0 shadow-md shadow-indigo-900/40">
             {user.full_name?.[0]?.toUpperCase() ?? user.email[0].toUpperCase()}

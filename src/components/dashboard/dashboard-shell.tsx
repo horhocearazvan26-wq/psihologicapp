@@ -2,7 +2,8 @@
 
 import { AnimatePresence, motion, LazyMotion, domAnimation } from 'framer-motion'
 import { memo, useState } from 'react'
-import { Menu, Brain } from 'lucide-react'
+import { Menu, Brain, LogOut } from 'lucide-react'
+import { signOut } from '@/app/auth/actions'
 import { DashboardMain } from './dashboard-main'
 import { Sidebar } from './sidebar'
 import type { UserProfile } from '@/types'
@@ -74,6 +75,16 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             </div>
             <span className="font-extrabold text-sm tracking-tight text-white">PsihoPrep</span>
           </div>
+          <form action={signOut} className="ml-auto">
+            <button
+              type="submit"
+              aria-label="Deconectare"
+              title="Deconectare"
+              className="interactive-press interactive-glow w-9 h-9 flex items-center justify-center rounded-xl text-white/70 hover:bg-red-500/12 hover:text-red-200 transition-colors"
+            >
+              <LogOut className="h-[18px] w-[18px]" />
+            </button>
+          </form>
         </header>
 
         <main className="flex-1 overflow-y-auto relative">
