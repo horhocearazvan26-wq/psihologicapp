@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { memo, useId } from 'react'
 import type { Cell, Shape } from './raven-patterns'
 
 interface CellSVGProps {
@@ -74,7 +74,10 @@ function CellShape({ cell, viewSize }: { cell: Cell; viewSize: number }) {
   )
 }
 
-export function CellSVG({ cell, size = 80, selected, isCorrect, isWrong }: CellSVGProps) {
+// memo: the results review renders 20 matrices × 6 options = 120 CellSVGs at
+// once. On any state change all 120 would re-render without memo. With memo,
+// each cell only re-renders when its own props change (virtually never in results).
+export const CellSVG = memo(function CellSVG({ cell, size = 80, selected, isCorrect, isWrong }: CellSVGProps) {
   const bg = isCorrect ? '#dcfce7' : isWrong ? '#fee2e2' : selected ? '#dbeafe' : '#f8fafc'
   const border = isCorrect ? '#16a34a' : isWrong ? '#dc2626' : selected ? '#2563eb' : '#cbd5e1'
   const borderWidth = selected || isCorrect || isWrong ? 2 : 1
@@ -97,4 +100,4 @@ export function CellSVG({ cell, size = 80, selected, isCorrect, isWrong }: CellS
       )}
     </svg>
   )
-}
+})

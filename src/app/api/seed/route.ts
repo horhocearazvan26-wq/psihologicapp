@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     // Insert in batches of 50
     for (let i = 0; i < allQuestions.length; i += 50) {
       const batch = allQuestions.slice(i, i + 50)
-      const { error, count } = await supabase
+      const { error } = await supabase
         .from('test_questions')
         .insert(batch)
 

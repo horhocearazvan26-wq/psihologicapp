@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useSyncExternalStore } from 'react'
+import { useState, useSyncExternalStore, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { CATEGORY_LABELS, getScoreColor } from '@/lib/utils'
@@ -64,7 +64,14 @@ const INST_CONFIG = {
   },
 }
 
-const categories: TestCategory[] = ['attention', 'logic', 'memory', 'numerical', 'vocabulary', 'personality']
+const CATEGORIES: TestCategory[] = ['attention', 'logic', 'memory', 'numerical', 'vocabulary', 'personality']
+
+// Static array defined once at module level — not recreated on every render.
+const QUICK_ACTIONS = [
+  { href: '/dashboard/simulate',   Icon: Play,       title: 'Simulare',   sub: 'Condiții reale' },
+  { href: '/dashboard/flashcards', Icon: Layers,     title: 'Flashcards', sub: 'Memorare' },
+  { href: '/dashboard/review',     Icon: TrendingUp, title: 'Review',     sub: 'Greșeli' },
+] as const
 
 interface ProgressEntry {
   institution: string
@@ -114,16 +121,70 @@ export function DashboardClient({
     () => false
   )
 
-  function handlePickerSelect(id: string) {
+  const handlePickerSelect = useCallback((id: string) => {
     setInstitution(id)
     setShowPicker(false)
-  }
+  }, [])
 
-  function changeInstitution() {
+  const changeInstitution = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY)
     setInstitution(null)
     setShowPicker(true)
-  }
+  }, [])
+
+  const inst = (institution ?? 'MAI') as keyof typeof INST_CONFIG
+
+  // All derived values are memoized so they only recompute when their inputs
+  // change, while staying before conditional returns to keep Hook order stable.
+  const cfg = useMemo(() => INST_CONFIG[inst] ?? INST_CONFIG.MAI, [inst])
+
+  const instProgress = useMemo(
+    () => progressData.filter(p => p.institution === inst),
+    [progressData, inst]
+  )
+  const completedCats = useMemo(
+    () => instProgress.filter(p => p.tests_taken > 0).length,
+    [instProgress]
+  )
+  const instAvg = useMemo(
+    () => instProgress.length
+      ? instProgress.reduce((s, p) => s + p.average_score, 0) / instProgress.length
+      : 0,
+    [instProgress]
+  )
+  const instTests = useMemo(
+    () => instProgress.reduce((s, p) => s + p.tests_taken, 0),
+    [instProgress]
+  )
+  const instSessions = useMemo(
+    () => recentSessions.filter(s => s.institution === inst),
+    [recentSessions, inst]
+  )
+  const recentFive = useMemo(() => instSessions.slice(0, 5), [instSessions])
+
+  // Computed once on mount — hours don't change mid-session.
+  const greeting = useMemo(() => {
+    const h = new Date().getHours()
+    return h < 12 ? 'Bună dimineața' : h < 18 ? 'Bună ziua' : 'Bună seara'
+  }, [])
+
+  const examCountdown = useMemo(() => daysUntil == null
+    ? '—'
+    : daysUntil < 0
+      ? 'Trecut'
+      : daysUntil === 0
+        ? 'Azi!'
+        : `${daysUntil}z`,
+    [daysUntil]
+  )
+
+  // Stat card data memoized on the four props it depends on.
+  const globalStats = useMemo(() => [
+    { icon: BookOpen, label: 'Teste totale',     value: totalTests.toString() },
+    { icon: Target,   label: 'Scor mediu',       value: avgScore > 0 ? `${avgScore.toFixed(0)}%` : '—' },
+    { icon: Trophy,   label: 'Cel mai bun scor', value: bestScore > 0 ? `${bestScore.toFixed(0)}%` : '—' },
+    { icon: Flame,    label: 'Plan activ',       value: subscriptionPlan === 'free' ? 'Gratuit' : subscriptionPlan === 'one_institution' ? '1 Inst.' : 'Complet' },
+  ], [totalTests, avgScore, bestScore, subscriptionPlan])
 
   if (!mounted) {
     return (
@@ -139,28 +200,6 @@ export function DashboardClient({
   }
   if (showPicker) return <InstitutionPicker onSelect={handlePickerSelect} />
 
-  const inst = institution as keyof typeof INST_CONFIG
-  const cfg = INST_CONFIG[inst] ?? INST_CONFIG.MAI
-
-  const instProgress = progressData.filter(p => p.institution === inst)
-  const completedCats = instProgress.filter(p => p.tests_taken > 0).length
-  const instAvg = instProgress.length
-    ? instProgress.reduce((s, p) => s + p.average_score, 0) / instProgress.length
-    : 0
-  const instTests = instProgress.reduce((s, p) => s + p.tests_taken, 0)
-
-  const instSessions = recentSessions.filter(s => s.institution === inst)
-
-  const hour = new Date().getHours()
-  const greeting = hour < 12 ? 'Bună dimineața' : hour < 18 ? 'Bună ziua' : 'Bună seara'
-  const examCountdown = daysUntil == null
-    ? '—'
-    : daysUntil < 0
-      ? 'Trecut'
-      : daysUntil === 0
-        ? 'Azi!'
-        : `${daysUntil}z`
-
   return (
     <div className="space-y-7 animate-fade-up">
 
@@ -173,9 +212,12 @@ export function DashboardClient({
         }}
       >
         {/* Full-bleed institution image */}
-        <img
+        <Image
           src={`/images/${inst.toLowerCase()}.png`}
           alt=""
+          fill
+          priority
+          sizes="(min-width: 768px) 768px, 100vw"
           className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700"
           onError={(e) => { e.currentTarget.style.display = 'none' }}
         />
@@ -267,11 +309,7 @@ export function DashboardClient({
       <div>
         <p className="text-[10px] font-bold tracking-widest uppercase mb-4" style={{ color: 'var(--text-muted)' }}>Acțiuni rapide</p>
         <div className="grid grid-cols-3 gap-3">
-          {[
-            { href: '/dashboard/simulate',   icon: Play,       title: 'Simulare',   sub: 'Condiții reale' },
-            { href: '/dashboard/flashcards', icon: Layers,     title: 'Flashcards', sub: 'Memorare' },
-            { href: '/dashboard/review',     icon: TrendingUp, title: 'Review',     sub: 'Greșeli' },
-          ].map(({ href, icon: Icon, title, sub }) => (
+          {QUICK_ACTIONS.map(({ href, Icon, title, sub }) => (
             <Link key={href} href={href}>
               <div
                 className="group flex flex-col items-center gap-3 py-5 px-3 rounded-2xl cursor-pointer transition-all duration-200 active:scale-95 text-center"
@@ -320,7 +358,7 @@ export function DashboardClient({
             boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
           }}
         >
-          {categories.map((cat, i) => {
+          {CATEGORIES.map((cat, i) => {
             const progress = instProgress.find(p => p.category === cat)
             const href = cat === 'attention'
               ? `/dashboard/tests/${inst.toLowerCase()}/attention`
@@ -330,7 +368,7 @@ export function DashboardClient({
             return (
               <Link key={cat} href={href}>
                 <div
-                  className={`group flex items-center gap-4 px-4 py-3.5 cursor-pointer transition-colors hover:bg-white/[0.03] ${i < categories.length - 1 ? 'border-b border-white/[0.05]' : ''}`}
+                  className={`group flex items-center gap-4 px-4 py-3.5 cursor-pointer transition-colors hover:bg-white/[0.03] ${i < CATEGORIES.length - 1 ? 'border-b border-white/[0.05]' : ''}`}
                 >
                   <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-base transition-transform duration-200 group-hover:scale-105"
@@ -367,12 +405,7 @@ export function DashboardClient({
       <div>
         <p className="text-[10px] font-bold tracking-widest uppercase mb-4" style={{ color: 'var(--text-muted)' }}>Statistici generale</p>
         <div className="grid grid-cols-2 gap-3">
-          {[
-            { icon: BookOpen, label: 'Teste totale',     value: totalTests.toString() },
-            { icon: Target,   label: 'Scor mediu',       value: avgScore > 0 ? `${avgScore.toFixed(0)}%` : '—' },
-            { icon: Trophy,   label: 'Cel mai bun scor', value: bestScore > 0 ? `${bestScore.toFixed(0)}%` : '—' },
-            { icon: Flame,    label: 'Plan activ',       value: subscriptionPlan === 'free' ? 'Gratuit' : subscriptionPlan === 'one_institution' ? '1 Inst.' : 'Complet' },
-          ].map((stat, i) => {
+          {globalStats.map((stat, i) => {
             const Icon = stat.icon
             return (
               <div
@@ -419,10 +452,10 @@ export function DashboardClient({
               boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
             }}
           >
-            {instSessions.slice(0, 5).map((session, i) => (
+            {recentFive.map((session, i) => (
               <div
                 key={session.id}
-                className={`flex items-center gap-4 px-4 py-3.5 transition-colors hover:bg-white/[0.02] ${i < Math.min(instSessions.length, 5) - 1 ? 'border-b border-white/[0.05]' : ''}`}
+                className={`flex items-center gap-4 px-4 py-3.5 transition-colors hover:bg-white/[0.02] ${i < recentFive.length - 1 ? 'border-b border-white/[0.05]' : ''}`}
               >
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center text-base shrink-0"

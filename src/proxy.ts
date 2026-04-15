@@ -1,7 +1,23 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
+function hasSupabaseSessionCookie(request: NextRequest) {
+  return request.cookies
+    .getAll()
+    .some(cookie => cookie.name.startsWith('sb-') && cookie.name.includes('auth-token'))
+}
+
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  const isProtectedRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/onboarding')
+  const isAuthRoute = pathname.startsWith('/auth') && pathname !== '/auth/callback'
+  const isHome = pathname === '/'
+  const mightHaveSession = hasSupabaseSessionCookie(request)
+
+  if (!isProtectedRoute && !isAuthRoute && !(isHome && mightHaveSession)) {
+    return NextResponse.next({ request })
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -29,16 +45,14 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const { pathname } = request.nextUrl
-
-  if (pathname === '/' && user) {
+  if (isHome && user) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 
   // Protected routes — require authentication
-  if ((pathname.startsWith('/dashboard') || pathname.startsWith('/onboarding')) && !user) {
+  if (isProtectedRoute && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth/login'
     url.searchParams.set('redirectTo', pathname)
@@ -46,7 +60,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Auth routes — redirect if already logged in
-  if (pathname.startsWith('/auth') && pathname !== '/auth/callback' && user) {
+  if (isAuthRoute && user) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)

@@ -1,9 +1,7 @@
 'use client'
 
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
-
-const NavigationFeedbackContext = createContext<{ pending: boolean }>({ pending: false })
 
 function isInternalNavigation(anchor: HTMLAnchorElement) {
   if (!anchor.href) return false
@@ -20,11 +18,7 @@ function isInternalNavigation(anchor: HTMLAnchorElement) {
   return `${url.pathname}${url.search}` !== `${window.location.pathname}${window.location.search}`
 }
 
-export function NavigationFeedbackProvider({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export function NavigationFeedback() {
   const pathname = usePathname()
   const [pending, setPending] = useState(false)
 
@@ -63,18 +57,9 @@ export function NavigationFeedbackProvider({
     }
   }, [])
 
-  const value = useMemo(() => ({ pending }), [pending])
-
   return (
-    <NavigationFeedbackContext.Provider value={value}>
-      <div className={`route-feedback ${pending ? 'route-feedback-active' : ''}`} aria-hidden="true">
-        <div className="route-feedback-bar" />
-      </div>
-      {children}
-    </NavigationFeedbackContext.Provider>
+    <div className={`route-feedback ${pending ? 'route-feedback-active' : ''}`} aria-hidden="true">
+      <div className="route-feedback-bar" />
+    </div>
   )
-}
-
-export function useNavigationFeedback() {
-  return useContext(NavigationFeedbackContext)
 }

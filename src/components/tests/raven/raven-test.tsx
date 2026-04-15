@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { cn, formatTime, getScoreColor } from '@/lib/utils'
 import { CellSVG } from './cell-svg'
@@ -20,6 +20,8 @@ const TOTAL_TIME = TOTAL_MATRICES * TIME_PER_MATRIX
 type Phase = 'intro' | 'test' | 'results'
 
 export function RavenTest({ institution }: RavenTestProps) {
+  void institution
+
   const [phase, setPhase] = useState<Phase>('intro')
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedOptions, setSelectedOptions] = useState<Record<number, number>>({})
@@ -28,16 +30,26 @@ export function RavenTest({ institution }: RavenTestProps) {
 
   const matrices = useMemo(() => generateMatrices(TOTAL_MATRICES), [])
 
-  function finishTest() {
+  // Keep a ref in sync with selectedOptions so finishTest can read the latest
+  // answers without closing over the state value (which would change on every
+  // answer and force the timer useEffect to restart every time).
+  const selectedOptionsRef = useRef(selectedOptions)
+
+  // finishTest now only depends on matrices (stable, computed once).
+  // Previously it closed over `selectedOptions` directly, giving it a new
+  // reference on every answer and causing the 1-second interval to be torn
+  // down and recreated on each keypress — a subtle correctness bug.
+  const finishTest = useCallback(() => {
     let correct = 0
     matrices.forEach((m, i) => {
-      if (selectedOptions[i] === m.correctIndex) correct++
+      if (selectedOptionsRef.current[i] === m.correctIndex) correct++
     })
     const score = Math.round((correct / matrices.length) * 100)
     setResults({ score, correct, total: matrices.length })
     setPhase('results')
-  }
+  }, [matrices])
 
+  // Timer only restarts when phase changes — not on every answer.
   useEffect(() => {
     if (phase !== 'test') return
     const timer = setInterval(() => {
@@ -47,19 +59,24 @@ export function RavenTest({ institution }: RavenTestProps) {
       })
     }, 1000)
     return () => clearInterval(timer)
-  }, [finishTest, phase])
+  }, [phase, finishTest])
 
-  function startTest() {
+  const startTest = useCallback(() => {
+    selectedOptionsRef.current = {}
     setCurrentIndex(0)
     setSelectedOptions({})
     setTimeLeft(TOTAL_TIME)
     setResults(null)
     setPhase('test')
-  }
+  }, [])
 
-  function selectOption(optionIndex: number) {
-    setSelectedOptions(prev => ({ ...prev, [currentIndex]: optionIndex }))
-  }
+  const selectOption = useCallback((optionIndex: number) => {
+    setSelectedOptions(prev => {
+      const next = { ...prev, [currentIndex]: optionIndex }
+      selectedOptionsRef.current = next
+      return next
+    })
+  }, [currentIndex])
 
   const matrix = matrices[currentIndex]
   const timerPercent = (timeLeft / TOTAL_TIME) * 100

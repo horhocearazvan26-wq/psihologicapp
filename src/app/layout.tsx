@@ -1,9 +1,7 @@
 import type { Metadata, Viewport } from 'next'
-import { Analytics } from '@vercel/analytics/next'
-import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
-import { AppMain } from '@/components/app/app-main'
-import { NavigationFeedbackProvider } from '@/components/app/navigation-feedback'
+import { NavigationFeedback } from '@/components/app/navigation-feedback'
+import { DeferredObservability } from '@/components/app/observability'
 
 const siteUrl = 'https://psihoprep.ro'
 
@@ -69,11 +67,9 @@ export default function RootLayout({
         className="min-h-full antialiased"
         style={{ backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)' }}
       >
-        <NavigationFeedbackProvider>
-          <AppMain>{children}</AppMain>
-        </NavigationFeedbackProvider>
-        <Analytics />
-        <SpeedInsights />
+        {children}
+        <NavigationFeedback />
+        <DeferredObservability />
       </body>
     </html>
   )

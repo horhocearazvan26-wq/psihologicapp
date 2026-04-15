@@ -124,6 +124,7 @@ export default function MaterialePage() {
             'transition-all duration-200',
             zoom ? 'overflow-auto max-h-[80vh]' : 'overflow-hidden'
           )}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imageUrl}
               alt={`${selectedCategory.label} — pagina ${currentPageNum}`}

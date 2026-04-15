@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { memo, useEffect, useRef } from 'react'
 import { drawSymbol, isTarget, type ToulouseSymbol } from './symbols'
 
 interface ToulouseCanvasProps {
@@ -12,7 +12,11 @@ interface ToulouseCanvasProps {
   cellSize?: number
 }
 
-export function ToulouseCanvas({
+// memo: during the test the parent re-renders every second (timer tick).
+// None of the canvas props change on timer ticks, so React skips the
+// entire canvas subtree — no React reconciliation, no canvas redraw.
+// The canvas only re-renders when the user actually clicks a cell.
+export const ToulouseCanvas = memo(function ToulouseCanvas({
   grid,
   targets,
   selected,
@@ -27,15 +31,16 @@ export function ToulouseCanvas({
   const width = cols * cellSize
   const height = rows * cellSize
 
-  const draw = useCallback(() => {
+  // Draw directly in the effect — no intermediate useCallback needed.
+  // The closure captures the latest grid/selected/targets from the render
+  // that scheduled this effect, which is always the correct version.
+  useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
     ctx.clearRect(0, 0, width, height)
-
-    // Background
     ctx.fillStyle = '#f8fafc'
     ctx.fillRect(0, 0, width, height)
 
@@ -43,16 +48,10 @@ export function ToulouseCanvas({
     ctx.strokeStyle = '#e2e8f0'
     ctx.lineWidth = 0.5
     for (let r = 0; r <= rows; r++) {
-      ctx.beginPath()
-      ctx.moveTo(0, r * cellSize)
-      ctx.lineTo(width, r * cellSize)
-      ctx.stroke()
+      ctx.beginPath(); ctx.moveTo(0, r * cellSize); ctx.lineTo(width, r * cellSize); ctx.stroke()
     }
     for (let c = 0; c <= cols; c++) {
-      ctx.beginPath()
-      ctx.moveTo(c * cellSize, 0)
-      ctx.lineTo(c * cellSize, height)
-      ctx.stroke()
+      ctx.beginPath(); ctx.moveTo(c * cellSize, 0); ctx.lineTo(c * cellSize, height); ctx.stroke()
     }
 
     // Symbols
@@ -60,16 +59,10 @@ export function ToulouseCanvas({
       for (let c = 0; c < cols; c++) {
         const sym = grid[r][c]
         const key = `${r}-${c}`
-        const sel = selected.has(key)
-        const isT = isTarget(sym, targets)
-        drawSymbol(ctx, sym, c * cellSize, r * cellSize, cellSize, sel, isT, showResult)
+        drawSymbol(ctx, sym, c * cellSize, r * cellSize, cellSize, selected.has(key), isTarget(sym, targets), showResult)
       }
     }
   }, [grid, targets, selected, showResult, rows, cols, width, height, cellSize])
-
-  useEffect(() => {
-    draw()
-  }, [draw])
 
   function handleClick(e: React.MouseEvent<HTMLCanvasElement>) {
     if (showResult) return
@@ -97,4 +90,4 @@ export function ToulouseCanvas({
       style={{ touchAction: 'none' }}
     />
   )
-}
+})

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import Image from 'next/image'
 import { Brain, ArrowRight, CheckCircle, Loader2, Shield, Star, Eye, Scale, Calendar, ChevronRight, CreditCard } from 'lucide-react'
 import { saveInstitution, saveOnboardingFree } from './actions'
 
@@ -181,9 +182,11 @@ export function OnboardingFlow({ firstName }: OnboardingFlowProps) {
                       }}
                     >
                       {/* Full-bleed background image */}
-                      <img
-                        src={`/images/${inst.id.toLowerCase()}.jpg`}
+                      <Image
+                        src={`/images/${inst.id.toLowerCase()}.png`}
                         alt={inst.label}
+                        fill
+                        sizes="(min-width: 640px) 280px, 50vw"
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
                       />

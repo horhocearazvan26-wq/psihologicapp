@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { CheckCircle } from 'lucide-react'
 
 export const STORAGE_KEY = 'psihoprep_institution'
@@ -89,9 +90,11 @@ export function InstitutionPicker({ onSelect }: InstitutionPickerProps) {
                 }}
               >
                 {/* Full-bleed image */}
-                <img
+                <Image
                   src={`/images/${inst.id.toLowerCase()}.png`}
                   alt={inst.label}
+                  fill
+                  sizes="(min-width: 640px) 320px, 50vw"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
                 />

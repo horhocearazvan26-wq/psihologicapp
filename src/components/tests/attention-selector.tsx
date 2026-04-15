@@ -1,13 +1,35 @@
 'use client'
 
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { ToulouseTest } from './toulouse/toulouse-test'
-import { RavenTest } from './raven/raven-test'
 import type { Institution } from '@/types'
 import { Eye, Puzzle } from 'lucide-react'
 import { IconBadge } from '@/components/ui/icon-badge'
+
+// Both tests are heavy (~25 KB each). Only one can be active at a time, so
+// we load them on-demand the moment the user taps a card — not upfront.
+// ssr: false because both rely on canvas/window APIs unavailable on the server.
+const ToulouseTest = dynamic(
+  () => import('./toulouse/toulouse-test').then(m => ({ default: m.ToulouseTest })),
+  { loading: () => <TestLoading />, ssr: false }
+)
+const RavenTest = dynamic(
+  () => import('./raven/raven-test').then(m => ({ default: m.RavenTest })),
+  { loading: () => <TestLoading />, ssr: false }
+)
+
+function TestLoading() {
+  return (
+    <div className="max-w-lg mx-auto space-y-4 py-12 animate-pulse">
+      <div className="mx-auto h-16 w-16 rounded-2xl bg-slate-200" />
+      <div className="h-8 bg-slate-200 rounded-xl mx-auto w-48" />
+      <div className="h-32 bg-slate-100 rounded-2xl" />
+      <div className="h-12 bg-slate-200 rounded-xl" />
+    </div>
+  )
+}
 
 type TestType = 'toulouse' | 'raven'
 

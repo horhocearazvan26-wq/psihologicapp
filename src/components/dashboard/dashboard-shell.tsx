@@ -1,7 +1,7 @@
 'use client'
 
-import { AnimatePresence, motion } from 'framer-motion'
-import { useState } from 'react'
+import { AnimatePresence, motion, LazyMotion, domAnimation } from 'framer-motion'
+import { memo, useState } from 'react'
 import { Menu, Brain } from 'lucide-react'
 import { DashboardMain } from './dashboard-main'
 import { Sidebar } from './sidebar'
@@ -12,42 +12,51 @@ interface DashboardShellProps {
   children: React.ReactNode
 }
 
+// Memoized so the blobs never re-render when sidebarOpen toggles.
+// They have no props and no state — they're pure decoration.
+const AtmosphericBlobs = memo(function AtmosphericBlobs() {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      <div className="absolute top-0 left-1/3 w-[700px] h-[500px] rounded-full blur-[160px]" style={{ background: 'radial-gradient(ellipse, rgba(59,130,246,0.06) 0%, transparent 70%)' }} />
+      <div className="absolute bottom-0 right-1/4 w-[500px] h-[400px] rounded-full blur-[140px]" style={{ background: 'radial-gradient(ellipse, rgba(139,92,246,0.04) 0%, transparent 70%)' }} />
+      <div className="absolute top-1/2 left-0 w-[300px] h-[300px] rounded-full blur-[120px]" style={{ background: 'radial-gradient(ellipse, rgba(34,211,238,0.025) 0%, transparent 70%)' }} />
+    </div>
+  )
+})
+
 export function DashboardShell({ user, children }: DashboardShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
     <div className="dark flex h-screen overflow-hidden relative" style={{ background: 'var(--bg-base)' }}>
-      {/* Atmospheric background blobs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-0 left-1/3 w-[700px] h-[500px] rounded-full blur-[160px]" style={{ background: 'radial-gradient(ellipse, rgba(59,130,246,0.06) 0%, transparent 70%)' }} />
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[400px] rounded-full blur-[140px]" style={{ background: 'radial-gradient(ellipse, rgba(139,92,246,0.04) 0%, transparent 70%)' }} />
-        <div className="absolute top-1/2 left-0 w-[300px] h-[300px] rounded-full blur-[120px]" style={{ background: 'radial-gradient(ellipse, rgba(34,211,238,0.025) 0%, transparent 70%)' }} />
-      </div>
+      <AtmosphericBlobs />
 
-      <AnimatePresence>
-        {sidebarOpen && (
-          <motion.div
-            className="fixed inset-0 z-20 bg-black/70 backdrop-blur-sm md:hidden"
-            onClick={() => setSidebarOpen(false)}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.14, ease: 'easeOut' }}
-          />
-        )}
-      </AnimatePresence>
+      <LazyMotion features={domAnimation} strict>
+        <AnimatePresence>
+          {sidebarOpen && (
+            <motion.div
+              className="fixed inset-0 z-20 bg-black/70 backdrop-blur-sm md:hidden"
+              onClick={() => setSidebarOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.14, ease: 'easeOut' }}
+            />
+          )}
+        </AnimatePresence>
 
-      <motion.div
-        animate={sidebarOpen ? { x: 0 } : { x: '-100%' }}
-        transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-        className={[
-          'fixed inset-y-0 left-0 z-30 will-change-transform',
-          'md:relative md:translate-x-0 md:z-auto',
-          'md:!transform-none',
-        ].join(' ')}
-      >
-        <Sidebar user={user} onClose={() => setSidebarOpen(false)} />
-      </motion.div>
+        <motion.div
+          animate={sidebarOpen ? { x: 0 } : { x: '-100%' }}
+          transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+          className={[
+            'fixed inset-y-0 left-0 z-30 will-change-transform',
+            'md:relative md:translate-x-0 md:z-auto',
+            'md:!transform-none',
+          ].join(' ')}
+        >
+          <Sidebar user={user} onClose={() => setSidebarOpen(false)} />
+        </motion.div>
+      </LazyMotion>
 
       <div className="flex flex-col flex-1 overflow-hidden min-w-0 relative z-10">
         {/* Mobile header */}

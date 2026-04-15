@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import type { Institution } from '@/types'
 import { Lock, Play, ChevronRight, CheckCircle } from 'lucide-react'
@@ -59,9 +60,11 @@ export function SimulationSelector({ institutions }: SimulationSelectorProps) {
               }}
             >
               {/* Full-bleed image */}
-              <img
-                src={`/images/${opt.inst.toLowerCase()}.jpg`}
+              <Image
+                src={`/images/${opt.inst.toLowerCase()}.png`}
                 alt={opt.label}
+                fill
+                sizes="(min-width: 640px) 280px, 50vw"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
               />

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { formatTime } from '@/lib/utils'
 import { ToulouseCanvas } from './toulouse-canvas'
@@ -31,6 +31,11 @@ export function ToulouseTest({ institution }: ToulouseTestProps) {
   const [loading, setLoading] = useState(false)
   const targetCanvasRef = useRef<HTMLCanvasElement>(null)
 
+  // Keep a ref in sync so finishTest can read the latest selection without
+  // closing over the state value. This prevents the timer interval from
+  // restarting on every canvas click (same bug fixed in raven-test.tsx).
+  const selectedRef = useRef(selected)
+
   const finishTest = useCallback(async () => {
     setPhase('results')
 
@@ -39,13 +44,14 @@ export function ToulouseTest({ institution }: ToulouseTestProps) {
     let hits = 0
     let misses = 0
     let falseAlarms = 0
+    const currentSelected = selectedRef.current
 
     for (let r = 0; r < grid.length; r++) {
       for (let c = 0; c < grid[r].length; c++) {
         const sym = grid[r][c]
         const key = `${r}-${c}`
         const isT = isTarget(sym, targets)
-        const clicked = selected.has(key)
+        const clicked = currentSelected.has(key)
 
         if (isT && clicked) hits++
         else if (isT && !clicked) misses++
@@ -58,7 +64,7 @@ export function ToulouseTest({ institution }: ToulouseTestProps) {
     const score = totalTargets > 0 ? Math.round((rawScore / totalTargets) * 100) : 0
 
     setResults({ score, hits, misses, falseAlarms, total: totalTargets })
-  }, [grid, selected, targets])
+  }, [grid, targets])  // no longer depends on `selected`
 
   // Draw target symbols preview
   useEffect(() => {
@@ -93,9 +99,11 @@ export function ToulouseTest({ institution }: ToulouseTestProps) {
     setLoading(true)
     const t = pickTargetSymbols()
     const g = generateGrid(ROWS, COLS, t)
+    const emptySelection = new Set<string>()
     setTargets(t)
     setGrid(g)
-    setSelected(new Set())
+    selectedRef.current = emptySelection
+    setSelected(emptySelection)
     setTimeLeft(TIME_SECONDS)
 
     // Create session
@@ -112,16 +120,19 @@ export function ToulouseTest({ institution }: ToulouseTestProps) {
     setPhase('test')
   }
 
-  function toggleCell(key: string) {
+  // Stable reference — no deps needed because functional update reads prev state.
+  // Memoizing this lets ToulouseCanvas skip re-renders when only the timer ticks.
+  const toggleCell = useCallback((key: string) => {
     setSelected(prev => {
       const next = new Set(prev)
       if (next.has(key)) next.delete(key)
       else next.add(key)
+      selectedRef.current = next
       return next
     })
-  }
+  }, [])
 
-  const timerPercent = (timeLeft / TIME_SECONDS) * 100
+  const timerPercent = useMemo(() => (timeLeft / TIME_SECONDS) * 100, [timeLeft])
   const timerColor = timerPercent > 50 ? 'bg-green-500' : timerPercent > 25 ? 'bg-yellow-500' : 'bg-red-500'
 
   // INTRO

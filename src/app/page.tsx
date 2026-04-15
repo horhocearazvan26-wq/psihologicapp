@@ -1,14 +1,15 @@
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
+import Image from 'next/image'
 import {
   Eye, Brain, Database, Hash, BookOpen, Users,
   CheckCircle, Shield, Clock, Award, ArrowRight, Star,
   TrendingUp, Zap, Lock, Sparkles, CalendarDays, FileText,
   Share, MoreVertical, Plus, Smartphone,
 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
 import { IconBadge } from '@/components/ui/icon-badge'
 import { ScrollReveal } from '@/components/ui/scroll-reveal'
+
+export const dynamic = 'force-static'
 
 const institutions = [
   {
@@ -217,10 +218,6 @@ const androidSteps = [
 ]
 
 export default async function HomePage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (user) redirect('/dashboard')
-
   return (
     <div className="min-h-screen bg-white">
 
@@ -348,9 +345,13 @@ export default async function HomePage() {
                 >
                   <div className={`absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r ${inst.gradient} opacity-80`} />
                   <div className="relative h-28 sm:h-36 overflow-hidden">
-                    <img
+                    <Image
                       src={inst.image}
                       alt={inst.name}
+                      fill
+                      sizes="(min-width: 1024px) 25vw, 50vw"
+                      loading="lazy"
+                      fetchPriority="low"
                       className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
