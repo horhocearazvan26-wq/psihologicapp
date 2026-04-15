@@ -339,11 +339,7 @@ export default async function HomePage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
             {institutions.map((inst, i) => (
               <ScrollReveal key={inst.abbr} delay={i * 80}>
-                <div
-                  className="group relative bg-white rounded-2xl cursor-pointer card-premium overflow-hidden h-full"
-                  style={{ '--glow-color': inst.glow } as React.CSSProperties}
-                >
-                  <div className={`absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r ${inst.gradient} opacity-80`} />
+                <div className="group relative bg-white rounded-2xl cursor-pointer card-premium overflow-hidden h-full">
                   <div className="relative h-28 sm:h-36 overflow-hidden">
                     <Image
                       src={inst.image}
@@ -354,18 +350,10 @@ export default async function HomePage() {
                       fetchPriority="low"
                       className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 p-3 sm:p-5">
-                      <div
-                        className={`w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br ${inst.gradient} flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110`}
-                        style={{ boxShadow: `0 8px 20px -4px ${inst.glow}` }}
-                      >
-                        <span className="text-white font-extrabold text-sm sm:text-lg tracking-tight">{inst.abbr}</span>
-                      </div>
-                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
                   </div>
                   <div className="p-3 sm:p-6 sm:pt-5">
-                    <h3 className="font-extrabold text-xs sm:text-sm text-slate-900 mb-0.5">{inst.abbr}</h3>
+                    <h3 className="font-extrabold text-sm sm:text-base text-slate-900 mb-0.5">{inst.abbr}</h3>
                     <p className="text-[10px] sm:text-xs font-medium text-slate-600 mb-0.5 sm:mb-1 leading-snug">{inst.name}</p>
                     <p className="text-[10px] sm:text-xs text-slate-400">{inst.desc}</p>
                   </div>

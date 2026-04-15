@@ -445,7 +445,7 @@ a, button, [role="button"] {
 }
 
 .perf-reveal {
-  animation: perfReveal 0.45s cubic-bezier(.22,1,.36,1) both;
+  animation: perfReveal 0.58s cubic-bezier(.22,1,.36,1) both;
   will-change: opacity, transform;
 }
 
@@ -463,6 +463,22 @@ a, button, [role="button"] {
     opacity: 1;
     transform: translate3d(0, 0, 0);
   }
+}
+
+@supports (animation-timeline: view()) {
+  .perf-reveal {
+    opacity: 0;
+    animation-timeline: view();
+    animation-range: entry 0% cover 30%;
+  }
+}
+
+.card-premium img {
+  transition: transform 0.55s cubic-bezier(.22,1,.36,1), filter 0.28s ease;
+}
+
+.card-premium:hover img {
+  filter: saturate(1.04) contrast(1.02);
 }
 
 @supports (-webkit-touch-callout: none) {
