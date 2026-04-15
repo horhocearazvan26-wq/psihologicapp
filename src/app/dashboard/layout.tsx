@@ -10,22 +10,24 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  // getSession() reads from the already-validated cookie (0ms, no network call).
+  // Middleware already ran getUser() to refresh/validate the token.
+  const { data: { session } } = await supabase.auth.getSession()
 
-  if (!user) {
+  if (!session) {
     redirect('/auth/login')
   }
 
-  const profile = await getProfile(user.id)
+  const profile = await getProfile(session.user.id)
 
   const userProfile: UserProfile = profile ?? {
-    id: user.id,
-    email: user.email!,
-    full_name: user.user_metadata?.full_name ?? null,
-    avatar_url: user.user_metadata?.avatar_url ?? null,
+    id: session.user.id,
+    email: session.user.email!,
+    full_name: session.user.user_metadata?.full_name ?? null,
+    avatar_url: session.user.user_metadata?.avatar_url ?? null,
     subscription_plan: 'free',
     subscribed_institution: null,
-    created_at: user.created_at,
+    created_at: session.user.created_at,
   }
 
   return <DashboardShell user={userProfile}>{children}</DashboardShell>

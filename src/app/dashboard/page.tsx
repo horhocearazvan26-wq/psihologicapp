@@ -29,13 +29,15 @@ function DashboardSkeleton() {
 
 async function DashboardContent() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  // Session is already validated by middleware — read locally, no network call.
+  const { data: { session } } = await supabase.auth.getSession()
+  const userId = session!.user.id
 
   const [profile, { data: recentSessions }, { data: progressData }] = await Promise.all([
-    getProfile(user!.id),   // returns cached result — no extra DB call
-    supabase.from('test_sessions').select('*').eq('user_id', user!.id).eq('completed', true)
+    getProfile(userId),   // returns cached result from layout — no extra DB call
+    supabase.from('test_sessions').select('*').eq('user_id', userId).eq('completed', true)
       .order('completed_at', { ascending: false }).limit(10),
-    supabase.from('user_progress').select('*').eq('user_id', user!.id),
+    supabase.from('user_progress').select('*').eq('user_id', userId),
   ])
 
   const totalTests = progressData?.reduce((s, p) => s + p.tests_taken, 0) ?? 0

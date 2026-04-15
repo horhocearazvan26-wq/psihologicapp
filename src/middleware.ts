@@ -48,7 +48,7 @@ export async function middleware(request: NextRequest) {
   // Auth routes — redirect if already logged in
   if (pathname.startsWith('/auth') && pathname !== '/auth/callback' && user) {
     const url = request.nextUrl.clone()
-    url.pathname = '/onboarding'
+    url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 
