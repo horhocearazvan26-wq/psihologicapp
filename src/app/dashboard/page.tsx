@@ -29,9 +29,8 @@ function DashboardSkeleton() {
 
 async function DashboardContent() {
   const supabase = await createClient()
-  // Session is already validated by middleware — read locally, no network call.
-  const { data: { session } } = await supabase.auth.getSession()
-  const userId = session!.user.id
+  const { data: { user } } = await supabase.auth.getUser()
+  const userId = user!.id
 
   const [profile, { data: recentSessions }, { data: progressData }] = await Promise.all([
     getProfile(userId),   // returns cached result from layout — no extra DB call
