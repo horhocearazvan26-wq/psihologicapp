@@ -11,19 +11,13 @@ export default async function DashboardLayout({
 }) {
   const supabase = await createClient()
 
-  // Read user ID from cookie (unverified) so we can fire the profile DB query
-  // at the same time as getUser() verifies the token — cuts layout time in half.
-  const { data: { session: cookieSession } } = await supabase.auth.getSession()
-  const tentativeId = cookieSession?.user?.id
-
-  const [{ data: { user } }, profile] = await Promise.all([
-    supabase.auth.getUser(),
-    tentativeId ? getProfile(tentativeId) : Promise.resolve(null),
-  ])
+  const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
     redirect('/auth/login')
   }
+
+  const profile = await getProfile(user.id)
 
   const userProfile: UserProfile = profile ?? {
     id: user.id,
