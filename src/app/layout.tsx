@@ -5,11 +5,26 @@ import './globals.css'
 import { AppMain } from '@/components/app/app-main'
 import { NavigationFeedbackProvider } from '@/components/app/navigation-feedback'
 
+const siteUrl = 'https://psihoprep.ro'
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: 'PsihoPrep — Pregătire Psihologică MAI, MApN, SRI, ANP',
   description:
     'Platformă premium de pregătire pentru probele psihologice la MAI, MApN, SRI și ANP. Teste de atenție, logică, memorie, aptitudini numerice și vocabular.',
   keywords: ['psihoprep', 'psihologic', 'MAI', 'MApN', 'SRI', 'ANP', 'teste', 'pregătire'],
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'PsihoPrep — Pregătire Psihologică MAI, MApN, SRI, ANP',
+    description:
+      'Platformă premium de pregătire pentru probele psihologice la MAI, MApN, SRI și ANP.',
+    url: '/',
+    siteName: 'PsihoPrep',
+    locale: 'ro_RO',
+    type: 'website',
+  },
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,

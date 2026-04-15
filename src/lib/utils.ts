@@ -29,13 +29,13 @@ export const CATEGORY_LABELS: Record<TestCategory, string> = {
   personality: 'Personalitate',
 }
 
-export const CATEGORY_ICONS: Record<TestCategory, string> = {
-  attention: '👁',
-  logic: '🧠',
-  memory: '💾',
-  numerical: '🔢',
-  vocabulary: '📚',
-  personality: '🎭',
+export const CATEGORY_SHORT_LABELS: Record<TestCategory, string> = {
+  attention: 'AT',
+  logic: 'LG',
+  memory: 'MM',
+  numerical: 'NR',
+  vocabulary: 'VC',
+  personality: 'PS',
 }
 
 export function formatTime(seconds: number): string {

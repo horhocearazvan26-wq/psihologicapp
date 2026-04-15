@@ -1,14 +1,23 @@
+import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
+import Image from 'next/image'
 import Link from 'next/link'
 import {
   INSTITUTION_LABELS, INSTITUTION_FULL_NAMES,
-  CATEGORY_LABELS, CATEGORY_ICONS, getScoreColor,
+  CATEGORY_LABELS, getScoreColor,
 } from '@/lib/utils'
 import type { Institution, TestCategory } from '@/types'
 import { Lock, CheckCircle, ChevronRight, Shield, Star, Eye, Scale, Sparkles } from 'lucide-react'
+import { CategoryIcon } from '@/components/ui/category-icon'
 
 const institutions: Institution[] = ['MAI', 'MApN', 'SRI', 'ANP']
 const categories: TestCategory[] = ['attention', 'logic', 'memory', 'numerical', 'vocabulary', 'personality']
+const INSTITUTION_IMAGES: Record<Institution, string> = {
+  MAI: '/images/mai.png',
+  MApN: '/images/mapn.png',
+  SRI: '/images/sri.png',
+  ANP: '/images/anp.png',
+}
 
 const INST_CONFIG: Record<Institution, {
   heroBg: string; heroGlow: string; progressBar: string;
@@ -70,11 +79,35 @@ const CAT_CONFIG: Record<TestCategory, { bg: string; text: string; glow: string 
   personality: { bg: 'bg-teal-500/10',    text: 'text-teal-400',    glow: 'rgba(20,184,166,0.15)' },
 }
 
-export default async function TestsPage() {
+function TestsSkeleton() {
+  return (
+    <div className="space-y-10 animate-fade-in">
+      <div>
+        <div className="h-3 w-20 rounded skeleton mb-2" />
+        <div className="h-8 w-48 rounded-lg skeleton mb-1.5" />
+        <div className="h-4 w-64 rounded skeleton" />
+      </div>
+      {[...Array(2)].map((_, i) => (
+        <div key={i}>
+          <div className="h-28 rounded-2xl skeleton mb-4" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {[...Array(6)].map((_, j) => (
+              <div key={j} className="h-32 rounded-2xl skeleton" />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+async function TestsContent() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user!.id).single()
-  const { data: progressData } = await supabase.from('user_progress').select('*').eq('user_id', user!.id)
+  const [{ data: profile }, { data: progressData }] = await Promise.all([
+    supabase.from('profiles').select('*').eq('id', user!.id).single(),
+    supabase.from('user_progress').select('*').eq('user_id', user!.id),
+  ])
 
   function isAccessible(inst: Institution) {
     if (!profile) return false
@@ -120,11 +153,12 @@ export default async function TestsPage() {
               }}
             >
               {/* Full-bleed background image */}
-              <img
-                src={`/images/${inst.toLowerCase()}.jpg`}
+              <Image
+                src={INSTITUTION_IMAGES[inst]}
                 alt=""
-                className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                fill
+                sizes="(max-width: 1024px) 100vw, 1200px"
+                className="absolute inset-0 object-cover object-top transition-transform duration-700 group-hover:scale-105"
               />
               {/* Gradient overlay */}
               <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.15) 100%)' }} />
@@ -209,12 +243,11 @@ export default async function TestsPage() {
                     <div className="group dash-card rounded-2xl p-5 hover:-translate-y-1 transition-all duration-200 cursor-pointer h-full relative overflow-hidden">
                       <div className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${cfg.progressBar} opacity-0 group-hover:opacity-50 transition-opacity`} />
                       <div className="flex items-start gap-3.5 mb-4">
-                        <div
-                          className={`w-11 h-11 rounded-xl ${catCfg.bg} flex items-center justify-center text-xl shrink-0 transition-transform duration-200 group-hover:scale-110`}
-                          style={{ boxShadow: progress?.tests_taken ? `0 0 16px ${catCfg.glow}` : 'none' }}
-                        >
-                          {CATEGORY_ICONS[cat]}
-                        </div>
+                        <CategoryIcon
+                          category={cat}
+                          className={`h-11 w-11 rounded-xl ${catCfg.bg} text-[var(--text-primary)] shrink-0 transition-transform duration-200 group-hover:scale-110`}
+                          iconClassName="h-5 w-5 text-[var(--text-primary)]"
+                        />
                         <div className="flex-1 min-w-0">
                           <h3 className="font-bold text-sm leading-tight" style={{ color: 'var(--text-primary)' }}>{CATEGORY_LABELS[cat]}</h3>
                           {progress && progress.tests_taken > 0 ? (
@@ -287,5 +320,13 @@ export default async function TestsPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function TestsPage() {
+  return (
+    <Suspense fallback={<TestsSkeleton />}>
+      <TestsContent />
+    </Suspense>
   )
 }

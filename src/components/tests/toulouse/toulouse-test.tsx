@@ -4,9 +4,11 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { formatTime } from '@/lib/utils'
 import { ToulouseCanvas } from './toulouse-canvas'
-import { pickTargetSymbols, generateGrid, isTarget, symbolsEqual, type ToulouseSymbol } from './symbols'
+import { pickTargetSymbols, generateGrid, isTarget, type ToulouseSymbol } from './symbols'
 import { drawSymbol } from './symbols'
 import type { Institution } from '@/types'
+import { Eye, Target } from 'lucide-react'
+import { IconBadge } from '@/components/ui/icon-badge'
 
 interface ToulouseTestProps {
   institution: Institution
@@ -25,72 +27,18 @@ export function ToulouseTest({ institution }: ToulouseTestProps) {
   const [grid, setGrid] = useState<ToulouseSymbol[][]>([])
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [timeLeft, setTimeLeft] = useState(TIME_SECONDS)
-  const [sessionId, setSessionId] = useState<string | null>(null)
   const [results, setResults] = useState<{ score: number; hits: number; misses: number; falseAlarms: number; total: number } | null>(null)
   const [loading, setLoading] = useState(false)
   const targetCanvasRef = useRef<HTMLCanvasElement>(null)
-
-  // Draw target symbols preview
-  useEffect(() => {
-    if (targets.length === 0 || !targetCanvasRef.current) return
-    const ctx = targetCanvasRef.current.getContext('2d')
-    if (!ctx) return
-    ctx.clearRect(0, 0, 160, 50)
-    ctx.fillStyle = '#f8fafc'
-    ctx.fillRect(0, 0, 160, 50)
-    targets.forEach((t, i) => {
-      drawSymbol(ctx, t, i * 55 + 5, 5, 40, false, true, false)
-    })
-  }, [targets])
-
-  // Timer
-  useEffect(() => {
-    if (phase !== 'test') return
-    const timer = setInterval(() => {
-      setTimeLeft(t => {
-        if (t <= 1) {
-          clearInterval(timer)
-          finishTest()
-          return 0
-        }
-        return t - 1
-      })
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [phase])
-
-  async function startTest() {
-    setLoading(true)
-    const t = pickTargetSymbols()
-    const g = generateGrid(ROWS, COLS, t)
-    setTargets(t)
-    setGrid(g)
-    setSelected(new Set())
-    setTimeLeft(TIME_SECONDS)
-
-    // Create session
-    try {
-      const res = await fetch('/api/tests/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ institution, category: 'attention' }),
-      })
-      const data = await res.json()
-      if (data.session?.id) setSessionId(data.session.id)
-    } catch { /* continue without session */ }
-
-    setLoading(false)
-    setPhase('test')
-  }
 
   const finishTest = useCallback(async () => {
     setPhase('results')
 
     if (!grid.length || !targets.length) return
 
-    let hits = 0      // correct marks (target clicked)
-    let misses = 0    // targets not clicked
-    let falseAlarms = 0 // non-targets clicked
+    let hits = 0
+    let misses = 0
+    let falseAlarms = 0
 
     for (let r = 0; r < grid.length; r++) {
       for (let c = 0; c < grid[r].length; c++) {
@@ -110,7 +58,59 @@ export function ToulouseTest({ institution }: ToulouseTestProps) {
     const score = totalTargets > 0 ? Math.round((rawScore / totalTargets) * 100) : 0
 
     setResults({ score, hits, misses, falseAlarms, total: totalTargets })
-  }, [grid, targets, selected])
+  }, [grid, selected, targets])
+
+  // Draw target symbols preview
+  useEffect(() => {
+    if (targets.length === 0 || !targetCanvasRef.current) return
+    const ctx = targetCanvasRef.current.getContext('2d')
+    if (!ctx) return
+    ctx.clearRect(0, 0, 160, 50)
+    ctx.fillStyle = '#f8fafc'
+    ctx.fillRect(0, 0, 160, 50)
+    targets.forEach((t, i) => {
+      drawSymbol(ctx, t, i * 55 + 5, 5, 40, false, true, false)
+    })
+  }, [phase, targets])
+
+  // Timer
+  useEffect(() => {
+    if (phase !== 'test') return
+    const timer = setInterval(() => {
+      setTimeLeft(t => {
+        if (t <= 1) {
+          clearInterval(timer)
+          finishTest()
+          return 0
+        }
+        return t - 1
+      })
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [finishTest, phase])
+
+  async function startTest() {
+    setLoading(true)
+    const t = pickTargetSymbols()
+    const g = generateGrid(ROWS, COLS, t)
+    setTargets(t)
+    setGrid(g)
+    setSelected(new Set())
+    setTimeLeft(TIME_SECONDS)
+
+    // Create session
+    try {
+      const res = await fetch('/api/tests/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ institution, category: 'attention' }),
+      })
+      await res.json()
+    } catch { /* continue without session */ }
+
+    setLoading(false)
+    setPhase('test')
+  }
 
   function toggleCell(key: string) {
     setSelected(prev => {
@@ -128,7 +128,7 @@ export function ToulouseTest({ institution }: ToulouseTestProps) {
   if (phase === 'intro') {
     return (
       <div className="max-w-lg mx-auto text-center space-y-6 py-12">
-        <div className="text-5xl">👁</div>
+        <IconBadge icon={Eye} className="mx-auto h-16 w-16 rounded-2xl border-slate-200 bg-slate-100 text-slate-700 shadow-none backdrop-blur-0" iconClassName="h-7 w-7 text-slate-700" />
         <h1 className="text-2xl font-bold text-slate-900">Test Toulouse-Piéron</h1>
         <p className="text-slate-600 text-sm leading-relaxed">
           Vei vedea o grilă de simboluri. Două simboluri-țintă vor fi afișate în partea de sus.
@@ -156,7 +156,7 @@ export function ToulouseTest({ institution }: ToulouseTestProps) {
     const scoreColor = s.score >= 80 ? 'text-green-600' : s.score >= 60 ? 'text-yellow-600' : 'text-red-600'
     return (
       <div className="max-w-lg mx-auto text-center space-y-6 py-12">
-        <div className="text-5xl">{s.score >= 80 ? '🎯' : s.score >= 60 ? '👍' : '💪'}</div>
+        <IconBadge icon={Target} className="mx-auto h-16 w-16 rounded-2xl border-slate-200 bg-slate-100 text-slate-700 shadow-none backdrop-blur-0" iconClassName="h-7 w-7 text-slate-700" />
         <h1 className="text-2xl font-bold text-slate-900">Rezultat Toulouse-Piéron</h1>
         <p className={`text-5xl font-extrabold ${scoreColor}`}>{s.score}%</p>
 

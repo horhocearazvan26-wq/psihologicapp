@@ -1,27 +1,40 @@
+import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import {
   INSTITUTION_LABELS,
   CATEGORY_LABELS,
-  CATEGORY_ICONS,
+  CATEGORY_SHORT_LABELS,
   getScoreColor,
 } from '@/lib/utils'
 import type { Institution, TestCategory } from '@/types'
 import { ProgressCharts } from './progress-charts'
 import { TrendingUp, Trophy, BookOpen, Clock } from 'lucide-react'
+import { CategoryIcon } from '@/components/ui/category-icon'
+import { IconBadge } from '@/components/ui/icon-badge'
 
 const institutions: Institution[] = ['MAI', 'MApN', 'SRI', 'ANP']
 const categories: TestCategory[] = ['attention', 'logic', 'memory', 'numerical', 'vocabulary', 'personality']
 
-const CATEGORY_STYLES: Record<TestCategory, string> = {
-  attention:   'bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400',
-  logic:       'bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400',
-  memory:      'bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400',
-  numerical:   'bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400',
-  vocabulary:  'bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400',
-  personality: 'bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400',
+function ProgressSkeleton() {
+  return (
+    <div className="space-y-8 animate-fade-in">
+      <div>
+        <div className="h-3 w-20 rounded skeleton mb-2" />
+        <div className="h-8 w-40 rounded-lg skeleton mb-1.5" />
+        <div className="h-4 w-56 rounded skeleton" />
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {[...Array(4)].map((_, i) => <div key={i} className="h-24 rounded-2xl skeleton" />)}
+      </div>
+      <div className="h-64 rounded-2xl skeleton" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[...Array(6)].map((_, i) => <div key={i} className="h-28 rounded-2xl skeleton" />)}
+      </div>
+    </div>
+  )
 }
 
-export default async function ProgressPage() {
+async function ProgressContent() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -51,7 +64,7 @@ export default async function ProgressPage() {
     const avg = catProgress.length > 0
       ? catProgress.reduce((s, p) => s + p.average_score, 0) / catProgress.length
       : 0
-    return { category: CATEGORY_LABELS[cat], score: Math.round(avg), icon: CATEGORY_ICONS[cat] }
+    return { category: CATEGORY_LABELS[cat], score: Math.round(avg), icon: CATEGORY_SHORT_LABELS[cat] }
   }).filter(c => c.score > 0)
 
   function getProgress(institution: Institution, category: TestCategory) {
@@ -73,12 +86,10 @@ export default async function ProgressPage() {
           { icon: TrendingUp, label: 'Scor mediu',         value: avgScore > 0 ? `${avgScore.toFixed(1)}%` : '—', iconBg: 'bg-emerald-500/10', iconColor: 'text-emerald-400',topBar: 'from-emerald-500 to-emerald-400' },
           { icon: Trophy,     label: 'Cel mai bun scor',   value: bestScore > 0 ? `${bestScore.toFixed(0)}%` : '—',iconBg: 'bg-amber-500/10',   iconColor: 'text-amber-400',  topBar: 'from-amber-500 to-amber-400' },
           { icon: Clock,      label: 'Sesiuni recente',    value: (sessions?.length ?? 0).toString(),             iconBg: 'bg-violet-500/10',  iconColor: 'text-violet-400', topBar: 'from-violet-500 to-violet-400' },
-        ].map(({ icon: Icon, label, value, iconBg, iconColor, topBar }) => (
+        ].map(({ icon: Icon, label, value, topBar }) => (
           <div key={label} className="relative dash-card overflow-hidden rounded-2xl p-5">
             <div className={`absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r ${topBar} opacity-60`} />
-            <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center shrink-0 mb-3`}>
-              <Icon className={`w-5 h-5 ${iconColor}`} />
-            </div>
+            <IconBadge icon={Icon} className="mb-3 h-10 w-10 rounded-xl bg-[var(--bg-muted)] text-[var(--text-primary)]" iconClassName="h-5 w-5 text-[var(--text-primary)]" />
             <p className="text-2xl font-extrabold leading-none tracking-tight" style={{ color: 'var(--text-primary)' }}>{value}</p>
             <p className="text-xs mt-1.5 font-medium" style={{ color: 'var(--text-muted)' }}>{label}</p>
           </div>
@@ -111,9 +122,7 @@ export default async function ProgressPage() {
                 return (
                   <div key={cat} className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-sm p-5 hover:border-[var(--border-strong)] hover:shadow-md transition-all duration-200">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className={`w-9 h-9 rounded-xl ${CATEGORY_STYLES[cat]} flex items-center justify-center text-base shrink-0`}>
-                        {CATEGORY_ICONS[cat]}
-                      </div>
+                      <CategoryIcon category={cat} className="h-9 w-9 rounded-xl bg-[var(--bg-muted)] text-[var(--text-primary)]" iconClassName="h-4 w-4 text-[var(--text-primary)]" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{CATEGORY_LABELS[cat]}</p>
                         <p className="text-xs text-[var(--text-muted)]">{p.tests_taken} teste</p>
@@ -154,7 +163,7 @@ export default async function ProgressPage() {
       {/* Empty state */}
       {totalTests === 0 && (
         <div className="dash-card rounded-2xl p-16 text-center">
-          <div className="text-5xl mb-4">📊</div>
+          <IconBadge icon={TrendingUp} className="mx-auto mb-4 h-14 w-14 rounded-2xl bg-[var(--bg-muted)] text-[var(--text-primary)]" iconClassName="h-7 w-7 text-[var(--text-primary)]" />
           <h3 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>Niciun test completat încă</h3>
           <p className="text-sm mt-2 max-w-sm mx-auto" style={{ color: 'var(--text-muted)' }}>
             Completează primul test pentru a vedea statisticile și graficele tale aici.
@@ -173,9 +182,7 @@ export default async function ProgressPage() {
                 className={`flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-white/[0.02] ${i < sessions.length - 1 ? 'border-b' : ''}`}
                 style={{ borderColor: 'var(--border)' }}
               >
-                <div className={`w-9 h-9 rounded-xl ${CATEGORY_STYLES[session.category as TestCategory] ?? 'bg-white/5 text-white/30'} flex items-center justify-center text-base shrink-0`}>
-                  {CATEGORY_ICONS[session.category as TestCategory]}
-                </div>
+                <CategoryIcon category={session.category as TestCategory} className="h-9 w-9 rounded-xl bg-[var(--bg-muted)] text-[var(--text-primary)]" iconClassName="h-4 w-4 text-[var(--text-primary)]" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                     {CATEGORY_LABELS[session.category as TestCategory]}
@@ -204,5 +211,13 @@ export default async function ProgressPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function ProgressPage() {
+  return (
+    <Suspense fallback={<ProgressSkeleton />}>
+      <ProgressContent />
+    </Suspense>
   )
 }

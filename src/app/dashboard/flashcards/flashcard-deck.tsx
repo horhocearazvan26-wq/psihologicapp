@@ -12,7 +12,6 @@ interface Card {
 interface Deck {
   id: string
   title: string
-  icon: string
   count: number
   gradient: string
   cards: Card[]

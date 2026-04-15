@@ -78,7 +78,6 @@ body {
     linear-gradient(to right, rgb(255 255 255 / 0.32) 1px, transparent 1px),
     linear-gradient(to bottom, rgb(255 255 255 / 0.32) 1px, transparent 1px);
   background-size: 36px 36px;
-  background-attachment: fixed;
 }
 
 .dark body {
@@ -101,8 +100,8 @@ h1, h2, h3, h4, h5, h6 {
 
 ::selection { background: #c7d8e8; color: #10263c; }
 
-*:not([class*="transition"]):not([class*="animate"]) {
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+a, button, [role="button"] {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
 }
 
 @keyframes fadeUp {
@@ -134,12 +133,17 @@ h1, h2, h3, h4, h5, h6 {
   to { transform: rotate(360deg); }
 }
 
-.animate-fade-up { animation: fadeUp 0.5s cubic-bezier(.22,1,.36,1) both; }
-.animate-fade-in { animation: fadeIn 0.4s ease both; }
+.animate-fade-up { animation: fadeUp 0.6s cubic-bezier(.22,1,.36,1) both; }
+.animate-fade-in { animation: fadeIn 0.5s ease both; }
 .animate-slide-in { animation: slideLeft 0.35s cubic-bezier(.22,1,.36,1) both; }
 .animate-scale-in { animation: scaleIn 0.3s cubic-bezier(.22,1,.36,1) both; }
 .animate-float { animation: float 3s ease-in-out infinite; }
 .animate-spin-slow { animation: spin-slow 8s linear infinite; }
+
+.\[animation-delay\:100ms\] { animation-delay: 100ms; }
+.\[animation-delay\:200ms\] { animation-delay: 200ms; }
+.\[animation-delay\:280ms\] { animation-delay: 280ms; }
+.\[animation-delay\:360ms\] { animation-delay: 360ms; }
 
 .stagger-1 { animation-delay: 0.05s; }
 .stagger-2 { animation-delay: 0.10s; }

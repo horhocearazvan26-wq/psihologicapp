@@ -2,13 +2,15 @@
 
 import { useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
-import { CATEGORY_LABELS, CATEGORY_ICONS, getScoreColor } from '@/lib/utils'
+import Image from 'next/image'
+import { CATEGORY_LABELS, getScoreColor } from '@/lib/utils'
 import type { TestCategory } from '@/types'
 import {
   Play, Layers, TrendingUp, ChevronRight, ArrowRight,
   BookOpen, Target, Trophy, BarChart3, Clock,
-  RefreshCw, Shield, Star, Eye, Scale, Zap, Flame,
+  RefreshCw, Zap, Flame,
 } from 'lucide-react'
+import { CategoryIcon } from '@/components/ui/category-icon'
 import { InstitutionPicker, STORAGE_KEY } from './institution-picker'
 
 const INST_CONFIG = {
@@ -20,7 +22,7 @@ const INST_CONFIG = {
     bg: 'bg-blue-500/10',
     text: 'text-blue-300',
     progress: 'from-blue-400 to-blue-600',
-    icon: <Shield className="w-6 h-6 text-white" />,
+    emblem: '/images/emblems/mai.png',
     label: 'MAI',
     fullName: 'Ministerul Afacerilor Interne',
   },
@@ -32,7 +34,7 @@ const INST_CONFIG = {
     bg: 'bg-emerald-500/10',
     text: 'text-emerald-300',
     progress: 'from-emerald-400 to-teal-500',
-    icon: <Star className="w-6 h-6 text-white" />,
+    emblem: '/images/emblems/mapn.png',
     label: 'MApN',
     fullName: 'Ministerul Apărării Naționale',
   },
@@ -44,7 +46,7 @@ const INST_CONFIG = {
     bg: 'bg-red-500/10',
     text: 'text-red-300',
     progress: 'from-red-400 to-rose-500',
-    icon: <Eye className="w-6 h-6 text-white" />,
+    emblem: '/images/emblems/sri.png',
     label: 'SRI',
     fullName: 'Serviciul Român de Informații',
   },
@@ -56,19 +58,10 @@ const INST_CONFIG = {
     bg: 'bg-violet-500/10',
     text: 'text-violet-300',
     progress: 'from-violet-400 to-indigo-500',
-    icon: <Scale className="w-6 h-6 text-white" />,
+    emblem: '/images/emblems/anp.png',
     label: 'ANP',
     fullName: 'Administrația Națională a Penitenciarelor',
   },
-}
-
-const CAT_CONFIG: Record<TestCategory, { bg: string; text: string; glow: string }> = {
-  attention:   { bg: 'bg-indigo-500/10', text: 'text-indigo-400', glow: 'rgba(99,102,241,0.15)' },
-  logic:       { bg: 'bg-indigo-500/10', text: 'text-indigo-400', glow: 'rgba(99,102,241,0.15)' },
-  memory:      { bg: 'bg-indigo-500/10', text: 'text-indigo-400', glow: 'rgba(99,102,241,0.15)' },
-  numerical:   { bg: 'bg-indigo-500/10', text: 'text-indigo-400', glow: 'rgba(99,102,241,0.15)' },
-  vocabulary:  { bg: 'bg-indigo-500/10', text: 'text-indigo-400', glow: 'rgba(99,102,241,0.15)' },
-  personality: { bg: 'bg-indigo-500/10', text: 'text-indigo-400', glow: 'rgba(99,102,241,0.15)' },
 }
 
 const categories: TestCategory[] = ['attention', 'logic', 'memory', 'numerical', 'vocabulary', 'personality']
@@ -199,10 +192,25 @@ export function DashboardClient({
         <div className="relative flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-4">
             <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 border border-white/20"
-              style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}
+              className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-white/20 transition-transform duration-300 hover:scale-[1.03]"
+              style={{
+                background: 'linear-gradient(145deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.07) 100%)',
+                boxShadow:
+                  '0 16px 30px rgba(0,0,0,0.46), 0 5px 12px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.32), inset 0 -1px 0 rgba(0,0,0,0.28)',
+                backdropFilter: 'blur(14px) saturate(150%)',
+                WebkitBackdropFilter: 'blur(14px) saturate(150%)',
+              }}
             >
-              {cfg.icon}
+              <div className="absolute inset-1.5 rounded-[14px] bg-white/92 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]" />
+              <Image
+                src={cfg.emblem}
+                alt={`Emblema ${cfg.fullName}`}
+                fill
+                sizes="64px"
+                className="p-2.5 object-contain drop-shadow-[0_5px_5px_rgba(0,0,0,0.35)]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/24 via-transparent to-black/35" />
+              <div className="absolute inset-[3px] rounded-[14px] border border-white/18 shadow-[inset_0_1px_0_rgba(255,255,255,0.28)]" />
             </div>
             <div>
               <p className="text-white/50 text-xs font-medium mb-0.5 tracking-wide uppercase">{greeting}, {firstName}</p>
@@ -307,11 +315,9 @@ export function DashboardClient({
         <div
           className="rounded-2xl overflow-hidden"
           style={{
-            background: 'rgba(255,255,255,0.04)',
-            backdropFilter: 'blur(24px) saturate(160%)',
-            WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+            background: 'rgba(255,255,255,0.05)',
             border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
           }}
         >
           {categories.map((cat, i) => {
@@ -334,7 +340,7 @@ export function DashboardClient({
                       border: '1px solid rgba(255,255,255,0.09)',
                     }}
                   >
-                    {CATEGORY_ICONS[cat]}
+                    <CategoryIcon category={cat} className="h-10 w-10 rounded-xl border-white/10 bg-white/0" iconClassName="h-4 w-4 text-white/70" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-[14px] text-white leading-tight">{CATEGORY_LABELS[cat]}</p>
@@ -373,11 +379,9 @@ export function DashboardClient({
                 key={stat.label}
                 className={`relative rounded-2xl p-4 animate-fade-up stagger-${i + 1}`}
                 style={{
-                  background: 'rgba(255,255,255,0.04)',
-                  backdropFilter: 'blur(24px) saturate(160%)',
-                  WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+                  background: 'rgba(255,255,255,0.05)',
                   border: '1px solid rgba(255,255,255,0.08)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08)',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
                 }}
               >
                 <div
@@ -410,11 +414,9 @@ export function DashboardClient({
           <div
             className="rounded-2xl overflow-hidden"
             style={{
-              background: 'rgba(255,255,255,0.04)',
-              backdropFilter: 'blur(24px) saturate(160%)',
-              WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+              background: 'rgba(255,255,255,0.05)',
               border: '1px solid rgba(255,255,255,0.08)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
             }}
           >
             {instSessions.slice(0, 5).map((session, i) => (
@@ -430,7 +432,7 @@ export function DashboardClient({
                     border: '1px solid rgba(255,255,255,0.09)',
                   }}
                 >
-                  {CATEGORY_ICONS[session.category as TestCategory]}
+                  <CategoryIcon category={session.category as TestCategory} className="h-10 w-10 rounded-xl border-white/10 bg-white/0" iconClassName="h-4 w-4 text-white/70" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-white truncate">{CATEGORY_LABELS[session.category as TestCategory]}</p>

@@ -6,6 +6,8 @@ import { cn, formatTime, getScoreColor } from '@/lib/utils'
 import { CellSVG } from './cell-svg'
 import { generateMatrices } from './raven-patterns'
 import type { Institution } from '@/types'
+import { Puzzle, Trophy } from 'lucide-react'
+import { IconBadge } from '@/components/ui/icon-badge'
 
 interface RavenTestProps {
   institution: Institution
@@ -23,9 +25,18 @@ export function RavenTest({ institution }: RavenTestProps) {
   const [selectedOptions, setSelectedOptions] = useState<Record<number, number>>({})
   const [timeLeft, setTimeLeft] = useState(TOTAL_TIME)
   const [results, setResults] = useState<{ score: number; correct: number; total: number } | null>(null)
-  const [showResult, setShowResult] = useState<boolean>(false)
 
   const matrices = useMemo(() => generateMatrices(TOTAL_MATRICES), [])
+
+  function finishTest() {
+    let correct = 0
+    matrices.forEach((m, i) => {
+      if (selectedOptions[i] === m.correctIndex) correct++
+    })
+    const score = Math.round((correct / matrices.length) * 100)
+    setResults({ score, correct, total: matrices.length })
+    setPhase('results')
+  }
 
   useEffect(() => {
     if (phase !== 'test') return
@@ -36,25 +47,14 @@ export function RavenTest({ institution }: RavenTestProps) {
       })
     }, 1000)
     return () => clearInterval(timer)
-  }, [phase])
+  }, [finishTest, phase])
 
   function startTest() {
     setCurrentIndex(0)
     setSelectedOptions({})
     setTimeLeft(TOTAL_TIME)
     setResults(null)
-    setShowResult(false)
     setPhase('test')
-  }
-
-  function finishTest() {
-    let correct = 0
-    matrices.forEach((m, i) => {
-      if (selectedOptions[i] === m.correctIndex) correct++
-    })
-    const score = Math.round((correct / matrices.length) * 100)
-    setResults({ score, correct, total: matrices.length })
-    setPhase('results')
   }
 
   function selectOption(optionIndex: number) {
@@ -70,7 +70,7 @@ export function RavenTest({ institution }: RavenTestProps) {
   if (phase === 'intro') {
     return (
       <div className="max-w-lg mx-auto text-center space-y-6 py-12">
-        <div className="text-5xl">🧩</div>
+        <IconBadge icon={Puzzle} className="mx-auto h-16 w-16 rounded-2xl border-slate-200 bg-slate-100 text-slate-700 shadow-none backdrop-blur-0" iconClassName="h-7 w-7 text-slate-700" />
         <h1 className="text-2xl font-bold text-slate-900">Matrici Raven</h1>
         <p className="text-slate-600 text-sm leading-relaxed">
           Vei vedea o matrice 3×3 cu un element lipsă (marcat cu X). Alege din cele 6 opțiuni
@@ -91,7 +91,7 @@ export function RavenTest({ institution }: RavenTestProps) {
   if (phase === 'results' && results) {
     return (
       <div className="max-w-lg mx-auto text-center space-y-6 py-12">
-        <div className="text-5xl">{results.score >= 80 ? '🎉' : results.score >= 60 ? '👍' : '💪'}</div>
+        <IconBadge icon={Trophy} className="mx-auto h-16 w-16 rounded-2xl border-slate-200 bg-slate-100 text-slate-700 shadow-none backdrop-blur-0" iconClassName="h-7 w-7 text-slate-700" />
         <h1 className="text-2xl font-bold text-slate-900">Rezultat Matrici Raven</h1>
         <p className={`text-5xl font-extrabold ${getScoreColor(results.score)}`}>{results.score}%</p>
         <p className="text-slate-500">{results.correct} corecte din {results.total}</p>

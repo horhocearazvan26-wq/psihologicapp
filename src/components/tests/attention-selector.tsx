@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button'
 import { ToulouseTest } from './toulouse/toulouse-test'
 import { RavenTest } from './raven/raven-test'
 import type { Institution } from '@/types'
+import { Eye, Puzzle } from 'lucide-react'
+import { IconBadge } from '@/components/ui/icon-badge'
 
 type TestType = 'toulouse' | 'raven'
 
@@ -57,7 +59,7 @@ export function AttentionSelector({ institution, institutionLabel, isFullAccess 
         {/* Toulouse-Piéron */}
         <Card hover onClick={() => setActiveTest('toulouse')}>
           <CardContent className="space-y-3">
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">👁</div>
+            <IconBadge icon={Eye} className="h-12 w-12 rounded-xl border-blue-200 bg-blue-100 text-blue-700 shadow-none backdrop-blur-0" iconClassName="h-5 w-5 text-blue-700" />
             <div>
               <h2 className="font-bold text-slate-800">Toulouse-Piéron</h2>
               <p className="text-sm text-slate-500 mt-1">
@@ -77,7 +79,7 @@ export function AttentionSelector({ institution, institutionLabel, isFullAccess 
         {/* Raven */}
         <Card hover onClick={() => setActiveTest('raven')}>
           <CardContent className="space-y-3">
-            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-2xl">🧩</div>
+            <IconBadge icon={Puzzle} className="h-12 w-12 rounded-xl border-purple-200 bg-purple-100 text-purple-700 shadow-none backdrop-blur-0" iconClassName="h-5 w-5 text-purple-700" />
             <div>
               <h2 className="font-bold text-slate-800">Matrici Raven</h2>
               <p className="text-sm text-slate-500 mt-1">

@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import { Brain, BookOpen, Eye, Hash, Puzzle, Type } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { IconBadge } from '@/components/ui/icon-badge'
 
 interface MaterialCategory {
   id: string
@@ -10,7 +12,7 @@ interface MaterialCategory {
   description: string
   folder: string
   pages: number[]
-  icon: string
+  icon: LucideIcon
 }
 
 const CATEGORIES: MaterialCategory[] = [
@@ -20,7 +22,7 @@ const CATEGORIES: MaterialCategory[] = [
     description: 'Matrici progresive standard — evaluarea inteligenței fluide și a raționamentului non-verbal',
     folder: 'raven',
     pages: Array.from({ length: 37 }, (_, i) => i + 4),
-    icon: '🧩',
+    icon: Puzzle,
   },
   {
     id: 'inteligenta',
@@ -28,7 +30,7 @@ const CATEGORIES: MaterialCategory[] = [
     description: 'Bateria Bonnardel — factori de inteligență F1-F12 din Materia Generală',
     folder: 'inteligenta',
     pages: Array.from({ length: 64 }, (_, i) => i + 25),
-    icon: '🧠',
+    icon: Brain,
   },
   {
     id: 'atentie',
@@ -36,7 +38,7 @@ const CATEGORIES: MaterialCategory[] = [
     description: 'Probe de atenție concentrată și distributivă',
     folder: 'atentie',
     pages: [1, 2, 3, 4],
-    icon: '👁',
+    icon: Eye,
   },
   {
     id: 'rationament',
@@ -44,7 +46,7 @@ const CATEGORIES: MaterialCategory[] = [
     description: 'Exerciții de raționament logic și deductiv',
     folder: 'rationament',
     pages: [1, 2, 3, 4, 5, 6, 7, 8],
-    icon: '💡',
+    icon: Brain,
   },
   {
     id: 'matematic',
@@ -52,7 +54,7 @@ const CATEGORIES: MaterialCategory[] = [
     description: 'Probleme matematice specifice testelor de admitere',
     folder: 'matematic',
     pages: [1, 2, 3, 4, 5, 6],
-    icon: '🔢',
+    icon: Hash,
   },
   {
     id: 'alfabet',
@@ -60,7 +62,7 @@ const CATEGORIES: MaterialCategory[] = [
     description: 'Exerciții cu litere, coduri și simboluri',
     folder: 'alfabet',
     pages: [1, 2, 3, 4, 5, 6, 7, 8],
-    icon: '🔤',
+    icon: Type,
   },
   {
     id: 'bontila',
@@ -68,7 +70,7 @@ const CATEGORIES: MaterialCategory[] = [
     description: 'Material suplimentar de psihologie aplicată',
     folder: 'bontila',
     pages: Array.from({ length: 64 }, (_, i) => i + 1),
-    icon: '📚',
+    icon: BookOpen,
   },
 ]
 
@@ -97,8 +99,9 @@ export default function MaterialePage() {
             ← Materiale
           </button>
           <span className="text-slate-300">/</span>
-          <span className="text-sm font-semibold text-slate-700">
-            {selectedCategory.icon} {selectedCategory.label}
+          <span className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+            <IconBadge icon={selectedCategory.icon} className="h-8 w-8 rounded-xl border-slate-200 bg-slate-100 text-slate-700 shadow-none backdrop-blur-0" iconClassName="h-4 w-4 text-slate-700" />
+            {selectedCategory.label}
           </span>
         </div>
 
@@ -194,7 +197,7 @@ export default function MaterialePage() {
             className="text-left p-5 bg-white rounded-2xl border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all group"
           >
             <div className="flex items-start gap-4">
-              <span className="text-3xl leading-none">{cat.icon}</span>
+              <IconBadge icon={cat.icon} className="h-12 w-12 rounded-2xl border-slate-200 bg-slate-100 text-slate-700 shadow-none backdrop-blur-0" iconClassName="h-5 w-5 text-slate-700" />
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-slate-900 group-hover:text-blue-700 transition-colors text-sm leading-snug">
                   {cat.label}

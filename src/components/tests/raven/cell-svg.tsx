@@ -1,4 +1,5 @@
-import type { Cell, Shape, Fill } from './raven-patterns'
+import { useId } from 'react'
+import type { Cell, Shape } from './raven-patterns'
 
 interface CellSVGProps {
   cell: Cell | null
@@ -39,7 +40,8 @@ function ShapePath({ shape, cx, cy, r }: { shape: Shape; cx: number; cy: number;
 
 function CellShape({ cell, viewSize }: { cell: Cell; viewSize: number }) {
   const r = (viewSize / 2) * SIZE_MAP[cell.size]
-  const id = `pattern-${cell.shape}-${cell.fill}-${Math.random().toString(36).slice(2, 7)}`
+  const patternId = useId().replace(/:/g, '')
+  const id = `pattern-${cell.shape}-${cell.fill}-${patternId}`
 
   const fillAttr = cell.fill === 'filled' ? '#374151'
     : cell.fill === 'empty' ? 'white'

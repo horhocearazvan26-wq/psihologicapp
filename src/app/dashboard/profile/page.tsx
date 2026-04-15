@@ -1,3 +1,4 @@
+import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { ProfileForm } from './profile-form'
 import type { Institution } from '@/types'
@@ -5,6 +6,10 @@ import { INSTITUTION_FULL_NAMES } from '@/lib/utils'
 import { BookOpen, Target, Calendar, Mail } from 'lucide-react'
 
 export default async function ProfilePage() {
+  const requestHeaders = await headers()
+  const requestDate = requestHeaders.get('date')
+  const now = requestDate ? new Date(requestDate) : null
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -25,8 +30,8 @@ export default async function ProfilePage() {
     ? stats.reduce((s, t) => s + (t.score ?? 0), 0) / stats.length
     : 0
 
-  const daysUntil = profile?.exam_date
-    ? Math.ceil((new Date(profile.exam_date).getTime() - Date.now()) / 86400000)
+  const daysUntil = profile?.exam_date && now
+    ? Math.ceil((new Date(profile.exam_date).getTime() - now.getTime()) / 86400000)
     : null
 
   const planLabel: Record<string, string> = {

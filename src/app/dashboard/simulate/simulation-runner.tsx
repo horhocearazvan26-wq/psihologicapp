@@ -1,9 +1,11 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { cn, formatTime, CATEGORY_LABELS, CATEGORY_ICONS, getScoreColor } from '@/lib/utils'
+import { cn, formatTime, CATEGORY_LABELS, getScoreColor } from '@/lib/utils'
 import type { Institution, TestCategory } from '@/types'
 import { CheckCircle, Clock, ChevronRight, Trophy, ArrowLeft, ArrowRight, Loader2 } from 'lucide-react'
+import { CategoryIcon } from '@/components/ui/category-icon'
+import { IconBadge } from '@/components/ui/icon-badge'
 
 const CATEGORIES: TestCategory[] = ['logic', 'memory', 'numerical', 'vocabulary', 'personality']
 const TIME_PER_QUESTION = 45
@@ -147,7 +149,7 @@ export function SimulationRunner({ institution, onBack }: SimulationRunnerProps)
           ))}
         </div>
 
-        <div className="text-4xl">{CATEGORY_ICONS[currentCategory]}</div>
+        <CategoryIcon category={currentCategory} className="mx-auto h-16 w-16 rounded-2xl bg-[var(--bg-muted)] text-[var(--text-primary)]" iconClassName="h-7 w-7 text-[var(--text-primary)]" />
         <div>
           <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-widest mb-1">
             Proba {categoryIndex + 1} din {CATEGORIES.length}
@@ -203,7 +205,7 @@ export function SimulationRunner({ institution, onBack }: SimulationRunnerProps)
 
     return (
       <div className="max-w-lg mx-auto text-center space-y-6 py-8 animate-fade-up">
-        <div className="text-4xl">{lastResult.score >= 80 ? '🎉' : lastResult.score >= 60 ? '👍' : '💪'}</div>
+        <IconBadge icon={Trophy} className="mx-auto h-16 w-16 rounded-2xl bg-[var(--bg-muted)] text-[var(--text-primary)]" iconClassName="h-7 w-7 text-[var(--text-primary)]" />
         <div className={cn('rounded-2xl border p-6', scoreBg)}>
           <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-widest mb-2">
             Proba {categoryIndex + 1}: {CATEGORY_LABELS[currentCategory]}
@@ -265,7 +267,7 @@ export function SimulationRunner({ institution, onBack }: SimulationRunnerProps)
               key={r.category}
               className={cn('flex items-center gap-3 px-5 py-3.5', i < categoryResults.length - 1 ? 'border-b border-[var(--border)]' : '')}
             >
-              <span className="text-xl w-8 text-center shrink-0">{CATEGORY_ICONS[r.category]}</span>
+              <CategoryIcon category={r.category} className="h-8 w-8 rounded-xl bg-[var(--bg-muted)] text-[var(--text-primary)] shrink-0" iconClassName="h-4 w-4 text-[var(--text-primary)]" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-[var(--text-primary)]">{CATEGORY_LABELS[r.category]}</p>
                 <p className="text-xs text-[var(--text-muted)]">{r.correct}/{r.total} corecte</p>

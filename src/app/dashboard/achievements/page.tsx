@@ -1,9 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 import { cn } from '@/lib/utils'
+import { Award, BookOpen, Brain, Flame, Goal, Palette, Shield, Sparkles, Star, Target, Trophy, Zap } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { IconBadge } from '@/components/ui/icon-badge'
 
 interface Achievement {
   id: string
-  icon: string
+  icon: LucideIcon
   title: string
   desc: string
   check: (stats: AchievementStats) => boolean
@@ -23,18 +26,18 @@ interface AchievementStats {
 }
 
 const achievements: Achievement[] = [
-  { id: 'first_test',       icon: '🎯', title: 'Primul pas',       desc: 'Completează primul test',                        check: (s) => s.totalTests >= 1,                            color: 'text-blue-600 dark:text-blue-400',    bg: 'bg-blue-50 dark:bg-blue-950/40' },
-  { id: 'five_tests',       icon: '📚', title: 'Student sârguincios', desc: 'Completează 5 teste',                         check: (s) => s.totalTests >= 5,                            color: 'text-green-600 dark:text-green-400',  bg: 'bg-green-50 dark:bg-green-950/40' },
-  { id: 'twenty_tests',     icon: '🏃', title: 'Maratonist',        desc: 'Completează 20 de teste',                        check: (s) => s.totalTests >= 20,                           color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-950/40' },
-  { id: 'fifty_tests',      icon: '🔥', title: 'On fire',           desc: 'Completează 50 de teste',                        check: (s) => s.totalTests >= 50,                           color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-50 dark:bg-orange-950/40' },
-  { id: 'high_score',       icon: '⭐', title: 'Bun elev',          desc: 'Obține un scor de 80%+',                         check: (s) => s.bestScore >= 80,                            color: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-50 dark:bg-yellow-950/40' },
-  { id: 'excellent',        icon: '🏆', title: 'Excelență',         desc: 'Obține un scor de 95%+',                         check: (s) => s.bestScore >= 95,                            color: 'text-amber-600 dark:text-amber-400',  bg: 'bg-amber-50 dark:bg-amber-950/40' },
-  { id: 'perfect',          icon: '💯', title: 'Perfect!',          desc: 'Obține scor 100% la un test',                    check: (s) => s.perfectTests >= 1,                          color: 'text-rose-600 dark:text-rose-400',    bg: 'bg-rose-50 dark:bg-rose-950/40' },
-  { id: 'consistent',       icon: '📊', title: 'Consistent',        desc: 'Menține scor mediu de 70%+ pe 10 teste',         check: (s) => s.totalTests >= 10 && s.avgScore >= 70,       color: 'text-teal-600 dark:text-teal-400',    bg: 'bg-teal-50 dark:bg-teal-950/40' },
-  { id: 'all_categories',   icon: '🎨', title: 'Complet',           desc: 'Completează teste din toate cele 6 categorii',   check: (s) => s.uniqueCategories >= 6,                      color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-950/40' },
-  { id: 'all_institutions', icon: '🏛️', title: 'Polivalent',       desc: 'Completează teste pentru toate 4 instituțiile',  check: (s) => s.uniqueInstitutions >= 4,                    color: 'text-[var(--text-secondary)]',        bg: 'bg-[var(--bg-muted)]' },
-  { id: 'speed_demon',      icon: '⚡', title: 'Rapid',             desc: 'Completează 3 teste în aceeași zi',              check: (s) => s.testsInDay >= 3,                            color: 'text-yellow-500 dark:text-yellow-400', bg: 'bg-yellow-50 dark:bg-yellow-950/40' },
-  { id: 'high_scorer',      icon: '🌟', title: 'Top performer',     desc: 'Obține 80%+ la 5 teste diferite',                check: (s) => s.highScoreTests >= 5,                        color: 'text-blue-500 dark:text-blue-400',    bg: 'bg-blue-50 dark:bg-blue-950/40' },
+  { id: 'first_test',       icon: Target,   title: 'Primul pas',          desc: 'Completează primul test',                       check: (s) => s.totalTests >= 1,                       color: 'text-[var(--text-primary)]', bg: 'bg-[var(--bg-muted)]' },
+  { id: 'five_tests',       icon: BookOpen, title: 'Student sârguincios', desc: 'Completează 5 teste',                           check: (s) => s.totalTests >= 5,                       color: 'text-[var(--text-primary)]', bg: 'bg-[var(--bg-muted)]' },
+  { id: 'twenty_tests',     icon: Goal,     title: 'Maratonist',          desc: 'Completează 20 de teste',                        check: (s) => s.totalTests >= 20,                      color: 'text-[var(--text-primary)]', bg: 'bg-[var(--bg-muted)]' },
+  { id: 'fifty_tests',      icon: Flame,    title: 'On fire',             desc: 'Completează 50 de teste',                        check: (s) => s.totalTests >= 50,                      color: 'text-[var(--text-primary)]', bg: 'bg-[var(--bg-muted)]' },
+  { id: 'high_score',       icon: Star,     title: 'Bun elev',            desc: 'Obține un scor de 80%+',                         check: (s) => s.bestScore >= 80,                      color: 'text-[var(--text-primary)]', bg: 'bg-[var(--bg-muted)]' },
+  { id: 'excellent',        icon: Trophy,   title: 'Excelență',           desc: 'Obține un scor de 95%+',                         check: (s) => s.bestScore >= 95,                      color: 'text-[var(--text-primary)]', bg: 'bg-[var(--bg-muted)]' },
+  { id: 'perfect',          icon: Award,    title: 'Perfect!',            desc: 'Obține scor 100% la un test',                    check: (s) => s.perfectTests >= 1,                    color: 'text-[var(--text-primary)]', bg: 'bg-[var(--bg-muted)]' },
+  { id: 'consistent',       icon: Brain,    title: 'Consistent',          desc: 'Menține scor mediu de 70%+ pe 10 teste',         check: (s) => s.totalTests >= 10 && s.avgScore >= 70, color: 'text-[var(--text-primary)]', bg: 'bg-[var(--bg-muted)]' },
+  { id: 'all_categories',   icon: Palette,  title: 'Complet',             desc: 'Completează teste din toate cele 6 categorii',   check: (s) => s.uniqueCategories >= 6,                color: 'text-[var(--text-primary)]', bg: 'bg-[var(--bg-muted)]' },
+  { id: 'all_institutions', icon: Shield,   title: 'Polivalent',          desc: 'Completează teste pentru toate 4 instituțiile',  check: (s) => s.uniqueInstitutions >= 4,              color: 'text-[var(--text-primary)]', bg: 'bg-[var(--bg-muted)]' },
+  { id: 'speed_demon',      icon: Zap,      title: 'Rapid',               desc: 'Completează 3 teste în aceeași zi',              check: (s) => s.testsInDay >= 3,                      color: 'text-[var(--text-primary)]', bg: 'bg-[var(--bg-muted)]' },
+  { id: 'high_scorer',      icon: Sparkles, title: 'Top performer',       desc: 'Obține 80%+ la 5 teste diferite',                check: (s) => s.highScoreTests >= 5,                  color: 'text-[var(--text-primary)]', bg: 'bg-[var(--bg-muted)]' },
 ]
 
 export default async function AchievementsPage() {
@@ -110,9 +113,7 @@ export default async function AchievementsPage() {
                 style={{ boxShadow: '0 0 0 1px rgba(99,102,241,0.15), 0 8px 24px -8px rgba(0,0,0,0.5)' }}
               >
                 <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-indigo-500 to-violet-500 opacity-50" />
-                <div className={cn('w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl', ach.bg)}>
-                  {ach.icon}
-                </div>
+                <IconBadge icon={ach.icon} className={cn('mx-auto mb-3 h-14 w-14 rounded-2xl', ach.bg)} iconClassName="h-6 w-6 text-[var(--text-primary)]" />
                 <p className={cn('font-extrabold text-sm mb-1', ach.color)}>{ach.title}</p>
                 <p className="text-xs leading-snug" style={{ color: 'var(--text-muted)' }}>{ach.desc}</p>
               </div>
@@ -131,9 +132,7 @@ export default async function AchievementsPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {locked.map((ach) => (
               <div key={ach.id} className="dash-card rounded-2xl p-5 text-center opacity-35">
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl grayscale" style={{ background: 'var(--bg-muted)' }}>
-                  {ach.icon}
-                </div>
+                <IconBadge icon={ach.icon} className="mx-auto mb-3 h-14 w-14 rounded-2xl opacity-60" iconClassName="h-6 w-6 text-[var(--text-primary)]" />
                 <p className="font-bold text-sm mb-1" style={{ color: 'var(--text-muted)' }}>{ach.title}</p>
                 <p className="text-xs leading-snug" style={{ color: 'var(--text-muted)' }}>{ach.desc}</p>
               </div>
@@ -144,7 +143,7 @@ export default async function AchievementsPage() {
 
       {earned.length === 0 && (
         <div className="dash-card rounded-2xl p-16 text-center">
-          <div className="text-5xl mb-4">🏆</div>
+          <IconBadge icon={Trophy} className="mx-auto mb-4 h-16 w-16 rounded-2xl bg-[var(--bg-muted)]" iconClassName="h-8 w-8 text-[var(--text-primary)]" />
           <h3 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>Nicio realizare deblocată încă</h3>
           <p className="text-sm mt-2 max-w-sm mx-auto" style={{ color: 'var(--text-muted)' }}>
             Completează primul test pentru a începe să câștigi realizări!

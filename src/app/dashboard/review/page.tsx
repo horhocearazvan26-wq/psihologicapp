@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { CATEGORY_LABELS, CATEGORY_ICONS, getScoreColor } from '@/lib/utils'
+import { CATEGORY_LABELS, getScoreColor } from '@/lib/utils'
 import type { TestCategory } from '@/types'
 import { FileText, TrendingDown, CheckCircle, ChevronRight } from 'lucide-react'
+import { CategoryIcon } from '@/components/ui/category-icon'
 
 export default async function ReviewPage() {
   const supabase = await createClient()
@@ -72,9 +73,7 @@ export default async function ReviewPage() {
                 {weakCategories.map((wc) => (
                   <div key={wc.category} className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-sm p-5 hover:shadow-md hover:border-[var(--border-strong)] hover:-translate-y-0.5 transition-all duration-200">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-950/40 flex items-center justify-center text-lg shrink-0">
-                        {CATEGORY_ICONS[wc.category]}
-                      </div>
+                      <CategoryIcon category={wc.category} className="h-10 w-10 rounded-xl bg-[var(--bg-muted)] text-[var(--text-primary)] shrink-0" iconClassName="h-4 w-4 text-[var(--text-primary)]" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-[var(--text-primary)]">{CATEGORY_LABELS[wc.category]}</p>
                         <p className="text-xs text-[var(--text-muted)]">{wc.institutions.join(', ')}</p>
@@ -119,9 +118,7 @@ export default async function ReviewPage() {
                     key={session.id}
                     className={`flex flex-col gap-3 px-5 py-3.5 transition-colors hover:bg-[var(--bg-muted)] sm:flex-row sm:items-center ${i < reviewSessions.length - 1 ? 'border-b border-[var(--border)]' : ''}`}
                   >
-                    <div className="w-9 h-9 rounded-xl bg-red-50 dark:bg-red-950/40 text-red-500 flex items-center justify-center text-base shrink-0">
-                      {CATEGORY_ICONS[session.category as TestCategory]}
-                    </div>
+                    <CategoryIcon category={session.category as TestCategory} className="h-9 w-9 rounded-xl bg-[var(--bg-muted)] text-[var(--text-primary)] shrink-0" iconClassName="h-4 w-4 text-[var(--text-primary)]" />
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-[var(--text-primary)]">
                         {CATEGORY_LABELS[session.category as TestCategory]}
@@ -178,9 +175,7 @@ export default async function ReviewPage() {
                     key={session.id}
                     className={`flex items-center gap-3 px-5 py-3.5 ${i < goodSessions.length - 1 ? 'border-b border-[var(--border)]' : ''}`}
                   >
-                    <div className="w-9 h-9 rounded-xl bg-green-50 dark:bg-green-950/40 text-green-500 flex items-center justify-center text-base shrink-0">
-                      {CATEGORY_ICONS[session.category as TestCategory]}
-                    </div>
+                    <CategoryIcon category={session.category as TestCategory} className="h-9 w-9 rounded-xl bg-[var(--bg-muted)] text-[var(--text-primary)] shrink-0" iconClassName="h-4 w-4 text-[var(--text-primary)]" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-[var(--text-primary)] truncate">
                         {CATEGORY_LABELS[session.category as TestCategory]}

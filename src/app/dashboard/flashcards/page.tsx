@@ -1,10 +1,13 @@
 import { FlashcardDeck } from './flashcard-deck'
+import { BookOpen, Brain, Database, Hash } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { IconBadge } from '@/components/ui/icon-badge'
 
 const decks = [
   {
     id: 'vocabulary',
     title: 'Vocabular',
-    icon: '📚',
+    icon: BookOpen,
     count: 40,
     gradient: 'from-rose-700 to-pink-700',
     cards: [
@@ -33,7 +36,7 @@ const decks = [
   {
     id: 'logic_formulas',
     title: 'Formule Logice',
-    icon: '🧠',
+    icon: Brain,
     count: 20,
     gradient: 'from-violet-700 to-indigo-700',
     cards: [
@@ -52,7 +55,7 @@ const decks = [
   {
     id: 'numerical',
     title: 'Formule Matematice',
-    icon: '🔢',
+    icon: Hash,
     count: 20,
     gradient: 'from-emerald-700 to-teal-700',
     cards: [
@@ -73,7 +76,7 @@ const decks = [
   {
     id: 'memory_tips',
     title: 'Tehnici de Memorare',
-    icon: '💾',
+    icon: Database,
     count: 15,
     gradient: 'from-amber-700 to-orange-700',
     cards: [
@@ -113,7 +116,7 @@ export default function FlashcardsPage() {
               <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)' }} />
               <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full blur-2xl" style={{ background: 'rgba(255,255,255,0.1)' }} />
               <div className="relative flex items-center gap-3">
-                <span className="text-3xl">{deck.icon}</span>
+                <IconBadge icon={deck.icon as LucideIcon} className="h-12 w-12 rounded-2xl border-white/12 bg-white/10 text-white shadow-none" iconClassName="h-5 w-5 text-white" />
                 <div>
                   <h2 className="font-extrabold text-white text-base leading-tight">{deck.title}</h2>
                   <p className="text-white/50 text-xs mt-0.5 font-medium">{deck.count} carduri</p>
@@ -122,7 +125,15 @@ export default function FlashcardsPage() {
             </div>
             {/* Deck content */}
             <div className="p-5">
-              <FlashcardDeck deck={deck} />
+              <FlashcardDeck
+                deck={{
+                  id: deck.id,
+                  title: deck.title,
+                  count: deck.count,
+                  gradient: deck.gradient,
+                  cards: deck.cards,
+                }}
+              />
             </div>
           </div>
         ))}
