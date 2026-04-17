@@ -1,8 +1,11 @@
+import type { CSSProperties } from 'react'
+
 interface ScrollRevealProps {
   children: React.ReactNode
   className?: string
   delay?: number
   direction?: 'up' | 'left' | 'right' | 'none'
+  style?: CSSProperties
 }
 
 export function ScrollReveal({
@@ -10,11 +13,16 @@ export function ScrollReveal({
   className = '',
   delay = 0,
   direction = 'up',
+  style,
 }: ScrollRevealProps) {
+  const mergedStyle: CSSProperties = {
+    ...(delay ? { animationDelay: `${delay}ms` } : {}),
+    ...style,
+  }
   return (
     <div
       className={`perf-reveal perf-reveal-${direction} ${className}`}
-      style={delay ? { animationDelay: `${delay}ms` } : undefined}
+      style={Object.keys(mergedStyle).length ? mergedStyle : undefined}
     >
       {children}
     </div>
