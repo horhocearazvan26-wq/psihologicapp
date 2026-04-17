@@ -91,20 +91,30 @@ export function OnboardingFlow({ firstName }: OnboardingFlowProps) {
   const [selectedInstitution, setSelectedInstitution] = useState<string | null>(null)
   const [examDate, setExamDate] = useState('')
   const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<string | null>(null)
 
   function goToStep2() {
     if (!selectedInstitution) return
+    setError(null)
     setStep(2)
   }
 
   function handlePlanContinue(plan: typeof plans[number]) {
     startTransition(async () => {
+      setError(null)
       if (plan.id === 'free') {
         // Save profile and go to dashboard (free, no payment)
-        await saveOnboardingFree(selectedInstitution!, examDate)
+        const result = await saveOnboardingFree(selectedInstitution!, examDate)
+        if (result?.error) {
+          setError(result.error)
+        }
       } else {
         // Save institution first, then redirect to Stripe
-        await saveInstitution(selectedInstitution!, examDate)
+        const result = await saveInstitution(selectedInstitution!, examDate)
+        if (result?.error) {
+          setError(result.error)
+          return
+        }
         const params = new URLSearchParams({ plan: plan.id })
         if (plan.id === 'one_institution') params.set('institution', selectedInstitution!)
         window.location.href = `/api/stripe/checkout?${params.toString()}`
@@ -335,6 +345,12 @@ export function OnboardingFlow({ firstName }: OnboardingFlowProps) {
                   </div>
                 ))}
               </div>
+
+              {error && (
+                <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+                  {error}
+                </div>
+              )}
 
               <button
                 onClick={() => setStep(1)}

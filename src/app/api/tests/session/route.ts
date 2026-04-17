@@ -18,14 +18,18 @@ export async function POST(request: Request) {
     .eq('id', user.id)
     .single()
 
+  const hasFullAccess =
+    profile?.subscription_plan === 'all_institutions' ||
+    (profile?.subscription_plan === 'one_institution' &&
+      profile?.subscribed_institution === institution)
+
+  if (is_simulation && !hasFullAccess) {
+    return NextResponse.json({ error: 'Simularea este disponibilă doar pentru planurile premium active.' }, { status: 403 })
+  }
+
   // Determine question limit based on subscription
   let limit = 15 // free demo
-  if (profile?.subscription_plan === 'all_institutions') {
-    limit = 30
-  } else if (
-    profile?.subscription_plan === 'one_institution' &&
-    profile?.subscribed_institution === institution
-  ) {
+  if (hasFullAccess) {
     limit = 30
   }
 

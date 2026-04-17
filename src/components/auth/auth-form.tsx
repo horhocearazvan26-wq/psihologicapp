@@ -4,23 +4,26 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Brain, Loader2 } from 'lucide-react'
 import { signInWithEmail, signUpWithEmail, signInWithGoogle, resetPassword } from '@/app/auth/actions'
+import { createClient } from '@/lib/supabase/client'
 
-type AuthMode = 'login' | 'register' | 'forgot'
+type AuthMode = 'login' | 'register' | 'forgot' | 'reset'
 
 interface AuthFormProps {
   mode: AuthMode
+  redirectTo?: string
 }
 
 const inputCls = 'w-full px-4 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] text-[var(--text-primary)] text-sm placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all hover:border-[var(--border-strong)]'
 const labelCls = 'block text-sm font-semibold text-[var(--text-secondary)] mb-1.5'
 
-export function AuthForm({ mode }: AuthFormProps) {
+export function AuthForm({ mode, redirectTo }: AuthFormProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const nameId = 'full-name'
   const emailId = 'email'
   const passwordId = 'password'
+  const passwordConfirmId = 'password-confirm'
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -40,6 +43,29 @@ export function AuthForm({ mode }: AuthFormProps) {
         const result = await resetPassword(formData)
         if (result?.error) setError(result.error)
         else if (result?.success) setSuccess(result.success)
+      } else if (mode === 'reset') {
+        const password = formData.get('password') as string
+        const passwordConfirmation = formData.get('password_confirmation') as string
+
+        if (password !== passwordConfirmation) {
+          setError('Parolele nu se potrivesc.')
+          return
+        }
+
+        const supabase = createClient()
+        const { data: { session } } = await supabase.auth.getSession()
+
+        if (!session) {
+          setError('Linkul de resetare este invalid sau a expirat.')
+          return
+        }
+
+        const { error: updateError } = await supabase.auth.updateUser({ password })
+        if (updateError) {
+          setError(updateError.message)
+        } else {
+          setSuccess('Parola a fost actualizată. Te poți autentifica acum.')
+        }
       }
     } catch {
       // redirect() from server action triggers navigation
@@ -51,7 +77,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   async function handleGoogleSignIn() {
     setLoading(true)
     setError(null)
-    const result = await signInWithGoogle()
+    const result = await signInWithGoogle(redirectTo)
     if (result?.error) {
       setError(result.error)
       setLoading(false)
@@ -82,11 +108,13 @@ export function AuthForm({ mode }: AuthFormProps) {
             {mode === 'login' && 'Intră în cont'}
             {mode === 'register' && 'Creează cont gratuit'}
             {mode === 'forgot' && 'Resetare parolă'}
+            {mode === 'reset' && 'Alege o parolă nouă'}
           </h1>
           <p className="mt-2 text-[var(--text-muted)] text-sm">
             {mode === 'login' && 'Bun venit înapoi!'}
             {mode === 'register' && 'Începe pregătirea ta astăzi'}
             {mode === 'forgot' && 'Îți vom trimite un link de resetare'}
+            {mode === 'reset' && 'Finalizează resetarea contului tău'}
           </p>
           <p className="mt-3 text-xs leading-relaxed text-[var(--text-muted)]">
             Continuă pregătirea pentru MAI, MApN, SRI și ANP din același loc.
@@ -94,7 +122,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         </div>
 
         {/* Google Sign In */}
-        {mode !== 'forgot' && (
+        {mode !== 'forgot' && mode !== 'reset' && (
           <>
             <button
               type="button"
@@ -121,6 +149,9 @@ export function AuthForm({ mode }: AuthFormProps) {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
+          {mode === 'login' && redirectTo ? (
+            <input type="hidden" name="redirectTo" value={redirectTo} />
+          ) : null}
           {mode === 'register' && (
             <div>
               <label htmlFor={nameId} className={labelCls}>Nume complet</label>
@@ -142,6 +173,21 @@ export function AuthForm({ mode }: AuthFormProps) {
                 required
                 minLength={8}
                 autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                className={inputCls}
+              />
+            </div>
+          )}
+          {mode === 'reset' && (
+            <div>
+              <label htmlFor={passwordConfirmId} className={labelCls}>Confirmă parola</label>
+              <input
+                id={passwordConfirmId}
+                name="password_confirmation"
+                type="password"
+                placeholder="Repetă parola"
+                required
+                minLength={8}
+                autoComplete="new-password"
                 className={inputCls}
               />
             </div>
@@ -175,6 +221,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             {mode === 'login' && 'Intră în cont'}
             {mode === 'register' && 'Creează cont'}
             {mode === 'forgot' && 'Trimite link de resetare'}
+            {mode === 'reset' && 'Actualizează parola'}
           </button>
         </form>
 
@@ -192,6 +239,10 @@ export function AuthForm({ mode }: AuthFormProps) {
                 Intră în cont
               </Link>
             </>
+          ) : mode === 'reset' ? (
+            <Link href="/auth/login" className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
+              Mergi la login
+            </Link>
           ) : (
             <Link href="/auth/login" className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
               Înapoi la login

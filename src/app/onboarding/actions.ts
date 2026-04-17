@@ -8,10 +8,16 @@ export async function saveInstitution(institution: string, examDate: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  await supabase.from('profiles').update({
+  const { error } = await supabase.from('profiles').update({
     target_institution: institution,
     exam_date: examDate || null,
   }).eq('id', user.id)
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  return { success: true }
 }
 
 export async function saveOnboardingFree(institution: string, examDate: string) {
@@ -19,10 +25,14 @@ export async function saveOnboardingFree(institution: string, examDate: string) 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  await supabase.from('profiles').update({
+  const { error } = await supabase.from('profiles').update({
     target_institution: institution,
     exam_date: examDate || null,
   }).eq('id', user.id)
+
+  if (error) {
+    return { error: error.message }
+  }
 
   redirect('/dashboard')
 }

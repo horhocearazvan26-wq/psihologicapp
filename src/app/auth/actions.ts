@@ -3,10 +3,17 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
+function normalizeRedirectPath(input: string | null | undefined) {
+  if (!input || !input.startsWith('/')) return null
+  if (input.startsWith('//')) return null
+  return input
+}
+
 export async function signInWithEmail(formData: FormData) {
   const supabase = await createClient()
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+  const redirectTo = normalizeRedirectPath(formData.get('redirectTo') as string | null)
 
   const { data: { user }, error } = await supabase.auth.signInWithPassword({ email, password })
 
@@ -21,7 +28,11 @@ export async function signInWithEmail(formData: FormData) {
     .eq('id', user!.id)
     .single()
 
-  redirect(profile?.target_institution ? '/dashboard' : '/onboarding')
+  if (profile?.target_institution) {
+    redirect(redirectTo ?? '/dashboard')
+  }
+
+  redirect('/onboarding')
 }
 
 export async function signUpWithEmail(formData: FormData) {
@@ -53,13 +64,19 @@ export async function signUpWithEmail(formData: FormData) {
   return { success: 'Verifică-ți emailul pentru a confirma contul.' }
 }
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(redirectTo?: string) {
   const supabase = await createClient()
+  const next = normalizeRedirectPath(redirectTo)
+  const callbackUrl = new URL('/auth/callback', process.env.NEXT_PUBLIC_APP_URL)
+
+  if (next) {
+    callbackUrl.searchParams.set('next', next)
+  }
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+      redirectTo: callbackUrl.toString(),
     },
   })
 
