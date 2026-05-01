@@ -92,11 +92,7 @@ export default async function ReviewPage() {
                       Scor mediu sub 70% — necesită practică suplimentară
                     </p>
                     {wc.institutions[0] && (
-                      <Link href={
-                        wc.category === 'attention'
-                          ? `/dashboard/tests/${wc.institutions[0].toLowerCase()}/attention`
-                          : `/dashboard/tests/${wc.institutions[0].toLowerCase()}/${wc.category}`
-                      }>
+                      <Link href={`/dashboard/tests/${wc.institutions[0].toLowerCase()}/${wc.category}`}>
                         <div className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold text-[var(--text-primary)] bg-[var(--bg-muted)] hover:bg-[var(--border-strong)] transition-colors border border-[var(--border)]">
                           Exersează acum <ChevronRight className="w-3.5 h-3.5" />
                         </div>
@@ -137,11 +133,7 @@ export default async function ReviewPage() {
                         </p>
                         <p className="text-xs text-[var(--text-muted)]">{session.correct_answers}/{session.total_questions}</p>
                       </div>
-                      <Link href={
-                        session.category === 'attention'
-                          ? `/dashboard/tests/${session.institution.toLowerCase()}/attention`
-                          : `/dashboard/tests/${session.institution.toLowerCase()}/${session.category}`
-                      }>
+                      <Link href={`/dashboard/tests/${session.institution.toLowerCase()}/${session.category}`}>
                         <div className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-muted)] transition-colors">
                           Reia
                         </div>

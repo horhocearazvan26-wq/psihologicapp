@@ -64,7 +64,17 @@ const INST_CONFIG = {
   },
 }
 
-const CATEGORIES: TestCategory[] = ['attention', 'logic', 'memory', 'numerical', 'vocabulary', 'personality']
+const CATEGORIES: TestCategory[] = [
+  'rationament-analitic',
+  'transfer-analogic',
+  'vocabular',
+  'intelegere-texte',
+  'rationament-matematic',
+  'calcul-matematic',
+  'memorie-lucru',
+  'inhibitie-cognitiva',
+  'comutare-atentie',
+]
 
 // Static array defined once at module level — not recreated on every render.
 const QUICK_ACTIONS = [
@@ -360,9 +370,7 @@ export function DashboardClient({
         >
           {CATEGORIES.map((cat, i) => {
             const progress = instProgress.find(p => p.category === cat)
-            const href = cat === 'attention'
-              ? `/dashboard/tests/${inst.toLowerCase()}/attention`
-              : `/dashboard/tests/${inst.toLowerCase()}/${cat}`
+            const href = `/dashboard/tests/${inst.toLowerCase()}/${cat}`
             const hasProgress = progress && progress.tests_taken > 0
 
             return (

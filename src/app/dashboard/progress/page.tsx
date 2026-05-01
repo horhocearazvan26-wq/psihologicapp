@@ -13,7 +13,17 @@ import { CategoryIcon } from '@/components/ui/category-icon'
 import { IconBadge } from '@/components/ui/icon-badge'
 
 const institutions: Institution[] = ['MAI', 'MApN', 'SRI', 'ANP']
-const categories: TestCategory[] = ['attention', 'logic', 'memory', 'numerical', 'vocabulary', 'personality']
+const categories: TestCategory[] = [
+  'rationament-analitic',
+  'transfer-analogic',
+  'vocabular',
+  'intelegere-texte',
+  'rationament-matematic',
+  'calcul-matematic',
+  'memorie-lucru',
+  'inhibitie-cognitiva',
+  'comutare-atentie',
+]
 
 function ProgressSkeleton() {
   return (

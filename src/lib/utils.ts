@@ -21,21 +21,27 @@ export const INSTITUTION_FULL_NAMES: Record<Institution, string> = {
 }
 
 export const CATEGORY_LABELS: Record<TestCategory, string> = {
-  attention: 'Atenție & Concentrare',
-  logic: 'Raționament Logic',
-  memory: 'Memorie',
-  numerical: 'Aptitudini Numerice',
-  vocabulary: 'Vocabular & Limbaj',
-  personality: 'Personalitate',
+  'rationament-analitic':  'Raționament Analitic',
+  'transfer-analogic':     'Transfer Analogic Verbal',
+  'vocabular':             'Vocabular',
+  'intelegere-texte':      'Înțelegere Texte',
+  'rationament-matematic': 'Raționament Matematic',
+  'calcul-matematic':      'Calcul Matematic',
+  'memorie-lucru':         'Memorie de Lucru',
+  'inhibitie-cognitiva':   'Inhibiție Cognitivă',
+  'comutare-atentie':      'Comutarea Atenției',
 }
 
 export const CATEGORY_SHORT_LABELS: Record<TestCategory, string> = {
-  attention: 'AT',
-  logic: 'LG',
-  memory: 'MM',
-  numerical: 'NR',
-  vocabulary: 'VC',
-  personality: 'PS',
+  'rationament-analitic':  'RA',
+  'transfer-analogic':     'TA',
+  'vocabular':             'VC',
+  'intelegere-texte':      'IT',
+  'rationament-matematic': 'RM',
+  'calcul-matematic':      'CM',
+  'memorie-lucru':         'ML',
+  'inhibitie-cognitiva':   'IC',
+  'comutare-atentie':      'CA',
 }
 
 export function formatTime(seconds: number): string {

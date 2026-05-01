@@ -7,7 +7,14 @@ import { CheckCircle, Clock, ChevronRight, Trophy, ArrowLeft, ArrowRight, Loader
 import { CategoryIcon } from '@/components/ui/category-icon'
 import { IconBadge } from '@/components/ui/icon-badge'
 
-const CATEGORIES: TestCategory[] = ['logic', 'memory', 'numerical', 'vocabulary', 'personality']
+const CATEGORIES: TestCategory[] = [
+  'rationament-analitic',
+  'transfer-analogic',
+  'vocabular',
+  'intelegere-texte',
+  'rationament-matematic',
+  'calcul-matematic',
+]
 const TIME_PER_QUESTION = 45
 const QUESTIONS_PER_CATEGORY = 30
 

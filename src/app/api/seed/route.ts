@@ -1,13 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-import { generateLogicQuestions } from '@/lib/questions/logic'
-import { generateNumericalQuestions } from '@/lib/questions/numerical'
-import { generateVocabularyQuestions } from '@/lib/questions/vocabulary'
-import { generateMemoryQuestions } from '@/lib/questions/memory'
-import { generatePersonalityQuestions } from '@/lib/questions/personality'
-import { generateRavenQuestions } from '@/lib/questions/raven'
+import {
+  generateRationamentAnalitic,
+  generateTransferAnalogic,
+  generateVocabular,
+  generateIntelegereTexte,
+  generateRationamentMatematic,
+  generateCalculMatematic,
+} from '@/lib/questions'
 
-// Only allow in development or with secret key
 export async function POST(request: Request) {
   const { searchParams } = new URL(request.url)
   const secret = searchParams.get('secret')
@@ -27,21 +28,17 @@ export async function POST(request: Request) {
 
   for (const institution of institutions) {
     const allQuestions = [
-      ...generateLogicQuestions(institution),
-      ...generateNumericalQuestions(institution),
-      ...generateVocabularyQuestions(institution),
-      ...generateMemoryQuestions(institution),
-      ...generatePersonalityQuestions(institution),
-      ...generateRavenQuestions(institution),
+      ...generateRationamentAnalitic(institution),
+      ...generateTransferAnalogic(institution),
+      ...generateVocabular(institution),
+      ...generateIntelegereTexte(institution),
+      ...generateRationamentMatematic(institution),
+      ...generateCalculMatematic(institution),
     ]
 
-    // Insert in batches of 50
     for (let i = 0; i < allQuestions.length; i += 50) {
       const batch = allQuestions.slice(i, i + 50)
-      const { error } = await supabase
-        .from('test_questions')
-        .insert(batch)
-
+      const { error } = await supabase.from('test_questions').insert(batch)
       if (error) {
         errors.push(`${institution} batch ${i}: ${error.message}`)
       } else {
@@ -50,11 +47,7 @@ export async function POST(request: Request) {
     }
   }
 
-  return NextResponse.json({
-    success: true,
-    totalInserted,
-    errors: errors.length > 0 ? errors : undefined,
-  })
+  return NextResponse.json({ success: true, totalInserted, errors: errors.length > 0 ? errors : undefined })
 }
 
 export async function GET() {

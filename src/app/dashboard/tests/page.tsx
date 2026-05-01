@@ -11,7 +11,17 @@ import { Lock, CheckCircle, ChevronRight, Shield, Star, Eye, Scale, Sparkles } f
 import { CategoryIcon } from '@/components/ui/category-icon'
 
 const institutions: Institution[] = ['MAI', 'MApN', 'SRI', 'ANP']
-const categories: TestCategory[] = ['attention', 'logic', 'memory', 'numerical', 'vocabulary', 'personality']
+const categories: TestCategory[] = [
+  'rationament-analitic',
+  'transfer-analogic',
+  'vocabular',
+  'intelegere-texte',
+  'rationament-matematic',
+  'calcul-matematic',
+  'memorie-lucru',
+  'inhibitie-cognitiva',
+  'comutare-atentie',
+]
 const INSTITUTION_IMAGES: Record<Institution, string> = {
   MAI: '/images/mai.png',
   MApN: '/images/mapn.png',
@@ -71,12 +81,15 @@ const INST_CONFIG: Record<Institution, {
 }
 
 const CAT_CONFIG: Record<TestCategory, { bg: string; text: string; glow: string }> = {
-  attention:   { bg: 'bg-sky-500/10',     text: 'text-sky-400',     glow: 'rgba(14,165,233,0.15)' },
-  logic:       { bg: 'bg-purple-500/10',  text: 'text-purple-400',  glow: 'rgba(168,85,247,0.15)' },
-  memory:      { bg: 'bg-amber-500/10',   text: 'text-amber-400',   glow: 'rgba(245,158,11,0.15)' },
-  numerical:   { bg: 'bg-emerald-500/10', text: 'text-emerald-400', glow: 'rgba(16,185,129,0.15)' },
-  vocabulary:  { bg: 'bg-rose-500/10',    text: 'text-rose-400',    glow: 'rgba(244,63,94,0.15)' },
-  personality: { bg: 'bg-teal-500/10',    text: 'text-teal-400',    glow: 'rgba(20,184,166,0.15)' },
+  'rationament-analitic':  { bg: 'bg-purple-500/10',  text: 'text-purple-400',  glow: 'rgba(168,85,247,0.15)' },
+  'transfer-analogic':     { bg: 'bg-cyan-500/10',    text: 'text-cyan-400',    glow: 'rgba(6,182,212,0.15)' },
+  'vocabular':             { bg: 'bg-rose-500/10',    text: 'text-rose-400',    glow: 'rgba(244,63,94,0.15)' },
+  'intelegere-texte':      { bg: 'bg-amber-500/10',   text: 'text-amber-400',   glow: 'rgba(245,158,11,0.15)' },
+  'rationament-matematic': { bg: 'bg-emerald-500/10', text: 'text-emerald-400', glow: 'rgba(16,185,129,0.15)' },
+  'calcul-matematic':      { bg: 'bg-blue-500/10',    text: 'text-blue-400',    glow: 'rgba(59,130,246,0.15)' },
+  'memorie-lucru':         { bg: 'bg-sky-500/10',     text: 'text-sky-400',     glow: 'rgba(14,165,233,0.15)' },
+  'inhibitie-cognitiva':   { bg: 'bg-orange-500/10',  text: 'text-orange-400',  glow: 'rgba(249,115,22,0.15)' },
+  'comutare-atentie':      { bg: 'bg-teal-500/10',    text: 'text-teal-400',    glow: 'rgba(20,184,166,0.15)' },
 }
 
 function TestsSkeleton() {
@@ -234,9 +247,7 @@ async function TestsContent() {
               {categories.map((cat) => {
                 const progress = getProgress(inst, cat)
                 const catCfg = CAT_CONFIG[cat]
-                const href = cat === 'attention'
-                  ? `/dashboard/tests/${inst.toLowerCase()}/attention`
-                  : `/dashboard/tests/${inst.toLowerCase()}/${cat}`
+                const href = `/dashboard/tests/${inst.toLowerCase()}/${cat}`
 
                 return (
                   <Link key={cat} href={href}>

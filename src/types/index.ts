@@ -1,12 +1,15 @@
 export type Institution = 'MAI' | 'MApN' | 'SRI' | 'ANP'
 
 export type TestCategory =
-  | 'attention'
-  | 'logic'
-  | 'memory'
-  | 'numerical'
-  | 'vocabulary'
-  | 'personality'
+  | 'rationament-analitic'
+  | 'transfer-analogic'
+  | 'vocabular'
+  | 'intelegere-texte'
+  | 'rationament-matematic'
+  | 'calcul-matematic'
+  | 'memorie-lucru'
+  | 'inhibitie-cognitiva'
+  | 'comutare-atentie'
 
 export type SubscriptionPlan = 'free' | 'one_institution' | 'all_institutions'
 

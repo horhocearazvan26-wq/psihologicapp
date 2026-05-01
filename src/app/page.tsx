@@ -91,21 +91,254 @@ const plans = [
 
 export default async function HomePage() {
   return (
-    <div className="min-h-screen" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div className="landing-root min-h-screen" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+      <style>{`
+        .landing-root {
+          overflow-x: hidden;
+        }
+        .landing-nav-link:hover {
+          color: white !important;
+        }
+        .landing-nav {
+          box-shadow: none;
+        }
+        .landing-nav-inner {
+          min-height: 68px;
+        }
+        .brand-mark {
+          width: 40px !important;
+          height: 40px !important;
+          border-radius: 12px !important;
+          box-shadow: 0 10px 28px rgba(37,99,235,0.42), inset 0 1px 0 rgba(255,255,255,0.22) !important;
+        }
+        .brand-word {
+          font-size: 19px !important;
+        }
+        .premium-button,
+        .premium-card,
+        .institution-card {
+          transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease, background 220ms ease;
+        }
+        .premium-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 16px 34px rgba(37,99,235,0.34) !important;
+        }
+        .premium-card:hover,
+        .institution-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 18px 48px rgba(15,23,42,0.13) !important;
+          border-color: rgba(37,99,235,0.22) !important;
+        }
+        .dark-premium-card:hover {
+          box-shadow: 0 24px 70px rgba(37,99,235,0.2) !important;
+          border-color: rgba(255,255,255,0.18) !important;
+          background: rgba(255,255,255,0.065) !important;
+        }
+        .equal-grid {
+          align-items: stretch !important;
+        }
+        .equal-grid > * {
+          height: 100%;
+          display: flex;
+        }
+        .equal-grid .premium-card,
+        .equal-grid .institution-card {
+          height: 100%;
+          width: 100%;
+          box-sizing: border-box;
+        }
+        .hero-grid {
+          grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.75fr) !important;
+        }
+        .hero-card {
+          animation: heroFloat 6s ease-in-out infinite;
+          box-shadow: 0 28px 80px rgba(2, 8, 23, 0.5), inset 0 1px 0 rgba(255,255,255,0.12);
+        }
+        .score-badge {
+          animation: badgePulse 3.8s ease-in-out infinite;
+        }
+        .hero-eyebrow {
+          position: relative;
+          overflow: hidden;
+          isolation: isolate;
+          animation: eyebrowFloat 5.2s ease-in-out infinite;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 14px 45px rgba(148,163,184,0.12);
+        }
+        .hero-eyebrow::before {
+          content: "";
+          position: absolute;
+          inset: -1px;
+          background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.22) 45%, transparent 58%);
+          transform: translateX(-120%);
+          animation: eyebrowSheen 4.8s ease-in-out infinite;
+          z-index: -1;
+        }
+        .hero-title-glow {
+          background:
+            linear-gradient(180deg, #ffffff 0%, #f5f8ff 44%, #b7c7ee 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          text-shadow: 0 28px 80px rgba(96,165,250,0.16);
+        }
+        .hero-title-accent {
+          background:
+            linear-gradient(100deg, #ffffff 0%, #dbeafe 22%, #8bb7ff 52%, #c4b5fd 80%, #ffffff 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          filter: drop-shadow(0 18px 42px rgba(99,102,241,0.28));
+        }
+        .hero-fade {
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: -1px;
+          height: 92px;
+          pointer-events: none;
+          background: linear-gradient(180deg, rgba(2,8,20,0) 0%, rgba(2,8,20,0.72) 100%);
+        }
+        .ios-alert {
+          border-radius: 24px;
+          background: rgba(248,250,252,0.94);
+          border: 1px solid rgba(255,255,255,0.72);
+          box-shadow: 0 18px 45px rgba(2,8,23,0.22), inset 0 1px 0 rgba(255,255,255,0.9);
+          backdrop-filter: blur(18px) saturate(160%);
+          -webkit-backdrop-filter: blur(18px) saturate(160%);
+        }
+        .ios-alert-icon {
+          background: linear-gradient(180deg, #2563eb, #1d4ed8);
+          box-shadow: 0 8px 18px rgba(37,99,235,0.28), inset 0 1px 0 rgba(255,255,255,0.24);
+        }
+        .section-shell {
+          padding-top: 92px !important;
+          padding-bottom: 92px !important;
+        }
+        .institution-card img {
+          transform: scale(1.01);
+        }
+        .institution-card:hover img {
+          transform: scale(1.08);
+        }
+        .institution-name {
+          font-size: 30px;
+          line-height: 1;
+          font-weight: 900;
+          letter-spacing: 0;
+          text-align: center;
+        }
+        .institution-full {
+          min-height: 38px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+        }
+        .pricing-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+          align-items: stretch !important;
+        }
+        .pricing-card {
+          min-height: 520px;
+        }
+        .feature-metric {
+          white-space: nowrap;
+        }
+        @keyframes heroFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+        @keyframes badgePulse {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-3px) scale(1.03); }
+        }
+        @keyframes eyebrowFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-4px); }
+        }
+        @keyframes eyebrowSheen {
+          0%, 18% { transform: translateX(-120%); opacity: 0; }
+          38% { opacity: 1; }
+          58%, 100% { transform: translateX(120%); opacity: 0; }
+        }
+        @media (max-width: 1023px) {
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .pricing-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .pricing-card {
+            min-height: auto;
+            transform: none !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .landing-nav-inner {
+            min-height: 62px;
+            padding: 0 16px !important;
+          }
+          .brand-mark {
+            width: 36px !important;
+            height: 36px !important;
+          }
+          .brand-word {
+            font-size: 17px !important;
+          }
+          .nav-login {
+            display: none !important;
+          }
+          .nav-register {
+            padding: 9px 12px !important;
+            font-size: 12px !important;
+            border-radius: 10px !important;
+          }
+          .alert-inner {
+            justify-content: center !important;
+          }
+          .ios-alert {
+            border-radius: 22px;
+            text-align: center;
+          }
+          .hero-section {
+            padding-top: 56px !important;
+            padding-bottom: 72px !important;
+          }
+          .hero-copy {
+            text-align: center;
+            margin: 0 auto;
+          }
+          .hero-copy p,
+          .hero-copy h1 {
+            margin-left: auto;
+            margin-right: auto;
+          }
+          .hero-actions,
+          .trust-strip {
+            justify-content: center;
+          }
+          .section-shell {
+            padding-top: 64px !important;
+            padding-bottom: 64px !important;
+          }
+          .institution-name {
+            font-size: 34px;
+          }
+        }
+      `}</style>
 
       {/* ─── NAVBAR ─── */}
-      <nav style={{
+      <nav className="landing-nav" style={{
         position: 'sticky', top: 0, zIndex: 50,
-        borderBottom: '1px solid rgba(255,255,255,0.08)',
-        background: 'rgba(5,16,30,0.92)',
-        backdropFilter: 'blur(20px)',
+        borderBottom: 'none',
+        background: 'transparent',
       }}>
-        <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="landing-nav-inner" style={{ maxWidth: 1152, margin: '0 auto', padding: '0 24px', height: 68, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-            <div style={{ width: 34, height: 34, background: 'linear-gradient(135deg, #2563eb, #7c3aed)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(37,99,235,0.4)' }}>
-              <Brain style={{ width: 18, height: 18, color: 'white' }} />
+            <div className="brand-mark" style={{ width: 40, height: 40, background: 'linear-gradient(135deg, #2563eb, #7c3aed)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(37,99,235,0.4)' }}>
+              <Brain style={{ width: 20, height: 20, color: 'white' }} />
             </div>
-            <span style={{ fontWeight: 800, color: 'white', fontSize: 17, letterSpacing: '-0.02em' }}>PsihoPrep</span>
+            <span className="brand-word" style={{ fontWeight: 800, color: 'white', fontSize: 19, letterSpacing: '0' }}>PsihoPrep</span>
           </Link>
 
           <div className="hidden md:flex" style={{ alignItems: 'center', gap: 28 }}>
@@ -115,44 +348,27 @@ export default async function HomePage() {
               { href: '#institutions', label: 'Instituții' },
               { href: '#pricing', label: 'Prețuri' },
             ].map(({ href, label }) => (
-              <a key={href} href={href} style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, fontWeight: 500, textDecoration: 'none', transition: 'color 0.15s' }}
-                onMouseOver={e => (e.currentTarget.style.color = 'white')}
-                onMouseOut={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}>
+              <a key={href} href={href} className="landing-nav-link" style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, fontWeight: 500, textDecoration: 'none', transition: 'color 0.15s' }}>
                 {label}
               </a>
             ))}
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Link href="/auth/login" style={{ padding: '8px 16px', fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', borderRadius: 10, transition: 'color 0.15s' }}>
+            <Link href="/auth/login" className="nav-login" style={{ padding: '8px 16px', fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', borderRadius: 10, transition: 'color 0.15s' }}>
               Intră în cont
             </Link>
-            <Link href="/auth/register" style={{ padding: '9px 18px', fontSize: 14, fontWeight: 700, color: 'white', textDecoration: 'none', background: 'linear-gradient(135deg, #2563eb, #7c3aed)', borderRadius: 10, boxShadow: '0 4px 14px rgba(37,99,235,0.35)' }}>
+            <Link href="/auth/register" className="nav-register premium-button" style={{ padding: '10px 18px', fontSize: 14, fontWeight: 700, color: 'white', textDecoration: 'none', background: 'linear-gradient(135deg, #2563eb, #7c3aed)', borderRadius: 11, boxShadow: '0 4px 14px rgba(37,99,235,0.35)' }}>
               Începe gratuit
             </Link>
           </div>
         </div>
       </nav>
 
-      {/* ─── ALERT BANNER ─── */}
-      <div style={{ background: 'linear-gradient(90deg, #1e3a5f, #1a2f4e)', borderBottom: '1px solid rgba(251,191,36,0.2)', padding: '10px 24px' }}>
-        <div style={{ maxWidth: 1152, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ background: '#f59e0b', color: '#000', fontSize: 10, fontWeight: 800, padding: '3px 8px', borderRadius: 6, letterSpacing: '0.08em', textTransform: 'uppercase' }}>LIVE</span>
-            <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: 13, fontWeight: 500 }}>
-              <strong style={{ color: 'white' }}>Sesiunea MAI Aprilie–Mai 2026 este activă.</strong> Candidații se pregătesc acum.
-            </span>
-          </div>
-          <Link href="/ghid/test-psihologic-mai-2026" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#fbbf24', fontSize: 13, fontWeight: 700, textDecoration: 'none', whiteSpace: 'nowrap' }}>
-            Citește ghidul complet <ArrowRight style={{ width: 14, height: 14 }} />
-          </Link>
-        </div>
-      </div>
-
       {/* ─── HERO ─── */}
-      <section style={{
-        background: 'linear-gradient(160deg, #020c1b 0%, #050f1f 50%, #08162c 100%)',
-        paddingTop: 80, paddingBottom: 100,
+      <section className="hero-section" style={{
+        background: 'radial-gradient(circle at 50% -10%, rgba(255,255,255,0.13), transparent 30%), linear-gradient(165deg, #020814 0%, #061426 45%, #0b1930 100%)',
+        paddingTop: 26, paddingBottom: 100,
         position: 'relative', overflow: 'hidden',
       }}>
         {/* Grid texture */}
@@ -164,19 +380,36 @@ export default async function HomePage() {
         {/* Glow blobs */}
         <div style={{ position: 'absolute', top: -100, left: '20%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: -50, right: '10%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(124,58,237,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div className="hero-fade" />
 
-        <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: '1fr', gap: 60, alignItems: 'center' }} className="lg:grid-cols-2-auto">
-          <div style={{ maxWidth: 600 }}>
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: 1152, margin: '0 auto', padding: '0 24px 46px' }}>
+          <div className="alert-inner ios-alert" style={{ maxWidth: 680, margin: '0 auto', padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+              <div className="ios-alert-icon" style={{ width: 34, height: 34, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <CalendarDays style={{ width: 17, height: 17, color: 'white' }} />
+              </div>
+              <span style={{ minWidth: 0 }}>
+                <span style={{ display: 'block', color: '#0f172a', fontSize: 13, fontWeight: 800, lineHeight: 1.2 }}>Sesiunea ANP este activă</span>
+                <span style={{ display: 'block', color: '#64748b', fontSize: 12, fontWeight: 600, lineHeight: 1.25, marginTop: 2 }}>Dosar + psihologic în desfășurare</span>
+              </span>
+            </div>
+            <Link href="/ghid/test-psihologic-anp-2026" style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#2563eb', fontSize: 12, fontWeight: 800, textDecoration: 'none', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              Detalii <ArrowRight style={{ width: 13, height: 13 }} />
+            </Link>
+          </div>
+        </div>
+
+        <div className="hero-grid" style={{ maxWidth: 1152, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: '1fr', gap: 60, alignItems: 'center' }}>
+          <div className="hero-copy" style={{ maxWidth: 600 }}>
             {/* Eyebrow */}
-            <div className="animate-fade-in" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(37,99,235,0.15)', border: '1px solid rgba(37,99,235,0.3)', borderRadius: 999, padding: '6px 14px', marginBottom: 28 }}>
-              <span style={{ width: 6, height: 6, background: '#22c55e', borderRadius: '50%', boxShadow: '0 0 8px #22c55e' }} />
-              <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Pregătire psihologică · MAI · MApN · SRI · ANP</span>
+            <div className="hero-eyebrow animate-fade-in" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.055))', border: '1px solid rgba(255,255,255,0.16)', borderRadius: 999, padding: '8px 15px', marginBottom: 28, backdropFilter: 'blur(18px)' }}>
+              <span style={{ color: 'rgba(255,255,255,0.82)', fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Pregătire psihologică · MAI · MApN · SRI · ANP</span>
             </div>
 
             {/* Headline */}
-            <h1 className={`animate-fade-up ${sora.className}`} style={{ fontSize: 'clamp(40px, 6vw, 68px)', fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.03em', color: 'white', marginBottom: 24 }}>
-              Nu mai pica<br />
-              <span style={{ background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            <h1 className={`animate-fade-up ${sora.className}`} style={{ fontSize: 'clamp(42px, 6vw, 72px)', fontWeight: 900, lineHeight: 1.02, letterSpacing: '0', color: 'white', marginBottom: 24 }}>
+              <span className="hero-title-glow">Nu mai pica</span><br />
+              <span className="hero-title-accent">
                 testul psihologic.
               </span>
             </h1>
@@ -186,8 +419,8 @@ export default async function HomePage() {
             </p>
 
             {/* CTAs */}
-            <div className="animate-fade-up" style={{ animationDelay: '140ms', display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 36 }}>
-              <Link href="/auth/register" style={{
+            <div className="hero-actions animate-fade-up" style={{ animationDelay: '140ms', display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 36 }}>
+              <Link href="/auth/register" className="premium-button" style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8,
                 padding: '14px 28px', fontSize: 15, fontWeight: 700, color: 'white',
                 textDecoration: 'none',
@@ -208,7 +441,7 @@ export default async function HomePage() {
             </div>
 
             {/* Trust strip */}
-            <div className="animate-fade-up" style={{ animationDelay: '200ms', display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
+            <div className="trust-strip animate-fade-up" style={{ animationDelay: '200ms', display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
               {[
                 { val: '500+', label: 'candidați admiși' },
                 { val: '94%', label: 'rată de succes' },
@@ -223,97 +456,143 @@ export default async function HomePage() {
           </div>
 
           {/* Product Mockup */}
-          <div className="animate-fade-up hidden lg:block" style={{ animationDelay: '160ms', position: 'relative', width: 400, marginLeft: 'auto' }}>
+          <div className="animate-fade-up hidden lg:block" style={{ animationDelay: '160ms', position: 'relative', width: 440, marginLeft: 'auto' }}>
             {/* Glow */}
-            <div style={{ position: 'absolute', inset: -40, background: 'radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 65%)', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', inset: -44, background: 'radial-gradient(circle, rgba(37,99,235,0.17) 0%, transparent 65%)', pointerEvents: 'none' }} />
 
-            {/* Main test card */}
-            <div style={{
+            {/* Command center */}
+            <div className="hero-card" style={{
               background: 'linear-gradient(145deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%)',
               border: '1px solid rgba(255,255,255,0.1)', borderRadius: 24, padding: 24,
               backdropFilter: 'blur(20px)', position: 'relative',
             }}>
-              {/* Card header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
                 <div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 4 }}>Sesiune activă · MAI</div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: 'white' }}>Întrebarea 8 din 15</div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 5 }}>PsihoPrep OS</div>
+                  <div style={{ fontSize: 19, fontWeight: 800, color: 'white', letterSpacing: '0' }}>Command Center</div>
                 </div>
-                <div style={{ background: 'rgba(239,68,68,0.14)', border: '1px solid rgba(239,68,68,0.28)', borderRadius: 10, padding: '7px 12px', textAlign: 'center' }}>
-                  <div style={{ fontSize: 10, color: 'rgba(239,68,68,0.7)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2 }}>Timp</div>
-                  <div style={{ fontSize: 19, fontWeight: 800, color: '#ef4444', fontFamily: 'monospace', lineHeight: 1 }}>01:47</div>
-                </div>
-              </div>
-
-              {/* Progress bar */}
-              <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: 999, height: 3, marginBottom: 18 }}>
-                <div style={{ background: 'linear-gradient(90deg,#3b82f6,#8b5cf6)', borderRadius: 999, height: 3, width: '53%' }} />
-              </div>
-
-              {/* Question */}
-              <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: 14, marginBottom: 14 }}>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>Raționament Logic</div>
-                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.9)', fontWeight: 500, lineHeight: 1.5 }}>
-                  Care este termenul următor în seria:<br />2, 6, 12, 20, 30, <strong style={{ color: '#3b82f6' }}>?</strong>
+                <div style={{ display: 'flex', gap: 5 }}>
+                  {['MAI', 'MApN', 'SRI', 'ANP'].map((inst, index) => (
+                    <span key={inst} style={{
+                      padding: '6px 8px',
+                      borderRadius: 8,
+                      fontSize: 10,
+                      fontWeight: 800,
+                      color: index === 0 ? 'white' : 'rgba(255,255,255,0.48)',
+                      background: index === 0 ? 'rgba(59,130,246,0.22)' : 'rgba(255,255,255,0.055)',
+                      border: index === 0 ? '1px solid rgba(59,130,246,0.38)' : '1px solid rgba(255,255,255,0.07)',
+                    }}>{inst}</span>
+                  ))}
                 </div>
               </div>
 
-              {/* Answer options */}
-              {[
-                { letter: 'A', text: '38', selected: false },
-                { letter: 'B', text: '42', selected: true },
-                { letter: 'C', text: '36', selected: false },
-                { letter: 'D', text: '44', selected: false },
-              ].map(opt => (
-                <div key={opt.letter} style={{
-                  display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, marginBottom: 6,
-                  background: opt.selected ? 'rgba(59,130,246,0.14)' : 'rgba(255,255,255,0.03)',
-                  border: opt.selected ? '1px solid rgba(59,130,246,0.4)' : '1px solid rgba(255,255,255,0.06)',
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '132px 1fr',
+                gap: 14,
+                marginBottom: 14,
+              }}>
+                <div style={{
+                  borderRadius: 18,
+                  padding: 16,
+                  background: 'linear-gradient(145deg, rgba(59,130,246,0.18), rgba(124,58,237,0.14))',
+                  border: '1px solid rgba(96,165,250,0.25)',
+                  minHeight: 128,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
                 }}>
-                  <span style={{
-                    width: 26, height: 26, borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 11, fontWeight: 800, flexShrink: 0,
-                    background: opt.selected ? '#3b82f6' : 'rgba(255,255,255,0.06)',
-                    color: opt.selected ? 'white' : 'rgba(255,255,255,0.35)',
-                  }}>{opt.letter}</span>
-                  <span style={{ fontSize: 14, color: opt.selected ? 'white' : 'rgba(255,255,255,0.5)', fontWeight: opt.selected ? 600 : 400 }}>{opt.text}</span>
-                  {opt.selected && <CheckCircle style={{ width: 14, height: 14, color: '#3b82f6', marginLeft: 'auto' }} />}
+                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.58)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 800 }}>Nivel pregătire</div>
+                  <div>
+                    <div style={{ fontSize: 42, fontWeight: 900, color: 'white', lineHeight: 1, letterSpacing: '0' }}>74%</div>
+                    <div style={{ fontSize: 12, color: '#93c5fd', fontWeight: 800, marginTop: 6 }}>+18% progres</div>
+                  </div>
                 </div>
-              ))}
+
+                <div style={{ display: 'grid', gap: 8 }}>
+                  {[
+                    { label: 'Atenție', value: 81, color: '#3b82f6' },
+                    { label: 'Logică', value: 69, color: '#8b5cf6' },
+                    { label: 'Memorie', value: 76, color: '#10b981' },
+                    { label: 'Numeric', value: 64, color: '#f59e0b' },
+                  ].map((item) => (
+                    <div key={item.label}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.66)', fontWeight: 700 }}>{item.label}</span>
+                        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontWeight: 800 }}>{item.value}%</span>
+                      </div>
+                      <div style={{ height: 6, borderRadius: 999, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+                        <div style={{ width: `${item.value}%`, height: '100%', borderRadius: 999, background: item.color, boxShadow: `0 0 18px ${item.color}66` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{
+                background: 'rgba(255,255,255,0.045)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 16,
+                padding: 15,
+                marginBottom: 12,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                  <div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 800, marginBottom: 5 }}>Recomandat azi</div>
+                    <div style={{ fontSize: 15, color: 'white', fontWeight: 800 }}>Raționament logic</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.48)', marginTop: 4 }}>12 minute · dificultate medie</div>
+                  </div>
+                  <div style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 14,
+                    background: 'rgba(59,130,246,0.16)',
+                    border: '1px solid rgba(59,130,246,0.28)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#60a5fa',
+                    fontWeight: 900,
+                    fontSize: 16,
+                  }}>12</div>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                {[
+                  ['36', 'teste făcute'],
+                  ['9', 'categorii'],
+                  ['4', 'instituții'],
+                ].map(([value, label]) => (
+                  <div key={label} style={{
+                    borderRadius: 12,
+                    padding: '10px 8px',
+                    textAlign: 'center',
+                    background: 'rgba(255,255,255,0.04)',
+                    border: '1px solid rgba(255,255,255,0.07)',
+                  }}>
+                    <div style={{ fontSize: 18, color: 'white', fontWeight: 900, lineHeight: 1 }}>{value}</div>
+                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.42)', fontWeight: 700, marginTop: 5 }}>{label}</div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Score badge */}
-            <div style={{
+            <div className="score-badge" style={{
               position: 'absolute', top: -18, right: -18,
-              background: 'linear-gradient(135deg,#059669,#10b981)', borderRadius: 16, padding: '12px 18px',
-              boxShadow: '0 16px 40px rgba(16,185,129,0.45)', border: '1px solid rgba(255,255,255,0.2)',
+              background: 'linear-gradient(135deg,#2563eb,#7c3aed)', borderRadius: 16, padding: '12px 16px',
+              boxShadow: '0 16px 42px rgba(37,99,235,0.46)', border: '1px solid rgba(255,255,255,0.2)',
               textAlign: 'center',
             }}>
-              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2 }}>Scor final</div>
-              <div style={{ fontSize: 28, fontWeight: 900, color: 'white', lineHeight: 1, letterSpacing: '-0.02em' }}>87%</div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.9)', fontWeight: 700, marginTop: 3 }}>✓ ADMIS</div>
-            </div>
-
-            {/* Streak badge */}
-            <div style={{
-              position: 'absolute', bottom: -14, left: -18,
-              background: 'rgba(10,20,40,0.95)', border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: 14, padding: '10px 14px',
-              display: 'flex', alignItems: 'center', gap: 10,
-              backdropFilter: 'blur(20px)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-            }}>
-              <div style={{ width: 34, height: 34, borderRadius: 9, background: 'rgba(251,191,36,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>🔥</div>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: 'white' }}>7 zile consecutiv</div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)' }}>Streak de practică</div>
-              </div>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.72)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4, fontWeight: 800 }}>Focus</div>
+              <div style={{ fontSize: 14, fontWeight: 900, color: 'white', lineHeight: 1.1 }}>Plan zilnic</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ─── DE CE PICĂ CANDIDAȚII ─── */}
-      <section id="why" style={{ background: '#f8fafc', padding: '80px 24px', borderBottom: '1px solid #e2e8f0' }}>
+      <section id="why" className="section-shell" style={{ background: '#f8fafc', padding: '80px 24px', borderBottom: '1px solid #e2e8f0' }}>
         <div style={{ maxWidth: 1152, margin: '0 auto' }}>
           <ScrollReveal className="text-center" style={{ marginBottom: 52 }}>
             <div style={{ display: 'inline-block', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 999, padding: '5px 16px', marginBottom: 16 }}>
@@ -327,12 +606,12 @@ export default async function HomePage() {
             </p>
           </ScrollReveal>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20 }}>
+          <div className="equal-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20 }}>
             {problems.map((p, i) => {
               const Icon = p.icon
               return (
                 <ScrollReveal key={p.title} delay={i * 70}>
-                  <div style={{
+                  <div className="premium-card" style={{
                     background: 'white', borderRadius: 20, padding: 28,
                     border: '1px solid #e2e8f0', boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
                     transition: 'transform 0.2s, box-shadow 0.2s',
@@ -351,7 +630,7 @@ export default async function HomePage() {
       </section>
 
       {/* ─── CUM FUNCȚIONEAZĂ ─── */}
-      <section id="how" style={{ background: 'white', padding: '80px 24px' }}>
+      <section id="how" className="section-shell" style={{ background: 'white', padding: '80px 24px' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <ScrollReveal className="text-center" style={{ marginBottom: 56 }}>
             <div style={{ display: 'inline-block', background: 'rgba(37,99,235,0.07)', border: '1px solid rgba(37,99,235,0.15)', borderRadius: 999, padding: '5px 16px', marginBottom: 16 }}>
@@ -422,7 +701,7 @@ export default async function HomePage() {
       </section>
 
       {/* ─── TESTIMONIALE ─── */}
-      <section style={{ background: '#f1f5f9', padding: '80px 24px' }}>
+      <section className="section-shell" style={{ background: '#f1f5f9', padding: '80px 24px' }}>
         <div style={{ maxWidth: 1152, margin: '0 auto' }}>
 
           {/* Big social proof number */}
@@ -453,10 +732,10 @@ export default async function HomePage() {
             <p style={{ fontSize: 16, color: '#64748b' }}>Oameni reali, examene reale.</p>
           </ScrollReveal>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
+          <div className="equal-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
             {testimonials.map((t, i) => (
               <ScrollReveal key={t.name} delay={i * 80}>
-                <div style={{
+                <div className="premium-card" style={{
                   background: 'white', borderRadius: 20, padding: 28, height: '100%', boxSizing: 'border-box',
                   border: '1px solid #e2e8f0', boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
                   display: 'flex', flexDirection: 'column',
@@ -485,7 +764,7 @@ export default async function HomePage() {
       </section>
 
       {/* ─── INSTITUȚII ─── */}
-      <section id="institutions" style={{ background: 'white', padding: '80px 24px' }}>
+      <section id="institutions" className="section-shell" style={{ background: 'white', padding: '80px 24px' }}>
         <div style={{ maxWidth: 1152, margin: '0 auto' }}>
           <ScrollReveal className="text-center" style={{ marginBottom: 48 }}>
             <h2 className={sora.className} style={{ fontSize: 'clamp(26px,3.5vw,38px)', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.03em', marginBottom: 10 }}>
@@ -496,24 +775,24 @@ export default async function HomePage() {
             </p>
           </ScrollReveal>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 18 }}>
+          <div className="equal-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 18 }}>
             {institutions.map((inst, i) => (
               <ScrollReveal key={inst.abbr} delay={i * 70}>
-                <div style={{
+                <div className="institution-card" style={{
                   background: 'white', borderRadius: 20, overflow: 'hidden',
                   border: '1px solid #e2e8f0', boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
                   transition: 'transform 0.2s, box-shadow 0.2s',
                 }}>
-                  <div style={{ position: 'relative', height: 140, overflow: 'hidden' }}>
+                  <div style={{ position: 'relative', height: 158, overflow: 'hidden' }}>
                     <Image src={inst.image} alt={inst.name} fill sizes="280px" className="object-cover object-top" style={{ transition: 'transform 0.4s' }} />
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)' }} />
-                  </div>
-                  <div style={{ padding: '18px 20px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontSize: 15, fontWeight: 800, color: '#0f172a' }}>{inst.abbr}</span>
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: inst.accent, flexShrink: 0 }} />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.58) 0%, rgba(0,0,0,0.08) 64%, transparent 100%)' }} />
+                    <div style={{ position: 'absolute', left: 0, right: 0, bottom: 16, display: 'flex', justifyContent: 'center' }}>
+                      <span className="institution-name" style={{ color: 'white', textShadow: '0 8px 22px rgba(0,0,0,0.45)' }}>{inst.abbr}</span>
                     </div>
-                    <p style={{ fontSize: 12, color: '#64748b', fontWeight: 500, lineHeight: 1.4 }}>{inst.desc}</p>
+                  </div>
+                  <div style={{ padding: '18px 20px 20px', textAlign: 'center' }}>
+                    <p className="institution-full" style={{ fontSize: 13, color: '#0f172a', fontWeight: 800, lineHeight: 1.35, marginBottom: 8 }}>{inst.name}</p>
+                    <p style={{ fontSize: 12, color: '#64748b', fontWeight: 600, lineHeight: 1.4 }}>{inst.desc}</p>
                   </div>
                 </div>
               </ScrollReveal>
@@ -523,7 +802,7 @@ export default async function HomePage() {
       </section>
 
       {/* ─── CATEGORII ─── */}
-      <section style={{ background: '#f8fafc', padding: '80px 24px' }}>
+      <section className="section-shell" style={{ background: '#f8fafc', padding: '80px 24px' }}>
         <div style={{ maxWidth: 1152, margin: '0 auto' }}>
           <ScrollReveal className="text-center" style={{ marginBottom: 48 }}>
             <h2 className={sora.className} style={{ fontSize: 'clamp(26px,3.5vw,38px)', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.03em', marginBottom: 10 }}>
@@ -534,12 +813,12 @@ export default async function HomePage() {
             </p>
           </ScrollReveal>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+          <div className="equal-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             {categories.map((cat, i) => {
               const Icon = cat.icon
               return (
                 <ScrollReveal key={cat.title} delay={i * 55}>
-                  <div style={{
+                  <div className="premium-card" style={{
                     background: 'white', borderRadius: 18, padding: '22px 20px',
                     border: '1px solid #e2e8f0', boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
                   }}>
@@ -557,7 +836,7 @@ export default async function HomePage() {
       </section>
 
       {/* ─── FEATURES ─── */}
-      <section style={{ background: '#020c1b', padding: '80px 24px', position: 'relative', overflow: 'hidden' }}>
+      <section className="section-shell" style={{ background: '#020c1b', padding: '80px 24px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse at 20% 50%, rgba(37,99,235,0.1) 0%, transparent 55%), radial-gradient(ellipse at 80% 50%, rgba(124,58,237,0.08) 0%, transparent 55%)' }} />
         <div style={{ maxWidth: 1152, margin: '0 auto', position: 'relative' }}>
           <ScrollReveal className="text-center" style={{ marginBottom: 52 }}>
@@ -569,12 +848,12 @@ export default async function HomePage() {
             </p>
           </ScrollReveal>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+          <div className="equal-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
             {features.map((f, i) => {
               const Icon = f.icon
               return (
                 <ScrollReveal key={f.title} delay={i * 65}>
-                  <div style={{
+                  <div className="premium-card dark-premium-card" style={{
                     background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
                     borderRadius: 18, padding: '22px 22px',
                     transition: 'background 0.2s, border-color 0.2s',
@@ -583,7 +862,7 @@ export default async function HomePage() {
                       <div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Icon style={{ width: 19, height: 19, color: 'rgba(255,255,255,0.8)' }} />
                       </div>
-                      <span style={{ fontSize: 10, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.45)', letterSpacing: '0.04em' }}>{f.metric}</span>
+                      <span className="feature-metric" style={{ fontSize: 10, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.45)', letterSpacing: '0.04em' }}>{f.metric}</span>
                     </div>
                     <h3 style={{ fontSize: 14, fontWeight: 700, color: 'white', marginBottom: 6 }}>{f.title}</h3>
                     <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>{f.desc}</p>
@@ -596,7 +875,7 @@ export default async function HomePage() {
       </section>
 
       {/* ─── PRICING ─── */}
-      <section id="pricing" style={{ background: '#f8fafc', padding: '80px 24px' }}>
+      <section id="pricing" className="section-shell" style={{ background: '#f8fafc', padding: '80px 24px' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <ScrollReveal className="text-center" style={{ marginBottom: 52 }}>
             <div style={{ display: 'inline-block', background: 'rgba(37,99,235,0.07)', border: '1px solid rgba(37,99,235,0.15)', borderRadius: 999, padding: '5px 16px', marginBottom: 16 }}>
@@ -620,15 +899,15 @@ export default async function HomePage() {
             }}>
               <CalendarDays style={{ width: 16, height: 16, color: '#2563eb' }} />
               <span style={{ fontSize: 14, color: '#1e40af', fontWeight: 600 }}>
-                Sesiunea MAI este activă acum — candidații care se pregătesc azi au un avantaj real față de cei care amână.
+                Sesiunea ANP este activă acum — dosarul și evaluarea psihologică sunt etapa care decide ritmul următoarelor săptămâni.
               </span>
             </div>
           </ScrollReveal>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, alignItems: 'start' }}>
+          <div className="pricing-grid equal-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, alignItems: 'stretch' }}>
             {plans.map((plan, i) => (
               <ScrollReveal key={plan.name} delay={i * 80}>
-                <div style={{
+                <div className="premium-card pricing-card" style={{
                   borderRadius: 22, padding: '28px 28px 26px',
                   position: 'relative', display: 'flex', flexDirection: 'column',
                   ...(plan.style === 'free' ? {
@@ -707,7 +986,7 @@ export default async function HomePage() {
         <ScrollReveal className="relative text-center" style={{ maxWidth: 600, margin: '0 auto' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 999, padding: '6px 16px', marginBottom: 28 }}>
             <Zap style={{ width: 13, height: 13, color: '#fbbf24' }} />
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Sesiunea MAI e activă acum</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Sesiunea ANP e activă acum</span>
           </div>
           <h2 className={sora.className} style={{ fontSize: 'clamp(32px,5vw,52px)', fontWeight: 900, color: 'white', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 18 }}>
             Pregătește-te serios.<br />

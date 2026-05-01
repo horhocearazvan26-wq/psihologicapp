@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 
 const siteUrl = 'https://psihoprep.ro'
-const lastModified = new Date('2026-04-15')
+const lastModified = new Date('2026-05-01')
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -12,7 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${siteUrl}/ghid/test-psihologic-mai-2026`,
+      url: `${siteUrl}/ghid/test-psihologic-anp-2026`,
       lastModified,
       changeFrequency: 'weekly',
       priority: 0.9,

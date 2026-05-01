@@ -1,0 +1,6 @@
+export { generateRationamentAnalitic } from './rationament-analitic'
+export { generateTransferAnalogic } from './transfer-analogic'
+export { generateVocabular } from './vocabular'
+export { generateIntelegereTexte } from './intelegere-texte'
+export { generateRationamentMatematic } from './rationament-matematic'
+export { generateCalculMatematic } from './calcul-matematic'
