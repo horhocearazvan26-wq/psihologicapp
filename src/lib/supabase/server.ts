@@ -1,5 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
+import type { User } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 
 export async function createClient() {
   const cookieStore = await cookies()
@@ -24,4 +26,17 @@ export async function createClient() {
       },
     }
   )
+}
+
+export async function getRequiredUser(redirectTo = '/auth/login'): Promise<User> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect(redirectTo)
+  }
+
+  return user
 }
