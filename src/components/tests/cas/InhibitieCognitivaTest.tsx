@@ -52,7 +52,7 @@ const LISTA_1: StimuliItem[] = buildStimuliList(5)
 const LISTA_2: StimuliItem[] = buildStimuliList(17)
 
 const btnPrimary = 'flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#0f2e49] to-[#12436d] text-white text-sm font-bold border border-cyan-300/20 hover:brightness-110 transition-all shadow-lg disabled:opacity-40'
-const btnSecondary = 'flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-muted)] transition-colors'
+const btnSecondary = 'flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/8 text-white text-sm font-medium hover:bg-white/[0.04] transition-colors'
 
 export function InhibitieCognitivaTest({
   institutionLabel,
@@ -173,7 +173,7 @@ export function InhibitieCognitivaTest({
 
     return (
       <div className="max-w-2xl mx-auto py-8 space-y-5 animate-fade-up">
-        <div className="rounded-[28px] border border-[var(--border)] bg-[linear-gradient(145deg,rgba(15,23,36,0.98),rgba(17,42,63,0.95))] overflow-hidden">
+        <div className="rounded-[28px] border border-white/10 bg-[linear-gradient(145deg,rgba(15,23,36,0.98),rgba(17,42,63,0.95))] overflow-hidden">
           <div className="px-7 py-6 border-b border-white/8">
             <p className="text-[10px] font-bold tracking-[0.22em] uppercase text-cyan-400/80 mb-1">Instructaj — {institutionLabel}</p>
             <h1 className="text-2xl font-extrabold tracking-tight text-white">Inhibiție Cognitivă (Stroop)</h1>
@@ -189,10 +189,10 @@ export function InhibitieCognitivaTest({
         </div>
         <div className="rounded-[20px] border border-amber-200/30 bg-amber-500/5 p-5 space-y-3">
           <p className="text-sm font-bold text-amber-400">Exemplu practic:</p>
-          <div className="inline-block px-6 py-3 rounded-xl bg-[var(--bg-surface)] border border-[var(--border)]">
+          <div className="inline-block px-6 py-3 rounded-xl bg-white/5 border border-white/10">
             <span className="text-2xl font-extrabold text-blue-500">ROȘU</span>
           </div>
-          <p className="text-sm text-[var(--text-muted)]">Cuvântul scrie „ROȘU" dar cerneala este <span className="text-blue-400 font-bold">albastră</span> → apasă <span className="font-bold text-[var(--text-primary)]">Albastru</span></p>
+          <p className="text-sm text-white/45">Cuvântul scrie „ROȘU" dar cerneala este <span className="text-blue-400 font-bold">albastră</span> → apasă <span className="font-bold text-white">Albastru</span></p>
         </div>
         <div className="flex gap-3">
           <button className={btnSecondary} onClick={handleBack}><ArrowLeft className="w-4 h-4" /> Înapoi</button>
@@ -211,10 +211,10 @@ export function InhibitieCognitivaTest({
       <div className="max-w-lg mx-auto text-center py-16 space-y-6 animate-fade-up">
         <div className="rounded-[24px] border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20 p-8">
           <p className="text-sm font-bold uppercase tracking-widest text-green-500 mb-3">Lista 1 completă</p>
-          <p className="text-3xl font-extrabold text-[var(--text-primary)]">{time1}s</p>
-          <p className="text-sm text-[var(--text-muted)] mt-1">Acuratețe: {accuracy1}%</p>
+          <p className="text-3xl font-extrabold text-white">{time1}s</p>
+          <p className="text-sm text-white/45 mt-1">Acuratețe: {accuracy1}%</p>
         </div>
-        <p className="text-sm text-[var(--text-muted)]">Odihniți-vă câteva secunde, apoi continuați cu Lista 2.</p>
+        <p className="text-sm text-white/45">Odihniți-vă câteva secunde, apoi continuați cu Lista 2.</p>
         <button className={cn(btnPrimary, 'mx-auto px-8')} onClick={beginList2}>Continuă — Lista 2 →</button>
       </div>
     )
@@ -223,22 +223,22 @@ export function InhibitieCognitivaTest({
   if (phase === 'results') {
     return (
       <div className="max-w-2xl mx-auto py-8 space-y-5 animate-fade-up">
-        <div className="rounded-[28px] border border-[var(--border)] bg-[var(--bg-surface)] p-8">
-          <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-5 text-center">Inhibiție Cognitivă — Rezultate</p>
+        <div className="rounded-[28px] border border-white/10 bg-white/5 p-8">
+          <p className="text-xs font-bold uppercase tracking-widest text-white/45 mb-5 text-center">Inhibiție Cognitivă — Rezultate</p>
           <div className="grid grid-cols-3 gap-4 text-center">
             {[
               { label: 'Timp Lista 1', val: `${time1}s`, sub: `${accuracy1}% acuratețe` },
               { label: 'Timp Lista 2', val: `${time2}s`, sub: `${accuracy2}% acuratețe` },
               { label: 'IHC', val: `${ihc > 0 ? '+' : ''}${ihc}s`, sub: 'SL2 − SL1' },
             ].map(({ label, val, sub }) => (
-              <div key={label} className="rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-4">
-                <p className="text-[10px] uppercase tracking-widest text-[var(--text-muted)] mb-1">{label}</p>
-                <p className="text-2xl font-extrabold text-[var(--text-primary)]">{val}</p>
-                <p className="text-xs text-[var(--text-muted)] mt-1">{sub}</p>
+              <div key={label} className="rounded-2xl border border-white/10 bg-white/8 p-4">
+                <p className="text-[10px] uppercase tracking-widest text-white/45 mb-1">{label}</p>
+                <p className="text-2xl font-extrabold text-white">{val}</p>
+                <p className="text-xs text-white/45 mt-1">{sub}</p>
               </div>
             ))}
           </div>
-          <p className="text-xs text-[var(--text-muted)] text-center mt-5 italic">
+          <p className="text-xs text-white/45 text-center mt-5 italic">
             IHC mai mic (apropiat de 0) indică inhibiție cognitivă mai bună.
           </p>
         </div>
@@ -275,12 +275,12 @@ export function InhibitieCognitivaTest({
     <div className="max-w-lg mx-auto py-6 space-y-6 animate-fade-up">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Lista {listNum} · {listIndex + 1}/{listLen}</span>
-        <span className="flex items-center gap-1.5 text-sm font-mono font-bold text-[var(--text-primary)]">
+        <span className="text-xs font-bold uppercase tracking-widest text-white/45">Lista {listNum} · {listIndex + 1}/{listLen}</span>
+        <span className="flex items-center gap-1.5 text-sm font-mono font-bold text-white">
           <Clock className="w-3.5 h-3.5" /> {elapsed}s
         </span>
       </div>
-      <div className="w-full bg-[var(--bg-muted)] rounded-full h-1.5">
+      <div className="w-full bg-white/[0.04] rounded-full h-1.5">
         <div className="h-1.5 rounded-full bg-[linear-gradient(90deg,#0f3060,#2d7cae)] transition-all" style={{ width: `${(listIndex / listLen) * 100}%` }} />
       </div>
 
@@ -307,7 +307,7 @@ export function InhibitieCognitivaTest({
         })}
       </div>
 
-      <p className="text-xs text-center text-[var(--text-muted)] italic">
+      <p className="text-xs text-center text-white/45 italic">
         Apasă culoarea CERNELII — ignoră ce scrie cuvântul
       </p>
     </div>

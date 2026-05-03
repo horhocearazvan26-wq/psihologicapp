@@ -72,7 +72,7 @@ interface SimulationRunnerProps {
 type Phase = 'category_intro' | 'test' | 'category_result' | 'final_results'
 
 const btnPrimary = 'flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-indigo-200 dark:shadow-indigo-950/40'
-const btnSecondary = 'flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-[var(--border)] text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-muted)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed'
+const btnSecondary = 'flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-white/10 text-white text-sm font-medium hover:bg-white/[0.04] transition-colors disabled:opacity-40 disabled:cursor-not-allowed'
 
 export function SimulationRunner({ institution, backHref = '/dashboard/simulate' }: SimulationRunnerProps) {
   const router = useRouter()
@@ -221,14 +221,14 @@ export function SimulationRunner({ institution, backHref = '/dashboard/simulate'
                     ? 'border-green-500 bg-green-500 text-white'
                     : index === categoryIndex
                     ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400'
-                    : 'border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text-muted)]'
+                    : 'border-white/10 bg-white/[0.04] text-white/45'
                 )}>
                   {index < categoryIndex ? <CheckCircle className="w-3.5 h-3.5" /> : index + 1}
                 </div>
                 {index < CATEGORIES.length - 1 && (
                   <div className={cn(
                     'w-4 h-0.5 rounded-full shrink-0',
-                    index < categoryIndex ? 'bg-green-400' : 'bg-[var(--border-strong)]'
+                    index < categoryIndex ? 'bg-green-400' : 'bg-white/20'
                   )} />
                 )}
               </div>
@@ -239,28 +239,28 @@ export function SimulationRunner({ institution, backHref = '/dashboard/simulate'
         <div className="text-center space-y-4">
           <CategoryIcon
             category={currentCategory}
-            className="mx-auto h-16 w-16 rounded-2xl bg-[var(--bg-muted)] text-[var(--text-primary)]"
-            iconClassName="h-7 w-7 text-[var(--text-primary)]"
+            className="mx-auto h-16 w-16 rounded-2xl bg-white/[0.04] text-white"
+            iconClassName="h-7 w-7 text-white"
           />
           <div>
-            <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-widest mb-1">
+            <p className="text-xs font-semibold text-white/45 uppercase tracking-widest mb-1">
               Proba {categoryIndex + 1} din {CATEGORIES.length}
             </p>
-            <h2 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">
+            <h2 className="text-2xl font-extrabold text-white tracking-tight">
               {CATEGORY_LABELS[currentCategory]}
             </h2>
           </div>
         </div>
 
-        <div className="bg-[var(--bg-muted)] rounded-2xl p-5 space-y-2.5 border border-[var(--border)]">
+        <div className="bg-white/[0.04] rounded-2xl p-5 space-y-2.5 border border-white/10">
           {[
             { label: 'Itemi', value: CATEGORY_DETAILS[currentCategory].items },
             { label: 'Timp', value: CATEGORY_DETAILS[currentCategory].duration },
             { label: 'Instituție', value: institution },
           ].map(({ label, value }) => (
             <div key={label} className="flex justify-between text-sm">
-              <span className="text-[var(--text-muted)]">{label}</span>
-              <span className="font-semibold text-[var(--text-primary)]">{value}</span>
+              <span className="text-white/45">{label}</span>
+              <span className="font-semibold text-white">{value}</span>
             </div>
           ))}
         </div>
@@ -300,22 +300,22 @@ export function SimulationRunner({ institution, backHref = '/dashboard/simulate'
       <div className="max-w-lg mx-auto text-center space-y-6 py-8 animate-fade-up">
         <IconBadge
           icon={Trophy}
-          className="mx-auto h-16 w-16 rounded-2xl bg-[var(--bg-muted)] text-[var(--text-primary)]"
-          iconClassName="h-7 w-7 text-[var(--text-primary)]"
+          className="mx-auto h-16 w-16 rounded-2xl bg-white/[0.04] text-white"
+          iconClassName="h-7 w-7 text-white"
         />
         <div className={cn('rounded-2xl border p-6', scoreBg)}>
-          <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-widest mb-2">
+          <p className="text-xs font-semibold text-white/45 uppercase tracking-widest mb-2">
             Proba {categoryIndex + 1}: {CATEGORY_LABELS[currentCategory]}
           </p>
           <p className={cn('text-6xl font-extrabold tracking-tight', getScoreColor(lastResult.score))}>
             {lastResult.score.toFixed(0)}%
           </p>
-          <p className="text-[var(--text-muted)] mt-2 text-sm">
+          <p className="text-white/45 mt-2 text-sm">
             {lastResult.correct} corecte din {lastResult.total}
           </p>
         </div>
 
-        <div className="w-full bg-[var(--bg-muted)] rounded-full h-2">
+        <div className="w-full bg-white/[0.04] rounded-full h-2">
           <div
             className={cn(
               'h-2 rounded-full transition-all duration-700',
@@ -349,18 +349,18 @@ export function SimulationRunner({ institution, backHref = '/dashboard/simulate'
       <div className="max-w-lg mx-auto space-y-6 py-8 animate-fade-up">
         <div className={cn('rounded-2xl border p-8 text-center', finalBg)}>
           <Trophy className="w-12 h-12 text-amber-500 mx-auto mb-3" />
-          <h2 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight mb-2">
+          <h2 className="text-2xl font-extrabold text-white tracking-tight mb-2">
             Simulare completă!
           </h2>
           <p className={cn('text-6xl font-extrabold tracking-tight', getScoreColor(totalScore))}>
             {totalScore.toFixed(0)}%
           </p>
-          <p className="text-[var(--text-muted)] mt-2 text-sm">
+          <p className="text-white/45 mt-2 text-sm">
             Scor mediu pe toate cele {CATEGORIES.length} probe
           </p>
         </div>
 
-        <div className="w-full bg-[var(--bg-muted)] rounded-full h-2">
+        <div className="w-full bg-white/[0.04] rounded-full h-2">
           <div
             className={cn(
               'h-2 rounded-full transition-all duration-700',
@@ -370,25 +370,25 @@ export function SimulationRunner({ institution, backHref = '/dashboard/simulate'
           />
         </div>
 
-        <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-sm overflow-hidden">
+        <div className="bg-white/5 rounded-2xl border border-white/10 shadow-sm overflow-hidden">
           {categoryResults.map((result, index) => (
             <div
               key={result.category}
               className={cn(
                 'flex items-center gap-3 px-5 py-3.5',
-                index < categoryResults.length - 1 ? 'border-b border-[var(--border)]' : ''
+                index < categoryResults.length - 1 ? 'border-b border-white/10' : ''
               )}
             >
               <CategoryIcon
                 category={result.category}
-                className="h-8 w-8 rounded-xl bg-[var(--bg-muted)] text-[var(--text-primary)] shrink-0"
-                iconClassName="h-4 w-4 text-[var(--text-primary)]"
+                className="h-8 w-8 rounded-xl bg-white/[0.04] text-white shrink-0"
+                iconClassName="h-4 w-4 text-white"
               />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-[var(--text-primary)]">
+                <p className="text-sm font-semibold text-white">
                   {CATEGORY_LABELS[result.category]}
                 </p>
-                <p className="text-xs text-[var(--text-muted)]">{result.correct}/{result.total} corecte</p>
+                <p className="text-xs text-white/45">{result.correct}/{result.total} corecte</p>
               </div>
               <span className={cn('text-sm font-extrabold shrink-0', getScoreColor(result.score))}>
                 {result.score.toFixed(0)}%
@@ -452,23 +452,23 @@ export function SimulationRunner({ institution, backHref = '/dashboard/simulate'
     <>
       <div className="max-w-2xl mx-auto space-y-4 pb-24 md:pb-8">
         {/* Sticky progress header */}
-        <div className="sticky top-0 z-20 rounded-[20px] border border-[var(--border)] bg-[color:rgb(10_18_28_/_0.94)] p-3 shadow-lg backdrop-blur-xl md:p-4">
+        <div className="sticky top-0 z-20 rounded-[20px] border border-white/10 bg-[color:rgb(10_18_28_/_0.94)] p-3 shadow-lg backdrop-blur-xl md:p-4">
           {/* Mobile: compact */}
           <div className="flex items-center justify-between gap-3 md:hidden">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-white/45">
                 Proba {categoryIndex + 1}/{CATEGORIES.length} · {CATEGORY_LABELS[currentCategory]}
               </p>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-sm font-bold text-[var(--text-primary)]">
+                <span className="text-sm font-bold text-white">
                   {currentIndex + 1}/{questions.length}
                 </span>
-                <span className="text-xs text-[var(--text-muted)]">· {answeredCount} răsp.</span>
+                <span className="text-xs text-white/45">· {answeredCount} răsp.</span>
               </div>
             </div>
             <span className={cn(
               'font-mono font-bold text-xl tabular-nums',
-              timeLeft < 30 ? 'text-red-500 animate-pulse' : 'text-[var(--text-primary)]'
+              timeLeft < 30 ? 'text-red-500 animate-pulse' : 'text-white'
             )}>
               {formatTime(timeLeft)}
             </span>
@@ -482,17 +482,17 @@ export function SimulationRunner({ institution, backHref = '/dashboard/simulate'
             </span>
             <span className={cn(
               'font-bold tabular-nums text-sm font-mono',
-              timeLeft < 30 ? 'text-red-500 animate-pulse' : 'text-[var(--text-primary)]'
+              timeLeft < 30 ? 'text-red-500 animate-pulse' : 'text-white'
             )}>
               ⏱ {formatTime(timeLeft)}
             </span>
           </div>
 
           <div className="mt-2 space-y-1 md:mt-3">
-            <div className="w-full bg-[var(--bg-muted)] rounded-full h-1.5">
+            <div className="w-full bg-white/[0.04] rounded-full h-1.5">
               <div className="bg-indigo-500 h-1.5 rounded-full transition-all" style={{ width: `${progress}%` }} />
             </div>
-            <div className="w-full bg-[var(--bg-muted)] rounded-full h-0.5">
+            <div className="w-full bg-white/[0.04] rounded-full h-0.5">
               <div
                 className={cn(
                   'h-0.5 rounded-full transition-all',
@@ -505,8 +505,8 @@ export function SimulationRunner({ institution, backHref = '/dashboard/simulate'
         </div>
 
         {/* Question card */}
-        <div className="rounded-[24px] border border-[var(--border)] bg-[var(--bg-surface)] p-5 shadow-sm md:p-6">
-          <p className="text-base font-medium text-[var(--text-primary)] leading-relaxed">
+        <div className="rounded-[24px] border border-white/10 bg-white/5 p-5 shadow-sm md:p-6">
+          <p className="text-base font-medium text-white leading-relaxed">
             {currentQ.question_text}
           </p>
         </div>
@@ -523,12 +523,12 @@ export function SimulationRunner({ institution, backHref = '/dashboard/simulate'
                   'w-full text-left px-4 py-4 rounded-xl border-2 transition-all duration-150 text-sm font-medium flex items-center gap-3 min-h-[58px] md:px-5',
                   isSelected
                     ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300'
-                    : 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-primary)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-muted)]'
+                    : 'border-white/10 bg-white/5 text-white hover:border-white/20 hover:bg-white/[0.04]'
                 )}
               >
                 <span className={cn(
                   'inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold shrink-0',
-                  isSelected ? 'bg-indigo-500 text-white' : 'bg-[var(--bg-muted)] text-[var(--text-muted)]'
+                  isSelected ? 'bg-indigo-500 text-white' : 'bg-white/[0.04] text-white/45'
                 )}>
                   {String.fromCharCode(65 + index)}
                 </span>
@@ -543,7 +543,7 @@ export function SimulationRunner({ institution, backHref = '/dashboard/simulate'
           <button className={btnSecondary} disabled={currentIndex === 0} onClick={() => setCurrentIndex(index => index - 1)}>
             <ArrowLeft className="w-4 h-4" /> Anterior
           </button>
-          <div className="flex-1 text-center text-xs text-[var(--text-muted)] font-medium">
+          <div className="flex-1 text-center text-xs text-white/45 font-medium">
             {answeredCount}/{questions.length} răspunse
           </div>
           {currentIndex < questions.length - 1 ? (
@@ -573,7 +573,7 @@ export function SimulationRunner({ institution, backHref = '/dashboard/simulate'
                     ? 'bg-indigo-500 text-white'
                     : selectedOptions[index] !== undefined
                     ? 'bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-400'
-                    : 'bg-[var(--bg-muted)] text-[var(--text-muted)] hover:bg-[var(--border-strong)]'
+                    : 'bg-white/[0.04] text-white/45 hover:bg-white/[0.08]'
                 )}
               >
                 {index + 1}

@@ -4,7 +4,7 @@ import { TestExitButton } from '@/components/test/exit-button'
 export default function TestLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="min-h-screen text-white"
+      className="dark min-h-screen text-white"
       style={{
         background: [
           'radial-gradient(circle at top left, rgba(37,99,235,0.18), transparent 28%)',

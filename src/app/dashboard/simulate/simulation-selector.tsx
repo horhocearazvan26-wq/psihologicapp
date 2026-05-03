@@ -28,7 +28,7 @@ export function SimulationSelector({ institutions }: SimulationSelectorProps) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-base font-bold text-[var(--text-primary)]">Alege instituția</h2>
+      <h2 className="text-base font-bold text-white">Alege instituția</h2>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {institutions.map((opt) => {
@@ -95,7 +95,7 @@ export function SimulationSelector({ institutions }: SimulationSelectorProps) {
           'w-full h-14 rounded-2xl font-bold text-base flex items-center justify-center gap-3 transition-all duration-200',
           selected
             ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-950 hover:shadow-xl hover:-translate-y-0.5'
-            : 'bg-[var(--bg-muted)] text-[var(--text-muted)] cursor-not-allowed'
+            : 'bg-white/[0.06] text-white/30 cursor-not-allowed'
         )}
         aria-disabled={!selected}
         onClick={event => {

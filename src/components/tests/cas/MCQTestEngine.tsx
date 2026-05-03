@@ -174,8 +174,8 @@ const TIME_LIMITS: Partial<Record<TestCategory, number>> = {
   'calcul-matematic':      5 * 60,
 }
 
-const btnPrimary = 'interactive-press interactive-glow flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-cyan-300/30 bg-[linear-gradient(135deg,#0f2e49,#12436d)] text-[var(--text-inverse)] text-sm font-semibold shadow-[0_18px_36px_-24px_rgba(15,76,129,0.72)] hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed'
-const btnSecondary = 'interactive-press flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-muted)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed'
+const btnPrimary = 'interactive-press interactive-glow flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-cyan-300/30 bg-[linear-gradient(135deg,#0f2e49,#12436d)] text-white text-sm font-semibold shadow-[0_18px_36px_-24px_rgba(15,76,129,0.72)] hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed'
+const btnSecondary = 'interactive-press flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/8 text-white text-sm font-medium hover:bg-white/[0.04] transition-colors disabled:opacity-40 disabled:cursor-not-allowed'
 
 export function MCQTestEngine({
   institution,
@@ -267,7 +267,7 @@ export function MCQTestEngine({
       <div className="max-w-3xl mx-auto py-6 space-y-5 animate-fade-up">
         {/* Header card */}
         <div
-          className="rounded-[28px] border border-[var(--border)] overflow-hidden"
+          className="rounded-[28px] border border-white/10 overflow-hidden"
           style={{ background: 'linear-gradient(145deg,rgba(15,23,36,0.98),rgba(17,42,63,0.95))' }}
         >
           <div className="px-6 py-6 border-b border-white/8 sm:px-8">
@@ -303,11 +303,11 @@ export function MCQTestEngine({
 
         {/* Instructions */}
         {info.instructiuni.length > 0 && (
-          <div className="rounded-[24px] border border-[var(--border)] bg-[var(--bg-surface)] p-6 space-y-3">
-            <h2 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-widest">Instrucțiuni</h2>
+          <div className="rounded-[24px] border border-white/10 bg-white/5 p-6 space-y-3">
+            <h2 className="text-sm font-bold text-white uppercase tracking-widest">Instrucțiuni</h2>
             <ul className="space-y-2.5">
               {info.instructiuni.map((instr, i) => (
-                <li key={i} className="flex items-start gap-3 text-sm text-[var(--text-secondary)]">
+                <li key={i} className="flex items-start gap-3 text-sm text-white/65">
                   <span className="w-5 h-5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                     {i + 1}
                   </span>
@@ -322,7 +322,7 @@ export function MCQTestEngine({
         {info.exemplu && (
           <div className="rounded-[24px] border border-amber-200/30 bg-amber-500/5 p-6 space-y-4">
             <h2 className="text-sm font-bold text-amber-400 uppercase tracking-widest">Exemplu</h2>
-            <p className="text-sm font-medium text-[var(--text-primary)] leading-relaxed whitespace-pre-line">
+            <p className="text-sm font-medium text-white leading-relaxed whitespace-pre-line">
               {info.exemplu.enunt}
             </p>
             <div className="space-y-2">
@@ -331,14 +331,14 @@ export function MCQTestEngine({
                   'text-xs px-4 py-2.5 rounded-xl font-medium border',
                   i === info.exemplu!.corect
                     ? 'border-green-400/30 bg-green-500/10 text-green-400'
-                    : 'border-[var(--border)] text-[var(--text-muted)]'
+                    : 'border-white/10 text-white/45'
                 )}>
                   {i === info.exemplu!.corect && <CheckCircle className="inline w-3.5 h-3.5 mr-1.5" />}
                   {String.fromCharCode(65 + i)}. {opt}
                 </div>
               ))}
             </div>
-            <p className="text-xs text-[var(--text-muted)] italic border-t border-[var(--border)] pt-3">
+            <p className="text-xs text-white/45 italic border-t border-white/10 pt-3">
               {info.exemplu.explicatie}
             </p>
           </div>
@@ -384,11 +384,11 @@ export function MCQTestEngine({
     return (
       <div className="max-w-3xl mx-auto space-y-5 py-6 animate-fade-up">
         <div className={cn('rounded-[28px] border p-8 text-center', scoreBg)}>
-          <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">
+          <p className="text-xs font-bold uppercase tracking-widest text-white/45 mb-3">
             Rezultat final — {categoryLabel}
           </p>
           <p className={cn('text-6xl font-extrabold tracking-tight', scoreColor)}>{score.toFixed(0)}%</p>
-          <p className="text-[var(--text-muted)] mt-2 text-sm">{correct} răspunsuri corecte din {total}</p>
+          <p className="text-white/45 mt-2 text-sm">{correct} răspunsuri corecte din {total}</p>
           <div className="w-full bg-black/10 dark:bg-white/10 rounded-full h-2 mt-4">
             <div
               className={cn('h-2 rounded-full transition-all duration-700', score >= 80 ? 'bg-green-500' : score >= 60 ? 'bg-amber-500' : 'bg-red-500')}
@@ -399,7 +399,7 @@ export function MCQTestEngine({
 
         {results?.results && (
           <div className="space-y-3">
-            <h2 className="font-bold text-[var(--text-primary)] text-sm uppercase tracking-widest">Revizuire itemi</h2>
+            <h2 className="font-bold text-white text-sm uppercase tracking-widest">Revizuire itemi</h2>
             {results.results.map((r, i) => {
               const q = questions.find(q => q.id === r.question_id)
               if (!q) return null
@@ -410,12 +410,12 @@ export function MCQTestEngine({
                   r.is_correct
                     ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/15'
                     : isSkipped
-                    ? 'border-[var(--border)] bg-[var(--bg-muted)]'
+                    ? 'border-white/10 bg-white/[0.04]'
                     : 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/15'
                 )}>
                   <div className="flex items-start gap-3 mb-3">
-                    <span className="text-xs font-bold text-[var(--text-muted)] shrink-0 mt-0.5">#{i + 1}</span>
-                    <p className="text-sm font-medium text-[var(--text-primary)] whitespace-pre-line">{q.question_text}</p>
+                    <span className="text-xs font-bold text-white/45 shrink-0 mt-0.5">#{i + 1}</span>
+                    <p className="text-sm font-medium text-white whitespace-pre-line">{q.question_text}</p>
                   </div>
                   <div className="ml-5 space-y-1">
                     {q.options.map((opt, oi) => (
@@ -425,7 +425,7 @@ export function MCQTestEngine({
                           ? 'bg-green-100 dark:bg-green-950/40 text-green-800 dark:text-green-300'
                           : oi === r.selected_option && !r.is_correct
                           ? 'bg-red-100 dark:bg-red-950/40 text-red-800 dark:text-red-300'
-                          : 'text-[var(--text-muted)]'
+                          : 'text-white/45'
                       )}>
                         {oi === r.correct_answer
                           ? <CheckCircle className="w-3 h-3 shrink-0" />
@@ -437,7 +437,7 @@ export function MCQTestEngine({
                     ))}
                   </div>
                   {r.explanation && (
-                    <p className="text-xs text-[var(--text-muted)] mt-2.5 ml-5 italic border-t border-[var(--border)] pt-2">
+                    <p className="text-xs text-white/45 mt-2.5 ml-5 italic border-t border-white/10 pt-2">
                       {r.explanation}
                     </p>
                   )}
@@ -480,23 +480,23 @@ export function MCQTestEngine({
       <div className={cn('max-w-4xl mx-auto space-y-4 pb-24 md:pb-8', hasPassage && 'max-w-6xl')}>
 
         {/* Sticky progress header */}
-        <div className="sticky top-0 z-20 rounded-[20px] border border-[var(--border)] bg-[color:rgb(10_18_28_/_0.94)] p-3 shadow-lg backdrop-blur-xl md:p-4">
+        <div className="sticky top-0 z-20 rounded-[20px] border border-white/10 bg-[color:rgb(10_18_28_/_0.94)] p-3 shadow-lg backdrop-blur-xl md:p-4">
           {/* Mobile: compact row */}
           <div className="flex items-center justify-between gap-3 md:hidden">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-white/45">
                 {categoryLabel}
               </p>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-sm font-bold text-[var(--text-primary)]">
+                <span className="text-sm font-bold text-white">
                   Item {currentIndex + 1}/{questions.length}
                 </span>
-                <span className="text-xs text-[var(--text-muted)]">· {answeredCount} răsp.</span>
+                <span className="text-xs text-white/45">· {answeredCount} răsp.</span>
               </div>
             </div>
             <span className={cn(
               'font-mono font-bold text-xl tabular-nums',
-              timeLeft < 30 ? 'text-red-500 animate-pulse' : 'text-[var(--text-primary)]'
+              timeLeft < 30 ? 'text-red-500 animate-pulse' : 'text-white'
             )}>
               {formatTime(timeLeft)}
             </span>
@@ -505,23 +505,23 @@ export function MCQTestEngine({
           {/* Desktop: full info row */}
           <div className="hidden md:flex items-center justify-between gap-4">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-white/45">
                 {institutionLabel} · {categoryLabel}
               </p>
               <div className="mt-0.5 flex items-center gap-2">
-                <span className="text-sm font-bold text-[var(--text-primary)]">
+                <span className="text-sm font-bold text-white">
                   Item {currentIndex + 1}/{questions.length}
                 </span>
-                <span className="text-xs border border-[var(--border)] rounded-full px-2 py-0.5 text-[var(--text-muted)]">
+                <span className="text-xs border border-white/10 rounded-full px-2 py-0.5 text-white/45">
                   {answeredCount} răspuns{answeredCount === 1 ? '' : 'uri'}
                 </span>
               </div>
             </div>
-            <div className="text-right border border-[var(--border)] rounded-xl px-3 py-2 bg-[var(--bg-elevated)]">
-              <p className="text-[9px] uppercase tracking-widest text-[var(--text-muted)]">Timp rămas</p>
+            <div className="text-right border border-white/10 rounded-xl px-3 py-2 bg-white/8">
+              <p className="text-[9px] uppercase tracking-widest text-white/45">Timp rămas</p>
               <span className={cn(
                 'font-mono font-bold text-lg tabular-nums',
-                timeLeft < 30 ? 'text-red-500 animate-pulse' : 'text-[var(--text-primary)]'
+                timeLeft < 30 ? 'text-red-500 animate-pulse' : 'text-white'
               )}>
                 {formatTime(timeLeft)}
               </span>
@@ -530,13 +530,13 @@ export function MCQTestEngine({
 
           {/* Progress bars — always visible */}
           <div className="mt-2 space-y-1 md:mt-3">
-            <div className="w-full bg-[var(--bg-muted)] rounded-full h-1.5">
+            <div className="w-full bg-white/[0.04] rounded-full h-1.5">
               <div
                 className="h-1.5 rounded-full bg-[linear-gradient(90deg,#0f3060,#2d7cae)] transition-all"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <div className="w-full bg-[var(--bg-muted)] rounded-full h-0.5">
+            <div className="w-full bg-white/[0.04] rounded-full h-0.5">
               <div
                 className={cn(
                   'h-0.5 rounded-full transition-all',
@@ -551,11 +551,11 @@ export function MCQTestEngine({
         {/* Passage + question layout */}
         <div className={cn(hasPassage && 'grid grid-cols-1 gap-4 lg:grid-cols-2')}>
           {hasPassage && (
-            <div className="overflow-auto rounded-[24px] border border-[var(--border)] bg-[var(--bg-surface)] p-5 max-h-[50vh] lg:sticky lg:top-20 lg:max-h-[70vh]">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-2">
+            <div className="overflow-auto rounded-[24px] border border-white/10 bg-white/5 p-5 max-h-[50vh] lg:sticky lg:top-20 lg:max-h-[70vh]">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-white/45 mb-2">
                 {currentQ.metadata?.passage_title ?? 'Text'}
               </p>
-              <p className="text-sm text-[var(--text-secondary)] leading-7 whitespace-pre-line">
+              <p className="text-sm text-white/65 leading-7 whitespace-pre-line">
                 {currentQ.metadata?.passage as string}
               </p>
             </div>
@@ -563,9 +563,9 @@ export function MCQTestEngine({
 
           <div className="space-y-3">
             {/* Question card */}
-            <div className="rounded-[24px] border border-[var(--border)] bg-[var(--bg-surface)] p-5 shadow-sm md:p-6">
+            <div className="rounded-[24px] border border-white/10 bg-white/5 p-5 shadow-sm md:p-6">
               <div className="flex items-center gap-2 mb-3">
-                <span className="flex h-7 w-7 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] text-xs font-bold text-[var(--text-muted)] md:h-8 md:w-8">
+                <span className="flex h-7 w-7 items-center justify-center rounded-xl border border-white/10 bg-white/8 text-xs font-bold text-white/45 md:h-8 md:w-8">
                   {String(currentIndex + 1).padStart(2, '0')}
                 </span>
                 {currentQ.difficulty === 3 && (
@@ -574,7 +574,7 @@ export function MCQTestEngine({
                   </span>
                 )}
               </div>
-              <p className="text-base font-medium text-[var(--text-primary)] leading-relaxed whitespace-pre-line">
+              <p className="text-base font-medium text-white leading-relaxed whitespace-pre-line">
                 {currentQ.question_text}
               </p>
               {currentQ.metadata?.image_url && (
@@ -583,7 +583,7 @@ export function MCQTestEngine({
                   <img
                     src={currentQ.metadata.image_url as string}
                     alt="Imagine întrebare"
-                    className="max-w-full rounded-xl border border-[var(--border)] object-contain"
+                    className="max-w-full rounded-xl border border-white/10 object-contain"
                     style={{ maxHeight: '280px' }}
                   />
                 </div>
@@ -601,15 +601,15 @@ export function MCQTestEngine({
                     className={cn(
                       'w-full text-left px-4 py-4 rounded-2xl border transition-all duration-150 text-sm font-medium flex items-center gap-3 min-h-[58px] md:gap-4 md:px-5',
                       isSelected
-                        ? 'border-cyan-400/40 bg-[linear-gradient(135deg,rgba(15,76,129,0.1),rgba(45,124,174,0.07))] text-[var(--text-primary)] shadow-sm'
-                        : 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-primary)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-elevated)]'
+                        ? 'border-cyan-400/40 bg-[linear-gradient(135deg,rgba(15,76,129,0.1),rgba(45,124,174,0.07))] text-white shadow-sm'
+                        : 'border-white/10 bg-white/5 text-white hover:border-white/20 hover:bg-white/8'
                     )}
                   >
                     <span className={cn(
                       'inline-flex items-center justify-center w-8 h-8 rounded-xl text-xs font-bold shrink-0 border',
                       isSelected
                         ? 'border-cyan-400/30 bg-[#12365b] text-white'
-                        : 'border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text-muted)]'
+                        : 'border-white/10 bg-white/[0.04] text-white/45'
                     )}>
                       {String.fromCharCode(65 + i)}
                     </span>
@@ -628,7 +628,7 @@ export function MCQTestEngine({
               >
                 <ArrowLeft className="w-4 h-4" /> Anterior
               </button>
-              <div className="flex-1 text-center text-xs text-[var(--text-muted)]">Navigare liberă</div>
+              <div className="flex-1 text-center text-xs text-white/45">Navigare liberă</div>
               {currentIndex < questions.length - 1 ? (
                 <button className={btnPrimary} onClick={() => setCurrentIndex(i => i + 1)}>
                   Următor <ArrowRight className="w-4 h-4" />
@@ -646,8 +646,8 @@ export function MCQTestEngine({
         </div>
 
         {/* Desktop question map */}
-        <div className="hidden md:block rounded-[20px] border border-[var(--border)] bg-[var(--bg-surface)] p-4">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">Hartă itemi</p>
+        <div className="hidden md:block rounded-[20px] border border-white/10 bg-white/5 p-4">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-white/45 mb-3">Hartă itemi</p>
           <div className="flex flex-wrap gap-1.5">
             {questions.map((_, i) => (
               <button
@@ -659,7 +659,7 @@ export function MCQTestEngine({
                     ? 'border-cyan-400/30 bg-[#12365b] text-white'
                     : selectedOptions[i] !== undefined
                     ? 'border-green-200 dark:border-green-900 bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-400'
-                    : 'border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text-muted)]'
+                    : 'border-white/10 bg-white/[0.04] text-white/45'
                 )}
               >
                 {i + 1}

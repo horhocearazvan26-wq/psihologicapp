@@ -44,7 +44,7 @@ function sortDigitsAsc(arr: number[]): string { return [...arr].sort((a, b) => a
 function sortLettersAlpha(arr: string[]): string { return [...arr].sort().join(' ') }
 
 const btnPrimary = 'flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#0f2e49] to-[#12436d] text-white text-sm font-bold border border-cyan-300/20 hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg'
-const btnSecondary = 'flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-muted)] transition-colors disabled:opacity-40'
+const btnSecondary = 'flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/8 text-white text-sm font-medium hover:bg-white/[0.04] transition-colors disabled:opacity-40'
 
 export function MemoireLucruTest({
   institutionLabel,
@@ -168,7 +168,7 @@ export function MemoireLucruTest({
 
     return (
       <div className="max-w-2xl mx-auto py-8 space-y-5 animate-fade-up">
-        <div className="rounded-[28px] border border-[var(--border)] bg-[linear-gradient(145deg,rgba(15,23,36,0.98),rgba(17,42,63,0.95))] overflow-hidden">
+        <div className="rounded-[28px] border border-white/10 bg-[linear-gradient(145deg,rgba(15,23,36,0.98),rgba(17,42,63,0.95))] overflow-hidden">
           <div className="px-7 py-6 border-b border-white/8">
             <p className="text-[10px] font-bold tracking-[0.22em] uppercase text-cyan-400/80 mb-1">Instructaj — {institutionLabel}</p>
             <h1 className="text-2xl font-extrabold tracking-tight text-white">Memorie de Lucru</h1>
@@ -184,10 +184,10 @@ export function MemoireLucruTest({
 
         <div className="rounded-[24px] border border-amber-200/30 bg-amber-500/5 p-5">
           <p className="text-sm font-bold text-amber-400 mb-3">Exemplu:</p>
-          <p className="text-sm text-[var(--text-secondary)] mb-3">Secvența afișată: <span className="font-mono font-bold text-[var(--text-primary)]">4 — K — 2 — F</span></p>
-          <p className="text-sm text-[var(--text-secondary)]">Răspuns corect:</p>
-          <p className="text-sm text-[var(--text-primary)] mt-1">Cifre (crescător): <span className="font-mono font-bold">2 4</span></p>
-          <p className="text-sm text-[var(--text-primary)]">Litere (alfabetic): <span className="font-mono font-bold">F K</span></p>
+          <p className="text-sm text-white/65 mb-3">Secvența afișată: <span className="font-mono font-bold text-white">4 — K — 2 — F</span></p>
+          <p className="text-sm text-white/65">Răspuns corect:</p>
+          <p className="text-sm text-white mt-1">Cifre (crescător): <span className="font-mono font-bold">2 4</span></p>
+          <p className="text-sm text-white">Litere (alfabetic): <span className="font-mono font-bold">F K</span></p>
         </div>
 
         <div className="flex gap-3">
@@ -208,14 +208,14 @@ export function MemoireLucruTest({
     const isDigit = typeof currentItem === 'number'
     return (
       <div className="max-w-lg mx-auto text-center py-16 space-y-10 animate-fade-up">
-        <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">
+        <p className="text-xs font-bold uppercase tracking-widest text-white/45">
           Serie {seriesIndex + 1} din {SERIES.length} · {totalSeriesLength} elemente
         </p>
         <div className="flex justify-center gap-2 flex-wrap">
           {currentSeries.sequence.map((_, i) => (
             <div key={i} className={cn(
               'w-8 h-2 rounded-full transition-all duration-300',
-              i < seqStep ? 'bg-cyan-500' : 'bg-[var(--bg-muted)]'
+              i < seqStep ? 'bg-cyan-500' : 'bg-white/[0.04]'
             )} />
           ))}
         </div>
@@ -229,9 +229,9 @@ export function MemoireLucruTest({
             </div>
           </div>
         ) : (
-          <div className="w-32 h-32 mx-auto rounded-3xl bg-[var(--bg-muted)] border border-[var(--border)]" />
+          <div className="w-32 h-32 mx-auto rounded-3xl bg-white/[0.04] border border-white/10" />
         )}
-        <p className="text-xs text-[var(--text-muted)]">
+        <p className="text-xs text-white/45">
           {isDigit ? 'Cifră' : seqStep > 0 ? 'Literă' : ''} · {seqStep}/{totalSeriesLength}
         </p>
       </div>
@@ -242,8 +242,8 @@ export function MemoireLucruTest({
   if (phase === 'input') {
     return (
       <div className="max-w-lg mx-auto text-center py-10 space-y-6 animate-fade-up">
-        <div className="rounded-[24px] border border-[var(--border)] bg-[var(--bg-surface)] p-7 space-y-5">
-          <p className="text-sm font-bold text-[var(--text-primary)]">Introduceți elementele memorate</p>
+        <div className="rounded-[24px] border border-white/10 bg-white/5 p-7 space-y-5">
+          <p className="text-sm font-bold text-white">Introduceți elementele memorate</p>
           <div className="space-y-4 text-left">
             <div>
               <label className="block text-xs font-bold text-blue-400 uppercase tracking-widest mb-2">
@@ -254,7 +254,7 @@ export function MemoireLucruTest({
                 value={digitsInput}
                 onChange={e => setDigitsInput(e.target.value)}
                 placeholder="ex: 2 4 7"
-                className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] font-mono text-base focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/20"
+                className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/8 text-white font-mono text-base focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/20"
                 autoFocus
               />
             </div>
@@ -267,7 +267,7 @@ export function MemoireLucruTest({
                 value={lettersInput}
                 onChange={e => setLettersInput(e.target.value.toUpperCase())}
                 placeholder="ex: F K R"
-                className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] font-mono text-base focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/20"
+                className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/8 text-white font-mono text-base focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/20"
               />
             </div>
           </div>
@@ -295,9 +295,9 @@ export function MemoireLucruTest({
           {lastFeedback.correct ? 'Corect!' : 'Incorect'}
         </p>
         {!lastFeedback.correct && (
-          <div className="text-sm text-[var(--text-muted)] space-y-1">
-            <p>Cifre corecte: <span className="font-mono font-bold text-[var(--text-primary)]">{lastFeedback.expected.digits}</span></p>
-            <p>Litere corecte: <span className="font-mono font-bold text-[var(--text-primary)]">{lastFeedback.expected.letters}</span></p>
+          <div className="text-sm text-white/45 space-y-1">
+            <p>Cifre corecte: <span className="font-mono font-bold text-white">{lastFeedback.expected.digits}</span></p>
+            <p>Litere corecte: <span className="font-mono font-bold text-white">{lastFeedback.expected.letters}</span></p>
           </div>
         )}
         {lastFeedback.correct && seriesIndex < SERIES.length - 1 && (
@@ -310,10 +310,10 @@ export function MemoireLucruTest({
   // ── RESULTS ───────────────────────────────────────────────────
   return (
     <div className="max-w-2xl mx-auto py-8 space-y-5 animate-fade-up">
-      <div className="rounded-[28px] border border-[var(--border)] bg-[var(--bg-surface)] p-8 text-center">
-        <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">Memorie de Lucru — Rezultate</p>
-        <p className="text-5xl font-extrabold text-[var(--text-primary)]">{correctCount} / {SERIES.length}</p>
-        <p className="text-sm text-[var(--text-muted)] mt-2">
+      <div className="rounded-[28px] border border-white/10 bg-white/5 p-8 text-center">
+        <p className="text-xs font-bold uppercase tracking-widest text-white/45 mb-3">Memorie de Lucru — Rezultate</p>
+        <p className="text-5xl font-extrabold text-white">{correctCount} / {SERIES.length}</p>
+        <p className="text-sm text-white/45 mt-2">
           Lungimea maximă procesată corect: {maxLen} elemente
         </p>
       </div>
@@ -327,11 +327,11 @@ export function MemoireLucruTest({
           )}>
             {r.correct ? <CheckCircle className="w-5 h-5 text-green-500 shrink-0" /> : <XCircle className="w-5 h-5 text-red-500 shrink-0" />}
             <div className="flex-1">
-              <p className="text-sm font-semibold text-[var(--text-primary)]">
+              <p className="text-sm font-semibold text-white">
                 Serie {i + 1} · {r.seriesLength} elemente
               </p>
               {!r.correct && (
-                <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                <p className="text-xs text-white/45 mt-0.5">
                   Corect: cifre {r.expected.digits} · litere {r.expected.letters}
                 </p>
               )}

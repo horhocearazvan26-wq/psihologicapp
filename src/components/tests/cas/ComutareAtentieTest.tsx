@@ -80,7 +80,7 @@ function getResponseOptions(p: Plansa): string[] {
 const BORDER_STYLES: Record<BorderColor, string> = {
   red: 'border-red-500 border-4',
   yellow: 'border-yellow-400 border-4',
-  none: 'border-[var(--border)] border-2',
+  none: 'border-white/10 border-2',
 }
 
 const FILL_COLORS: Record<string, string> = {
@@ -98,7 +98,7 @@ const RULE_HINTS: Record<BorderColor | 'solid', string> = {
 }
 
 const btnPrimary = 'flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#0f2e49] to-[#12436d] text-white text-sm font-bold border border-cyan-300/20 hover:brightness-110 transition-all shadow-lg disabled:opacity-40'
-const btnSecondary = 'flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-muted)] transition-colors'
+const btnSecondary = 'flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/8 text-white text-sm font-medium hover:bg-white/[0.04] transition-colors'
 
 export function ComutareAtentieTest({
   institutionLabel,
@@ -206,7 +206,7 @@ export function ComutareAtentieTest({
 
     return (
       <div className="max-w-2xl mx-auto py-8 space-y-5 animate-fade-up">
-        <div className="rounded-[28px] border border-[var(--border)] bg-[linear-gradient(145deg,rgba(15,23,36,0.98),rgba(17,42,63,0.95))] overflow-hidden">
+        <div className="rounded-[28px] border border-white/10 bg-[linear-gradient(145deg,rgba(15,23,36,0.98),rgba(17,42,63,0.95))] overflow-hidden">
           <div className="px-7 py-6 border-b border-white/8">
             <p className="text-[10px] font-bold tracking-[0.22em] uppercase text-cyan-400/80 mb-1">Instructaj — {institutionLabel}</p>
             <h1 className="text-2xl font-extrabold tracking-tight text-white">Comutarea Atenției</h1>
@@ -252,11 +252,11 @@ export function ComutareAtentieTest({
 
     return (
       <div className="max-w-2xl mx-auto py-8 space-y-5 animate-fade-up">
-        <div className="rounded-[28px] border border-[var(--border)] bg-[var(--bg-surface)] p-8 text-center">
-          <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">Comutarea Atenției — Rezultate</p>
-          <p className="text-5xl font-extrabold text-[var(--text-primary)]">{correct}/{results.length}</p>
-          <p className="text-sm text-[var(--text-muted)] mt-2">Timp mediu de reacție: {avgMs.toFixed(0)} ms</p>
-          <div className="w-full bg-[var(--bg-muted)] rounded-full h-2 mt-4">
+        <div className="rounded-[28px] border border-white/10 bg-white/5 p-8 text-center">
+          <p className="text-xs font-bold uppercase tracking-widest text-white/45 mb-3">Comutarea Atenției — Rezultate</p>
+          <p className="text-5xl font-extrabold text-white">{correct}/{results.length}</p>
+          <p className="text-sm text-white/45 mt-2">Timp mediu de reacție: {avgMs.toFixed(0)} ms</p>
+          <div className="w-full bg-white/[0.04] rounded-full h-2 mt-4">
             <div className="h-2 rounded-full bg-[linear-gradient(90deg,#0f3060,#2d7cae)] transition-all duration-700"
               style={{ width: `${(correct / results.length) * 100}%` }} />
           </div>
@@ -269,14 +269,14 @@ export function ComutareAtentieTest({
               r.isCorrect ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/15'
                 : 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/15'
             )}>
-              <span className="font-mono text-xs text-[var(--text-muted)] shrink-0 w-5">#{r.plansaIndex}</span>
+              <span className="font-mono text-xs text-white/45 shrink-0 w-5">#{r.plansaIndex}</span>
               <span className={cn('font-semibold', r.isCorrect ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400')}>
                 {r.isCorrect ? '✓' : '✗'}
               </span>
-              <span className="flex-1 text-[var(--text-muted)]">
+              <span className="flex-1 text-white/45">
                 {r.isCorrect ? r.response : `${r.response} → corect: ${r.correct}`}
               </span>
-              <span className="text-xs text-[var(--text-muted)] font-mono">{r.reactionMs}ms</span>
+              <span className="text-xs text-white/45 font-mono">{r.reactionMs}ms</span>
             </div>
           ))}
         </div>
@@ -312,17 +312,17 @@ export function ComutareAtentieTest({
   return (
     <div className="max-w-lg mx-auto py-6 space-y-6 animate-fade-up">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">
+        <span className="text-xs font-bold uppercase tracking-widest text-white/45">
           {isTraining ? 'Antrenament' : 'Test'} · Planșa {plansaIndex + 1}/{planse.length}
         </span>
         {!isTraining && (
-          <span className="flex items-center gap-1.5 text-sm font-mono font-bold text-[var(--text-primary)]">
+          <span className="flex items-center gap-1.5 text-sm font-mono font-bold text-white">
             <Clock className="w-3.5 h-3.5" />
           </span>
         )}
       </div>
 
-      <div className="w-full bg-[var(--bg-muted)] rounded-full h-1">
+      <div className="w-full bg-white/[0.04] rounded-full h-1">
         <div className="h-1 rounded-full bg-[linear-gradient(90deg,#0f3060,#2d7cae)] transition-all"
           style={{ width: `${(plansaIndex / planse.length) * 100}%` }} />
       </div>
@@ -332,13 +332,13 @@ export function ComutareAtentieTest({
         <div className={cn(
           'w-36 h-36 rounded-3xl flex items-center justify-center transition-all',
           BORDER_STYLES[p.isSolid ? 'none' : p.borderColor],
-          p.isSolid && p.fillColor ? FILL_COLORS[p.fillColor] : 'bg-[var(--bg-elevated)]'
+          p.isSolid && p.fillColor ? FILL_COLORS[p.fillColor] : 'bg-white/8'
         )}>
           {!p.isSolid && (
-            <span className="text-5xl font-extrabold text-[var(--text-primary)]">{p.digit}</span>
+            <span className="text-5xl font-extrabold text-white">{p.digit}</span>
           )}
         </div>
-        <p className="text-xs text-[var(--text-muted)] text-center max-w-xs">{ruleHint}</p>
+        <p className="text-xs text-white/45 text-center max-w-xs">{ruleHint}</p>
       </div>
 
       {/* Feedback for training */}
@@ -359,10 +359,10 @@ export function ComutareAtentieTest({
           {options.map(opt => (
             <button key={opt} onClick={() => handleResponse(opt)}
               className={cn(
-                'py-5 rounded-2xl border-2 border-[var(--border)] font-bold text-base capitalize transition-all hover:scale-105 active:scale-95',
+                'py-5 rounded-2xl border-2 border-white/10 font-bold text-base capitalize transition-all hover:scale-105 active:scale-95',
                 p.isSolid && FILL_COLORS[opt]
                   ? `${FILL_COLORS[opt]} text-white border-transparent`
-                  : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:border-cyan-400/30 hover:bg-[var(--bg-muted)]'
+                  : 'bg-white/8 text-white hover:border-cyan-400/30 hover:bg-white/[0.04]'
               )}>
               {opt.charAt(0).toUpperCase() + opt.slice(1)}
             </button>
