@@ -2,6 +2,26 @@ import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import type { Institution, TestCategory } from '@/types'
 
+const LEGACY_CATEGORY_LABELS = {
+  attention: 'Atenție & Concentrare',
+  logic: 'Raționament Logic',
+  memory: 'Memorie',
+  numerical: 'Aptitudini Numerice',
+  vocabulary: 'Vocabular & Limbaj',
+  personality: 'Personalitate',
+} as const
+
+const LEGACY_CATEGORY_SHORT_LABELS = {
+  attention: 'AT',
+  logic: 'LG',
+  memory: 'MM',
+  numerical: 'NR',
+  vocabulary: 'VC',
+  personality: 'PS',
+} as const
+
+export type LegacyTestCategory = keyof typeof LEGACY_CATEGORY_LABELS
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -44,10 +64,47 @@ export const CATEGORY_SHORT_LABELS: Record<TestCategory, string> = {
   'comutare-atentie':      'CA',
 }
 
+export function isKnownCategory(category: string): category is TestCategory {
+  return category in CATEGORY_LABELS
+}
+
+export function isLegacyCategory(category: string): category is LegacyTestCategory {
+  return category in LEGACY_CATEGORY_LABELS
+}
+
+export function getCategoryLabel(category: string): string {
+  if (isKnownCategory(category)) return CATEGORY_LABELS[category]
+  if (isLegacyCategory(category)) return LEGACY_CATEGORY_LABELS[category]
+  return category
+}
+
+export function getCategoryShortLabel(category: string): string {
+  if (isKnownCategory(category)) return CATEGORY_SHORT_LABELS[category]
+  if (isLegacyCategory(category)) return LEGACY_CATEGORY_SHORT_LABELS[category]
+  return '??'
+}
+
 export function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60)
   const s = seconds % 60
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+}
+
+export function normalizeInstitutionParam(value: string): Institution | null {
+  const normalized = value.trim().toLowerCase()
+
+  switch (normalized) {
+    case 'mai':
+      return 'MAI'
+    case 'mapn':
+      return 'MApN'
+    case 'sri':
+      return 'SRI'
+    case 'anp':
+      return 'ANP'
+    default:
+      return null
+  }
 }
 
 export function getScoreColor(score: number): string {
