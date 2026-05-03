@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils'
 import type { Institution } from '@/types'
 import { Lock, Play, ChevronRight, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
-import { SimulationRunner } from './simulation-runner'
 
 interface InstitutionOption {
   inst: Institution
@@ -26,16 +25,6 @@ interface SimulationSelectorProps {
 
 export function SimulationSelector({ institutions }: SimulationSelectorProps) {
   const [selected, setSelected] = useState<Institution | null>(null)
-  const [running, setRunning] = useState(false)
-
-  if (running && selected) {
-    return (
-      <SimulationRunner
-        institution={selected}
-        onBack={() => { setRunning(false); setSelected(null) }}
-      />
-    )
-  }
 
   return (
     <div className="space-y-5">
@@ -100,20 +89,23 @@ export function SimulationSelector({ institutions }: SimulationSelectorProps) {
       </div>
 
       {/* Start button */}
-      <button
-        disabled={!selected}
-        onClick={() => selected && setRunning(true)}
+      <Link
+        href={selected ? `/test/simulare/${selected.toLowerCase()}` : '/dashboard/simulate'}
         className={cn(
           'w-full h-14 rounded-2xl font-bold text-base flex items-center justify-center gap-3 transition-all duration-200',
           selected
             ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-950 hover:shadow-xl hover:-translate-y-0.5'
             : 'bg-[var(--bg-muted)] text-[var(--text-muted)] cursor-not-allowed'
         )}
+        aria-disabled={!selected}
+        onClick={event => {
+          if (!selected) event.preventDefault()
+        }}
       >
         <Play className="w-5 h-5" />
         {selected ? `Pornește simularea — ${selected}` : 'Selectează o instituție'}
         {selected && <ChevronRight className="w-5 h-5" />}
-      </button>
+      </Link>
     </div>
   )
 }

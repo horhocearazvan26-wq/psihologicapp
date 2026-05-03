@@ -4,7 +4,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { cn, formatTime } from '@/lib/utils'
 import type { Institution, TestCategory } from '@/types'
-import { ArrowLeft, ArrowRight, CheckCircle, XCircle, Loader2, BookOpen, Clock, Target, AlertCircle } from 'lucide-react'
+import {
+  ArrowLeft, ArrowRight, CheckCircle, XCircle,
+  Loader2, BookOpen, Clock, Target, AlertCircle, ChevronUp, ChevronDown,
+} from 'lucide-react'
 
 interface Question {
   id: string
@@ -25,6 +28,7 @@ interface MCQTestEngineProps {
   isFullAccess: boolean
   institutionLabel: string
   categoryLabel: string
+  backHref?: string
 }
 
 interface Result {
@@ -56,7 +60,7 @@ const CATEGORY_INSTRUCTAJ: Record<TestCategory, {
       enunt: 'Toți matematicienii sunt logicieni.\nUnii profesori sunt matematicieni.\nCare concluzie este validă?',
       optiuni: ['Toți profesorii sunt logicieni.', 'Unii profesori sunt logicieni.', 'Toți logicienii sunt profesori.', 'Niciun profesor nu este logician.'],
       corect: 1,
-      explicatie: 'Unii profesori sunt matematicieni (premisg 2) → deci și logicieni (premisa 1). Nu putem concluziona despre TOȚI profesorii.',
+      explicatie: 'Unii profesori sunt matematicieni (premisa 2) → deci și logicieni (premisa 1). Nu putem concluziona despre TOȚI profesorii.',
     },
     durata: '7 minute',
     itemi: '12 itemi',
@@ -145,7 +149,7 @@ const CATEGORY_INSTRUCTAJ: Record<TestCategory, {
     descriere: 'Evaluează capacitatea de a reține și manipula simultan informații alfanumerice în memoria de scurtă durată.',
     instructiuni: [],
     durata: 'Fără limită de timp',
-    itemi: '7 serii',
+    itemi: '10 serii',
   },
   'inhibitie-cognitiva': {
     descriere: 'Evaluează capacitatea de inhibiție a răspunsului dominant (Testul Stroop).',
@@ -157,7 +161,7 @@ const CATEGORY_INSTRUCTAJ: Record<TestCategory, {
     descriere: 'Evaluează flexibilitatea cognitivă și capacitatea de a comuta între reguli de clasificare.',
     instructiuni: [],
     durata: 'Temporizat per planșă',
-    itemi: '13 planșe',
+    itemi: '21 planșe',
   },
 }
 
@@ -173,7 +177,14 @@ const TIME_LIMITS: Partial<Record<TestCategory, number>> = {
 const btnPrimary = 'interactive-press interactive-glow flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-cyan-300/30 bg-[linear-gradient(135deg,#0f2e49,#12436d)] text-[var(--text-inverse)] text-sm font-semibold shadow-[0_18px_36px_-24px_rgba(15,76,129,0.72)] hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed'
 const btnSecondary = 'interactive-press flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-muted)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed'
 
-export function MCQTestEngine({ institution, category, isFullAccess, institutionLabel, categoryLabel }: MCQTestEngineProps) {
+export function MCQTestEngine({
+  institution,
+  category,
+  isFullAccess,
+  institutionLabel,
+  categoryLabel,
+  backHref = '/dashboard/tests',
+}: MCQTestEngineProps) {
   const router = useRouter()
   const [phase, setPhase] = useState<Phase>('instructaj')
   const [questions, setQuestions] = useState<Question[]>([])
@@ -183,6 +194,8 @@ export function MCQTestEngine({ institution, category, isFullAccess, institution
   const [timeLeft, setTimeLeft] = useState(0)
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<{ score: number; correct: number; total: number; results: Result[] } | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [showMap, setShowMap] = useState(false)
 
   const categoryTimeLimit = TIME_LIMITS[category]
   const totalTime = questions.length > 0
@@ -191,6 +204,7 @@ export function MCQTestEngine({ institution, category, isFullAccess, institution
 
   async function startTest() {
     setLoading(true)
+    setError(null)
     try {
       const res = await fetch('/api/tests/session', {
         method: 'POST',
@@ -198,13 +212,17 @@ export function MCQTestEngine({ institution, category, isFullAccess, institution
         body: JSON.stringify({ institution, category }),
       })
       const data = await res.json()
-      if (data.error) throw new Error(data.error)
+      if (!res.ok || data.error) throw new Error(data.error ?? 'Nu am putut porni testul.')
+      if (!Array.isArray(data.questions) || data.questions.length === 0) {
+        throw new Error(`Nu există încă itemi disponibili pentru proba ${categoryLabel}.`)
+      }
       setQuestions(data.questions)
       setSessionId(data.session.id)
       setTimeLeft(categoryTimeLimit ?? data.questions.length * 45)
       setPhase('test')
     } catch (err) {
       console.error(err)
+      setError(err instanceof Error ? err.message : 'A apărut o eroare la inițierea testului.')
     } finally {
       setLoading(false)
     }
@@ -246,23 +264,27 @@ export function MCQTestEngine({ institution, category, isFullAccess, institution
   // ── INSTRUCTAJ ────────────────────────────────────────────────
   if (phase === 'instructaj') {
     return (
-      <div className="max-w-3xl mx-auto py-8 space-y-5 animate-fade-up">
-        {/* Header */}
-        <div className="rounded-[28px] border border-[var(--border)] overflow-hidden"
-          style={{ background: 'linear-gradient(145deg,rgba(15,23,36,0.98),rgba(17,42,63,0.95))' }}>
-          <div className="px-7 py-6 border-b border-white/8">
+      <div className="max-w-3xl mx-auto py-6 space-y-5 animate-fade-up">
+        {/* Header card */}
+        <div
+          className="rounded-[28px] border border-[var(--border)] overflow-hidden"
+          style={{ background: 'linear-gradient(145deg,rgba(15,23,36,0.98),rgba(17,42,63,0.95))' }}
+        >
+          <div className="px-6 py-6 border-b border-white/8 sm:px-8">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center shrink-0">
                 <BookOpen className="w-5 h-5 text-cyan-400" />
               </div>
               <div>
-                <p className="text-[10px] font-bold tracking-[0.22em] uppercase text-cyan-400/80 mb-1">Instructaj — {institutionLabel}</p>
-                <h1 className="text-2xl font-extrabold tracking-tight text-white">{categoryLabel}</h1>
+                <p className="text-[10px] font-bold tracking-[0.22em] uppercase text-cyan-400/80 mb-1">
+                  Instructaj — {institutionLabel}
+                </p>
+                <h1 className="text-xl font-extrabold tracking-tight text-white sm:text-2xl">{categoryLabel}</h1>
                 <p className="text-sm text-white/50 mt-1">{info.descriere}</p>
               </div>
             </div>
           </div>
-          <div className="px-7 py-5 grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="px-6 py-5 grid grid-cols-2 gap-3 sm:px-8 sm:grid-cols-3">
             {[
               { icon: Target, label: 'Itemi', val: info.itemi },
               { icon: Clock, label: 'Timp alocat', val: info.durata },
@@ -286,7 +308,9 @@ export function MCQTestEngine({ institution, category, isFullAccess, institution
             <ul className="space-y-2.5">
               {info.instructiuni.map((instr, i) => (
                 <li key={i} className="flex items-start gap-3 text-sm text-[var(--text-secondary)]">
-                  <span className="w-5 h-5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+                  <span className="w-5 h-5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                    {i + 1}
+                  </span>
                   {instr}
                 </li>
               ))}
@@ -294,11 +318,13 @@ export function MCQTestEngine({ institution, category, isFullAccess, institution
           </div>
         )}
 
-        {/* Example item */}
+        {/* Example */}
         {info.exemplu && (
           <div className="rounded-[24px] border border-amber-200/30 bg-amber-500/5 p-6 space-y-4">
             <h2 className="text-sm font-bold text-amber-400 uppercase tracking-widest">Exemplu</h2>
-            <p className="text-sm font-medium text-[var(--text-primary)] leading-relaxed whitespace-pre-line">{info.exemplu.enunt}</p>
+            <p className="text-sm font-medium text-[var(--text-primary)] leading-relaxed whitespace-pre-line">
+              {info.exemplu.enunt}
+            </p>
             <div className="space-y-2">
               {info.exemplu.optiuni.map((opt, i) => (
                 <div key={i} className={cn(
@@ -312,7 +338,9 @@ export function MCQTestEngine({ institution, category, isFullAccess, institution
                 </div>
               ))}
             </div>
-            <p className="text-xs text-[var(--text-muted)] italic border-t border-[var(--border)] pt-3">{info.exemplu.explicatie}</p>
+            <p className="text-xs text-[var(--text-muted)] italic border-t border-[var(--border)] pt-3">
+              {info.exemplu.explicatie}
+            </p>
           </div>
         )}
 
@@ -322,8 +350,14 @@ export function MCQTestEngine({ institution, category, isFullAccess, institution
           </div>
         )}
 
+        {error && (
+          <div className="rounded-2xl border border-red-300/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            {error}
+          </div>
+        )}
+
         <div className="flex gap-3">
-          <button className={cn(btnSecondary, 'flex-none')} onClick={() => router.back()}>
+          <button className={cn(btnSecondary, 'flex-none')} onClick={() => router.push(backHref)}>
             <ArrowLeft className="w-4 h-4" /> Înapoi
           </button>
           <button className={cn(btnPrimary, 'flex-1')} disabled={loading} onClick={startTest}>
@@ -350,12 +384,16 @@ export function MCQTestEngine({ institution, category, isFullAccess, institution
     return (
       <div className="max-w-3xl mx-auto space-y-5 py-6 animate-fade-up">
         <div className={cn('rounded-[28px] border p-8 text-center', scoreBg)}>
-          <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">Rezultat final — {categoryLabel}</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">
+            Rezultat final — {categoryLabel}
+          </p>
           <p className={cn('text-6xl font-extrabold tracking-tight', scoreColor)}>{score.toFixed(0)}%</p>
           <p className="text-[var(--text-muted)] mt-2 text-sm">{correct} răspunsuri corecte din {total}</p>
           <div className="w-full bg-black/10 dark:bg-white/10 rounded-full h-2 mt-4">
-            <div className={cn('h-2 rounded-full transition-all duration-700', score >= 80 ? 'bg-green-500' : score >= 60 ? 'bg-amber-500' : 'bg-red-500')}
-              style={{ width: `${score}%` }} />
+            <div
+              className={cn('h-2 rounded-full transition-all duration-700', score >= 80 ? 'bg-green-500' : score >= 60 ? 'bg-amber-500' : 'bg-red-500')}
+              style={{ width: `${score}%` }}
+            />
           </div>
         </div>
 
@@ -369,8 +407,10 @@ export function MCQTestEngine({ institution, category, isFullAccess, institution
               return (
                 <div key={r.question_id} className={cn(
                   'rounded-[20px] border p-5',
-                  r.is_correct ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/15'
-                    : isSkipped ? 'border-[var(--border)] bg-[var(--bg-muted)]'
+                  r.is_correct
+                    ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/15'
+                    : isSkipped
+                    ? 'border-[var(--border)] bg-[var(--bg-muted)]'
                     : 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/15'
                 )}>
                   <div className="flex items-start gap-3 mb-3">
@@ -381,17 +421,25 @@ export function MCQTestEngine({ institution, category, isFullAccess, institution
                     {q.options.map((opt, oi) => (
                       <div key={oi} className={cn(
                         'text-xs px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5',
-                        oi === r.correct_answer ? 'bg-green-100 dark:bg-green-950/40 text-green-800 dark:text-green-300'
-                          : oi === r.selected_option && !r.is_correct ? 'bg-red-100 dark:bg-red-950/40 text-red-800 dark:text-red-300'
+                        oi === r.correct_answer
+                          ? 'bg-green-100 dark:bg-green-950/40 text-green-800 dark:text-green-300'
+                          : oi === r.selected_option && !r.is_correct
+                          ? 'bg-red-100 dark:bg-red-950/40 text-red-800 dark:text-red-300'
                           : 'text-[var(--text-muted)]'
                       )}>
-                        {oi === r.correct_answer ? <CheckCircle className="w-3 h-3 shrink-0" /> : oi === r.selected_option && !r.is_correct ? <XCircle className="w-3 h-3 shrink-0" /> : null}
+                        {oi === r.correct_answer
+                          ? <CheckCircle className="w-3 h-3 shrink-0" />
+                          : oi === r.selected_option && !r.is_correct
+                          ? <XCircle className="w-3 h-3 shrink-0" />
+                          : null}
                         {String.fromCharCode(65 + oi)}. {opt}
                       </div>
                     ))}
                   </div>
                   {r.explanation && (
-                    <p className="text-xs text-[var(--text-muted)] mt-2.5 ml-5 italic border-t border-[var(--border)] pt-2">{r.explanation}</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-2.5 ml-5 italic border-t border-[var(--border)] pt-2">
+                      {r.explanation}
+                    </p>
                   )}
                 </div>
               )
@@ -400,10 +448,21 @@ export function MCQTestEngine({ institution, category, isFullAccess, institution
         )}
 
         <div className="flex gap-3 pt-2">
-          <button className={cn(btnSecondary, 'flex-1')} onClick={() => router.push('/dashboard/tests')}>Toate testele</button>
-          <button className={cn(btnPrimary, 'flex-1')} onClick={() => {
-            setPhase('instructaj'); setSelectedOptions({}); setCurrentIndex(0); setResults(null); setQuestions([])
-          }}>Reia testul</button>
+          <button className={cn(btnSecondary, 'flex-1')} onClick={() => router.push(backHref)}>
+            Toate testele
+          </button>
+          <button
+            className={cn(btnPrimary, 'flex-1')}
+            onClick={() => {
+              setPhase('instructaj')
+              setSelectedOptions({})
+              setCurrentIndex(0)
+              setResults(null)
+              setQuestions([])
+            }}
+          >
+            Reia testul
+          </button>
         </div>
       </div>
     )
@@ -414,126 +473,273 @@ export function MCQTestEngine({ institution, category, isFullAccess, institution
   if (!currentQ) return null
 
   const hasPassage = !!currentQ.metadata?.passage
-  const samePassageAsLast = currentIndex > 0 && questions[currentIndex - 1]?.metadata?.passage_title === currentQ.metadata?.passage_title
 
   return (
-    <div className={cn('max-w-4xl mx-auto py-4 space-y-4', hasPassage ? 'max-w-6xl' : '')}>
-      {/* Sticky header */}
-      <div className="sticky top-4 z-10 rounded-[22px] border border-[var(--border)] bg-[color:rgb(249_250_248_/_0.9)] p-4 shadow-lg backdrop-blur-xl dark:bg-[color:rgb(16_25_36_/_0.9)]">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">{institutionLabel} · {categoryLabel}</p>
-            <div className="mt-0.5 flex items-center gap-2">
-              <span className="text-sm font-bold text-[var(--text-primary)]">Item {currentIndex + 1}/{questions.length}</span>
-              <span className="text-xs border border-[var(--border)] rounded-full px-2 py-0.5 text-[var(--text-muted)]">{answeredCount} răspuns{answeredCount === 1 ? '' : 'uri'}</span>
+    <>
+      {/* Main content — extra bottom padding on mobile for fixed nav bar */}
+      <div className={cn('max-w-4xl mx-auto space-y-4 pb-24 md:pb-8', hasPassage && 'max-w-6xl')}>
+
+        {/* Sticky progress header */}
+        <div className="sticky top-0 z-20 rounded-[20px] border border-[var(--border)] bg-[color:rgb(10_18_28_/_0.94)] p-3 shadow-lg backdrop-blur-xl md:p-4">
+          {/* Mobile: compact row */}
+          <div className="flex items-center justify-between gap-3 md:hidden">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+                {categoryLabel}
+              </p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-sm font-bold text-[var(--text-primary)]">
+                  Item {currentIndex + 1}/{questions.length}
+                </span>
+                <span className="text-xs text-[var(--text-muted)]">· {answeredCount} răsp.</span>
+              </div>
             </div>
-          </div>
-          <div className="text-right border border-[var(--border)] rounded-xl px-3 py-2 bg-[var(--bg-elevated)]">
-            <p className="text-[9px] uppercase tracking-widest text-[var(--text-muted)]">Timp rămas</p>
-            <span className={cn('font-mono font-bold text-lg tabular-nums', timeLeft < 30 ? 'text-red-500 animate-pulse' : 'text-[var(--text-primary)]')}>
+            <span className={cn(
+              'font-mono font-bold text-xl tabular-nums',
+              timeLeft < 30 ? 'text-red-500 animate-pulse' : 'text-[var(--text-primary)]'
+            )}>
               {formatTime(timeLeft)}
             </span>
           </div>
-        </div>
-        <div className="mt-3 space-y-1">
-          <div className="w-full bg-[var(--bg-muted)] rounded-full h-1.5">
-            <div className="h-1.5 rounded-full bg-[linear-gradient(90deg,#0f3060,#2d7cae)] transition-all" style={{ width: `${progress}%` }} />
+
+          {/* Desktop: full info row */}
+          <div className="hidden md:flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
+                {institutionLabel} · {categoryLabel}
+              </p>
+              <div className="mt-0.5 flex items-center gap-2">
+                <span className="text-sm font-bold text-[var(--text-primary)]">
+                  Item {currentIndex + 1}/{questions.length}
+                </span>
+                <span className="text-xs border border-[var(--border)] rounded-full px-2 py-0.5 text-[var(--text-muted)]">
+                  {answeredCount} răspuns{answeredCount === 1 ? '' : 'uri'}
+                </span>
+              </div>
+            </div>
+            <div className="text-right border border-[var(--border)] rounded-xl px-3 py-2 bg-[var(--bg-elevated)]">
+              <p className="text-[9px] uppercase tracking-widest text-[var(--text-muted)]">Timp rămas</p>
+              <span className={cn(
+                'font-mono font-bold text-lg tabular-nums',
+                timeLeft < 30 ? 'text-red-500 animate-pulse' : 'text-[var(--text-primary)]'
+              )}>
+                {formatTime(timeLeft)}
+              </span>
+            </div>
           </div>
-          <div className="w-full bg-[var(--bg-muted)] rounded-full h-0.5">
-            <div className={cn('h-0.5 rounded-full transition-all', timerPercent > 50 ? 'bg-green-500' : timerPercent > 20 ? 'bg-amber-500' : 'bg-red-500')} style={{ width: `${timerPercent}%` }} />
+
+          {/* Progress bars — always visible */}
+          <div className="mt-2 space-y-1 md:mt-3">
+            <div className="w-full bg-[var(--bg-muted)] rounded-full h-1.5">
+              <div
+                className="h-1.5 rounded-full bg-[linear-gradient(90deg,#0f3060,#2d7cae)] transition-all"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <div className="w-full bg-[var(--bg-muted)] rounded-full h-0.5">
+              <div
+                className={cn(
+                  'h-0.5 rounded-full transition-all',
+                  timerPercent > 50 ? 'bg-green-500' : timerPercent > 20 ? 'bg-amber-500' : 'bg-red-500'
+                )}
+                style={{ width: `${timerPercent}%` }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Passage + question layout */}
+        <div className={cn(hasPassage && 'grid grid-cols-1 gap-4 lg:grid-cols-2')}>
+          {hasPassage && (
+            <div className="overflow-auto rounded-[24px] border border-[var(--border)] bg-[var(--bg-surface)] p-5 max-h-[50vh] lg:sticky lg:top-20 lg:max-h-[70vh]">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-2">
+                {currentQ.metadata?.passage_title ?? 'Text'}
+              </p>
+              <p className="text-sm text-[var(--text-secondary)] leading-7 whitespace-pre-line">
+                {currentQ.metadata?.passage as string}
+              </p>
+            </div>
+          )}
+
+          <div className="space-y-3">
+            {/* Question card */}
+            <div className="rounded-[24px] border border-[var(--border)] bg-[var(--bg-surface)] p-5 shadow-sm md:p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="flex h-7 w-7 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] text-xs font-bold text-[var(--text-muted)] md:h-8 md:w-8">
+                  {String(currentIndex + 1).padStart(2, '0')}
+                </span>
+                {currentQ.difficulty === 3 && (
+                  <span className="text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded-full uppercase tracking-wide">
+                    Dificil
+                  </span>
+                )}
+              </div>
+              <p className="text-base font-medium text-[var(--text-primary)] leading-relaxed whitespace-pre-line">
+                {currentQ.question_text}
+              </p>
+              {currentQ.metadata?.image_url && (
+                <div className="mt-4 flex justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={currentQ.metadata.image_url as string}
+                    alt="Imagine întrebare"
+                    className="max-w-full rounded-xl border border-[var(--border)] object-contain"
+                    style={{ maxHeight: '280px' }}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Answer options — tall touch targets */}
+            <div className="space-y-2.5">
+              {currentQ.options.map((opt, i) => {
+                const isSelected = selectedOptions[currentIndex] === i
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedOptions(prev => ({ ...prev, [currentIndex]: i }))}
+                    className={cn(
+                      'w-full text-left px-4 py-4 rounded-2xl border transition-all duration-150 text-sm font-medium flex items-center gap-3 min-h-[58px] md:gap-4 md:px-5',
+                      isSelected
+                        ? 'border-cyan-400/40 bg-[linear-gradient(135deg,rgba(15,76,129,0.1),rgba(45,124,174,0.07))] text-[var(--text-primary)] shadow-sm'
+                        : 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-primary)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-elevated)]'
+                    )}
+                  >
+                    <span className={cn(
+                      'inline-flex items-center justify-center w-8 h-8 rounded-xl text-xs font-bold shrink-0 border',
+                      isSelected
+                        ? 'border-cyan-400/30 bg-[#12365b] text-white'
+                        : 'border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text-muted)]'
+                    )}>
+                      {String.fromCharCode(65 + i)}
+                    </span>
+                    {opt}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Desktop navigation */}
+            <div className="hidden md:flex items-center gap-3 pt-1">
+              <button
+                className={btnSecondary}
+                disabled={currentIndex === 0}
+                onClick={() => setCurrentIndex(i => i - 1)}
+              >
+                <ArrowLeft className="w-4 h-4" /> Anterior
+              </button>
+              <div className="flex-1 text-center text-xs text-[var(--text-muted)]">Navigare liberă</div>
+              {currentIndex < questions.length - 1 ? (
+                <button className={btnPrimary} onClick={() => setCurrentIndex(i => i + 1)}>
+                  Următor <ArrowRight className="w-4 h-4" />
+                </button>
+              ) : (
+                <button
+                  className={cn(answeredCount === questions.length ? btnPrimary : btnSecondary)}
+                  onClick={handleSubmit}
+                >
+                  Finalizează
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop question map */}
+        <div className="hidden md:block rounded-[20px] border border-[var(--border)] bg-[var(--bg-surface)] p-4">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">Hartă itemi</p>
+          <div className="flex flex-wrap gap-1.5">
+            {questions.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentIndex(i)}
+                className={cn(
+                  'w-8 h-8 rounded-xl text-xs font-semibold transition-colors border',
+                  i === currentIndex
+                    ? 'border-cyan-400/30 bg-[#12365b] text-white'
+                    : selectedOptions[i] !== undefined
+                    ? 'border-green-200 dark:border-green-900 bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-400'
+                    : 'border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text-muted)]'
+                )}
+              >
+                {i + 1}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Passage + Question layout */}
-      <div className={cn('gap-4', hasPassage ? 'grid grid-cols-1 lg:grid-cols-2' : '')}>
-        {/* Passage */}
-        {hasPassage && (
-          <div className="rounded-[24px] border border-[var(--border)] bg-[var(--bg-surface)] p-5 overflow-auto max-h-[70vh] lg:sticky lg:top-28">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-2">
-              {currentQ.metadata?.passage_title ?? 'Text'}
-            </p>
-            <p className="text-sm text-[var(--text-secondary)] leading-7 whitespace-pre-line">{currentQ.metadata?.passage as string}</p>
+      {/* Mobile fixed bottom navigation */}
+      <div className="fixed bottom-0 left-0 right-0 z-30 md:hidden border-t border-white/8 bg-[color:rgb(7_17_29_/_0.97)] backdrop-blur-2xl">
+        {/* Collapsible question map */}
+        {showMap && (
+          <div className="border-b border-white/8 px-4 pt-3 pb-2">
+            <div className="flex flex-wrap gap-1.5">
+              {questions.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => { setCurrentIndex(i); setShowMap(false) }}
+                  className={cn(
+                    'w-8 h-8 rounded-xl text-xs font-semibold transition-colors border',
+                    i === currentIndex
+                      ? 'border-cyan-400/30 bg-[#12365b] text-white'
+                      : selectedOptions[i] !== undefined
+                      ? 'border-green-400/40 bg-green-900/30 text-green-400'
+                      : 'border-white/10 bg-white/5 text-white/50'
+                  )}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
-        {/* Question + options */}
-        <div className="space-y-4">
-          {/* Question card */}
-          <div className="rounded-[24px] border border-[var(--border)] bg-[var(--bg-surface)] p-6 shadow-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="w-8 h-8 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] text-xs font-bold text-[var(--text-muted)] flex items-center justify-center">
-                {String(currentIndex + 1).padStart(2, '0')}
-              </span>
-              {currentQ.difficulty === 3 && (
-                <span className="text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded-full uppercase tracking-wide">Dificil</span>
-              )}
-            </div>
-            <p className="text-base font-medium text-[var(--text-primary)] leading-relaxed whitespace-pre-line">{currentQ.question_text}</p>
-          </div>
+        {/* Nav bar */}
+        <div className="flex items-center gap-2 px-4 py-3 pb-6">
+          {/* Prev */}
+          <button
+            disabled={currentIndex === 0}
+            onClick={() => setCurrentIndex(i => i - 1)}
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/70 disabled:opacity-30 transition-colors hover:bg-white/10 shrink-0"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
 
-          {/* Options */}
-          <div className="space-y-2.5">
-            {currentQ.options.map((opt, i) => {
-              const isSelected = selectedOptions[currentIndex] === i
-              return (
-                <button key={i}
-                  onClick={() => setSelectedOptions(prev => ({ ...prev, [currentIndex]: i }))}
-                  className={cn(
-                    'w-full text-left px-5 py-4 rounded-2xl border transition-all duration-150 text-sm font-medium flex items-center gap-4',
-                    isSelected
-                      ? 'border-cyan-400/40 bg-[linear-gradient(135deg,rgba(15,76,129,0.1),rgba(45,124,174,0.07))] text-[var(--text-primary)] shadow-sm'
-                      : 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-primary)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-elevated)]'
-                  )}>
-                  <span className={cn(
-                    'inline-flex items-center justify-center w-8 h-8 rounded-xl text-xs font-bold shrink-0 border',
-                    isSelected ? 'border-cyan-400/30 bg-[#12365b] text-white' : 'border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text-muted)]'
-                  )}>
-                    {String.fromCharCode(65 + i)}
-                  </span>
-                  {opt}
-                </button>
-              )
-            })}
-          </div>
+          {/* Counter / map toggle */}
+          <button
+            onClick={() => setShowMap(v => !v)}
+            className="flex flex-1 items-center justify-center gap-2 h-11 rounded-xl border border-white/10 bg-white/5 text-sm font-medium"
+          >
+            <span className="font-bold text-white">{currentIndex + 1}</span>
+            <span className="text-white/40">/ {questions.length}</span>
+            <span className={cn(
+              'w-2 h-2 rounded-full ml-0.5 shrink-0',
+              selectedOptions[currentIndex] !== undefined ? 'bg-green-400' : 'bg-white/20'
+            )} />
+            {showMap
+              ? <ChevronDown className="w-3.5 h-3.5 text-white/40 ml-0.5" />
+              : <ChevronUp className="w-3.5 h-3.5 text-white/40 ml-0.5" />}
+          </button>
 
-          {/* Navigation */}
-          <div className="flex items-center gap-3 pt-1">
-            <button className={btnSecondary} disabled={currentIndex === 0} onClick={() => setCurrentIndex(i => i - 1)}>
-              <ArrowLeft className="w-4 h-4" /> Anterior
+          {/* Next or Submit */}
+          {currentIndex < questions.length - 1 ? (
+            <button
+              onClick={() => setCurrentIndex(i => i + 1)}
+              className="flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-400/20 bg-[#0f2e49] text-white transition-colors hover:brightness-110 shrink-0"
+            >
+              <ArrowRight className="w-4 h-4" />
             </button>
-            <div className="flex-1 text-center text-xs text-[var(--text-muted)]">Navigare liberă</div>
-            {currentIndex < questions.length - 1 ? (
-              <button className={btnPrimary} onClick={() => setCurrentIndex(i => i + 1)}>
-                Următor <ArrowRight className="w-4 h-4" />
-              </button>
-            ) : (
-              <button className={cn(answeredCount === questions.length ? btnPrimary : btnSecondary)} onClick={handleSubmit}>
-                Finalizează
-              </button>
-            )}
-          </div>
+          ) : (
+            <button
+              onClick={handleSubmit}
+              className="flex h-11 items-center justify-center gap-1 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 text-white text-sm font-bold shrink-0"
+            >
+              Gata
+            </button>
+          )}
         </div>
       </div>
-
-      {/* Question map */}
-      <div className="rounded-[20px] border border-[var(--border)] bg-[var(--bg-surface)] p-4">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">Hartă itemi</p>
-        <div className="flex flex-wrap gap-1.5">
-          {questions.map((_, i) => (
-            <button key={i} onClick={() => setCurrentIndex(i)}
-              className={cn(
-                'w-8 h-8 rounded-xl text-xs font-semibold transition-colors border',
-                i === currentIndex ? 'border-cyan-400/30 bg-[#12365b] text-white'
-                  : selectedOptions[i] !== undefined ? 'border-green-200 dark:border-green-900 bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-400'
-                  : 'border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text-muted)]'
-              )}>
-              {i + 1}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
+    </>
   )
 }
-

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getRequiredUser } from '@/lib/supabase/server'
 import { SimulationSelector } from './simulation-selector'
 import type { Institution } from '@/types'
 import { INSTITUTION_FULL_NAMES } from '@/lib/utils'
@@ -6,10 +6,12 @@ import { ClipboardList, Clock, Target, AlertTriangle, Shield, Star, Eye, Scale }
 import { getScoreColor } from '@/lib/utils'
 
 const institutions: Institution[] = ['MAI', 'MApN', 'SRI', 'ANP']
-const SIMULATION_CATEGORY_COUNT = 5
+const SIMULATION_CATEGORY_COUNT = 9
 const QUESTIONS_PER_CATEGORY = 30
-const TOTAL_QUESTIONS = SIMULATION_CATEGORY_COUNT * QUESTIONS_PER_CATEGORY
-const TOTAL_MINUTES = Math.round((TOTAL_QUESTIONS * 45) / 60)
+const TOTAL_MCQ_QUESTIONS = 6 * QUESTIONS_PER_CATEGORY
+const TOTAL_INTERACTIVE_ITEMS = 10 + 96 + 18
+const TOTAL_QUESTIONS = TOTAL_MCQ_QUESTIONS + TOTAL_INTERACTIVE_ITEMS
+const TOTAL_MINUTES = Math.round((TOTAL_MCQ_QUESTIONS * 45) / 60) + 18
 
 const INST_STYLES: Record<Institution, {
   gradient: string; border: string; bg: string; text: string; icon: React.ReactNode
@@ -21,13 +23,13 @@ const INST_STYLES: Record<Institution, {
 }
 
 export default async function SimulatePage() {
+  const user = await getRequiredUser('/auth/login')
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
   const { data: profile } = await supabase
-    .from('profiles').select('subscription_plan, subscribed_institution').eq('id', user!.id).single()
+    .from('profiles').select('subscription_plan, subscribed_institution').eq('id', user.id).single()
   const { data: prevSims } = await supabase
     .from('test_sessions').select('institution, score, completed_at, correct_answers, total_questions')
-    .eq('user_id', user!.id).eq('is_simulation', true).eq('completed', true)
+    .eq('user_id', user.id).eq('is_simulation', true).eq('completed', true)
     .order('completed_at', { ascending: false }).limit(5)
 
   function canSimulate(inst: Institution): boolean {
@@ -47,16 +49,16 @@ export default async function SimulatePage() {
         <p className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{ color: 'var(--text-muted)' }}>Pregătire avansată</p>
         <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>Simulare Examen</h1>
         <p className="mt-1.5 text-sm" style={{ color: 'var(--text-secondary)' }}>
-          Condiții reale — toate probele în ordine, cronometru strict
+          Condiții reale — toate probele CAS++ în ordine, cronometru strict
         </p>
       </div>
 
       {/* Stats overview */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { icon: ClipboardList, label: `${SIMULATION_CATEGORY_COUNT} probe`,    sub: 'Categorii',      iconBg: 'bg-indigo-500/10', iconColor: 'text-indigo-400', topBar: 'from-indigo-500 to-indigo-400' },
-          { icon: Clock,         label: `~${TOTAL_MINUTES} min`,                 sub: 'Durată totală',  iconBg: 'bg-amber-500/10',  iconColor: 'text-amber-400',  topBar: 'from-amber-500 to-amber-400' },
-          { icon: Target,        label: `${TOTAL_QUESTIONS} întrebări`,          sub: 'Total probe',    iconBg: 'bg-emerald-500/10',iconColor: 'text-emerald-400',topBar: 'from-emerald-500 to-emerald-400' },
+          { icon: ClipboardList, label: `${SIMULATION_CATEGORY_COUNT} probe`,    sub: 'Categorii CAS++', iconBg: 'bg-indigo-500/10', iconColor: 'text-indigo-400', topBar: 'from-indigo-500 to-indigo-400' },
+          { icon: Clock,         label: `~${TOTAL_MINUTES} min`,                 sub: 'Durată estimată', iconBg: 'bg-amber-500/10',  iconColor: 'text-amber-400',  topBar: 'from-amber-500 to-amber-400' },
+          { icon: Target,        label: `${TOTAL_QUESTIONS} itemi`,              sub: 'MCQ + interactive', iconBg: 'bg-emerald-500/10',iconColor: 'text-emerald-400',topBar: 'from-emerald-500 to-emerald-400' },
         ].map((item) => {
           const Icon = item.icon
           return (

@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getRequiredUser } from '@/lib/supabase/server'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
@@ -115,11 +115,11 @@ function TestsSkeleton() {
 }
 
 async function TestsContent() {
+  const user = await getRequiredUser('/auth/login')
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
   const [{ data: profile }, { data: progressData }] = await Promise.all([
-    supabase.from('profiles').select('*').eq('id', user!.id).single(),
-    supabase.from('user_progress').select('*').eq('user_id', user!.id),
+    supabase.from('profiles').select('*').eq('id', user.id).single(),
+    supabase.from('user_progress').select('*').eq('user_id', user.id),
   ])
 
   function isAccessible(inst: Institution) {
@@ -247,7 +247,7 @@ async function TestsContent() {
               {categories.map((cat) => {
                 const progress = getProgress(inst, cat)
                 const catCfg = CAT_CONFIG[cat]
-                const href = `/dashboard/tests/${inst.toLowerCase()}/${cat}`
+                const href = `/test/${inst.toLowerCase()}/${cat}`
 
                 return (
                   <Link key={cat} href={href}>
