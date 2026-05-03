@@ -32,5 +32,5 @@ export default async function DedicatedSimulationPage({ params }: Props) {
     redirect('/dashboard/pricing')
   }
 
-  return <SimulationRunner institution={institution} backHref="/dashboard/simulate" />
+  return <SimulationRunner institution={institution} backHref="/test/simulare" />
 }

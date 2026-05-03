@@ -24,7 +24,7 @@ const navGroups = [
     label: 'Pregătire',
     items: [
       { href: '/dashboard/tests', label: 'Teste', icon: BookOpen },
-      { href: '/dashboard/simulate', label: 'Simulare', icon: ClipboardList },
+      { href: '/test/simulare', label: 'Simulare', icon: ClipboardList },
       { href: '/dashboard/flashcards', label: 'Flashcard-uri', icon: Layers },
       { href: '/dashboard/review', label: 'Greșeli', icon: FileText },
       { href: '/dashboard/materiale', label: 'Materiale PDF', icon: FolderOpen },
