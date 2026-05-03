@@ -13,6 +13,12 @@ interface StimuliItem {
   inkColor: Color
 }
 
+interface TestCompletionSummary {
+  score: number
+  correct: number
+  total: number
+}
+
 const COLORS: Color[] = ['roșu', 'albastru', 'verde', 'galben']
 
 const COLOR_STYLES: Record<Color, { bg: string; text: string; ring: string }> = {
@@ -22,66 +28,49 @@ const COLOR_STYLES: Record<Color, { bg: string; text: string; ring: string }> = 
   galben:  { bg: 'bg-yellow-500/10', text: 'text-yellow-500', ring: 'ring-yellow-400' },
 }
 
-// Lista 1: negative priming — word ≠ ink color (Stroop classic)
-const LISTA_1: StimuliItem[] = [
-  { word: 'ROȘU', inkColor: 'albastru' },
-  { word: 'VERDE', inkColor: 'roșu' },
-  { word: 'ALBASTRU', inkColor: 'galben' },
-  { word: 'GALBEN', inkColor: 'verde' },
-  { word: 'ROȘU', inkColor: 'verde' },
-  { word: 'ALBASTRU', inkColor: 'roșu' },
-  { word: 'VERDE', inkColor: 'galben' },
-  { word: 'GALBEN', inkColor: 'albastru' },
-  { word: 'ROȘU', inkColor: 'galben' },
-  { word: 'VERDE', inkColor: 'albastru' },
-  { word: 'GALBEN', inkColor: 'roșu' },
-  { word: 'ALBASTRU', inkColor: 'verde' },
-  { word: 'ROȘU', inkColor: 'albastru' },
-  { word: 'GALBEN', inkColor: 'verde' },
-  { word: 'VERDE', inkColor: 'roșu' },
-  { word: 'ALBASTRU', inkColor: 'galben' },
-  { word: 'GALBEN', inkColor: 'albastru' },
-  { word: 'ROȘU', inkColor: 'verde' },
-  { word: 'VERDE', inkColor: 'galben' },
-  { word: 'ALBASTRU', inkColor: 'roșu' },
-  { word: 'GALBEN', inkColor: 'roșu' },
-  { word: 'ROȘU', inkColor: 'galben' },
-  { word: 'VERDE', inkColor: 'albastru' },
-  { word: 'ALBASTRU', inkColor: 'verde' },
-]
+function buildStimuliList(seedShift: number): StimuliItem[] {
+  const allPairs: StimuliItem[] = []
 
-// Lista 2: same structure, different order (tests IHC = SL2 - SL1)
-const LISTA_2: StimuliItem[] = [
-  { word: 'ALBASTRU', inkColor: 'roșu' },
-  { word: 'GALBEN', inkColor: 'verde' },
-  { word: 'ROȘU', inkColor: 'albastru' },
-  { word: 'VERDE', inkColor: 'galben' },
-  { word: 'ALBASTRU', inkColor: 'galben' },
-  { word: 'ROȘU', inkColor: 'verde' },
-  { word: 'GALBEN', inkColor: 'albastru' },
-  { word: 'VERDE', inkColor: 'roșu' },
-  { word: 'ALBASTRU', inkColor: 'verde' },
-  { word: 'GALBEN', inkColor: 'roșu' },
-  { word: 'ROȘU', inkColor: 'galben' },
-  { word: 'VERDE', inkColor: 'albastru' },
-  { word: 'GALBEN', inkColor: 'verde' },
-  { word: 'ALBASTRU', inkColor: 'roșu' },
-  { word: 'ROȘU', inkColor: 'albastru' },
-  { word: 'VERDE', inkColor: 'galben' },
-  { word: 'GALBEN', inkColor: 'albastru' },
-  { word: 'ROȘU', inkColor: 'verde' },
-  { word: 'ALBASTRU', inkColor: 'galben' },
-  { word: 'VERDE', inkColor: 'roșu' },
-  { word: 'ROȘU', inkColor: 'galben' },
-  { word: 'VERDE', inkColor: 'albastru' },
-  { word: 'GALBEN', inkColor: 'roșu' },
-  { word: 'ALBASTRU', inkColor: 'verde' },
-]
+  for (let repeat = 0; repeat < 4; repeat += 1) {
+    for (const word of COLORS) {
+      for (const inkColor of COLORS) {
+        if (word !== inkColor) {
+          allPairs.push({
+            word: word.toUpperCase(),
+            inkColor,
+          })
+        }
+      }
+    }
+  }
+
+  return allPairs.map((_, index) => allPairs[(index * 7 + seedShift) % allPairs.length])
+}
+
+// 48 stimuli per list, all incongruent, order varied between lists.
+const LISTA_1: StimuliItem[] = buildStimuliList(5)
+const LISTA_2: StimuliItem[] = buildStimuliList(17)
 
 const btnPrimary = 'flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#0f2e49] to-[#12436d] text-white text-sm font-bold border border-cyan-300/20 hover:brightness-110 transition-all shadow-lg disabled:opacity-40'
 const btnSecondary = 'flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-muted)] transition-colors'
 
-export function InhibitieCognitivaTest({ institutionLabel }: { institutionLabel: string }) {
+export function InhibitieCognitivaTest({
+  institutionLabel,
+  backHref = '/dashboard/tests',
+  onBack,
+  onComplete,
+  completionLabel = 'Continuă',
+  startHref,
+  autoStart = false,
+}: {
+  institutionLabel: string
+  backHref?: string
+  onBack?: () => void
+  onComplete?: (summary: TestCompletionSummary) => void
+  completionLabel?: string
+  startHref?: string
+  autoStart?: boolean
+}) {
   const router = useRouter()
   const [phase, setPhase] = useState<Phase>('instructaj')
   const [listIndex, setListIndex] = useState(0)
@@ -146,8 +135,42 @@ export function InhibitieCognitivaTest({ institutionLabel }: { institutionLabel:
   const ihc = time2 - time1
   const accuracy1 = Math.round((1 - errors1 / LISTA_1.length) * 100)
   const accuracy2 = Math.round((1 - errors2 / LISTA_2.length) * 100)
+  const totalCorrect = LISTA_1.length + LISTA_2.length - errors1 - errors2
+  const summary: TestCompletionSummary = {
+    score: Math.round((accuracy1 + accuracy2) / 2),
+    correct: totalCorrect,
+    total: LISTA_1.length + LISTA_2.length,
+  }
+
+  function handleBack() {
+    if (onBack) {
+      onBack()
+      return
+    }
+    router.push(backHref)
+  }
+
+  useEffect(() => {
+    if (!autoStart || phase !== 'instructaj') return
+    beginList1()
+  }, [autoStart, phase])
 
   if (phase === 'instructaj') {
+    if (autoStart) {
+      return (
+        <div className="max-w-2xl mx-auto py-16 text-center space-y-4 animate-fade-up">
+          <div className="mx-auto w-16 h-16 rounded-3xl border border-cyan-400/20 bg-cyan-400/10 flex items-center justify-center">
+            <Clock className="w-7 h-7 text-cyan-300" />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold tracking-[0.22em] uppercase text-cyan-300/70 mb-2">Intrare în probă</p>
+            <h1 className="text-2xl font-extrabold tracking-tight text-white">Inhibiție Cognitivă</h1>
+            <p className="text-sm text-white/60 mt-2">Pornim lista 1 și trecem în modul de execuție.</p>
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div className="max-w-2xl mx-auto py-8 space-y-5 animate-fade-up">
         <div className="rounded-[28px] border border-[var(--border)] bg-[linear-gradient(145deg,rgba(15,23,36,0.98),rgba(17,42,63,0.95))] overflow-hidden">
@@ -160,7 +183,7 @@ export function InhibitieCognitivaTest({ institutionLabel }: { institutionLabel:
             <p>• Vei vedea cuvinte-culori scrise cu cerneală colorată.</p>
             <p>• <strong className="text-white">Nu citi cuvântul!</strong> Apasă butonul care corespunde CULORII CERNELII.</p>
             <p>• Exemplu: dacă vezi <span className="text-blue-400 font-bold">ROȘU</span> — apasă „Albastru".</p>
-            <p>• Lista 1 și Lista 2 conțin câte 24 de stimuli.</p>
+            <p>• Lista 1 și Lista 2 conțin câte 48 de stimuli.</p>
             <p>• Scorul de inhibiție (IHC) = Timp Lista 2 − Timp Lista 1.</p>
           </div>
         </div>
@@ -172,8 +195,12 @@ export function InhibitieCognitivaTest({ institutionLabel }: { institutionLabel:
           <p className="text-sm text-[var(--text-muted)]">Cuvântul scrie „ROȘU" dar cerneala este <span className="text-blue-400 font-bold">albastră</span> → apasă <span className="font-bold text-[var(--text-primary)]">Albastru</span></p>
         </div>
         <div className="flex gap-3">
-          <button className={btnSecondary} onClick={() => router.back()}><ArrowLeft className="w-4 h-4" /> Înapoi</button>
-          <button className={cn(btnPrimary, 'flex-1')} onClick={beginList1}>Începe Lista 1</button>
+          <button className={btnSecondary} onClick={handleBack}><ArrowLeft className="w-4 h-4" /> Înapoi</button>
+          {startHref ? (
+            <button className={cn(btnPrimary, 'flex-1')} onClick={() => router.push(startHref)}>Începe testul</button>
+          ) : (
+            <button className={cn(btnPrimary, 'flex-1')} onClick={beginList1}>Începe Lista 1</button>
+          )}
         </div>
       </div>
     )
@@ -216,12 +243,23 @@ export function InhibitieCognitivaTest({ institutionLabel }: { institutionLabel:
           </p>
         </div>
         <div className="flex gap-3">
-          <button className={cn(btnSecondary, 'flex-1')} onClick={() => router.push('/dashboard/tests')}>Toate testele</button>
-          <button className={cn(btnPrimary, 'flex-1')} onClick={() => {
-            setListIndex(0); setErrors1(0); setErrors2(0); setTime1(0); setTime2(0); setElapsed(0); setPhase('instructaj')
-          }}>
-            <RotateCcw className="w-4 h-4" /> Reia testul
-          </button>
+          {onComplete ? (
+            <>
+              <button className={cn(btnSecondary, 'flex-1')} onClick={handleBack}>Ieși din simulare</button>
+              <button className={cn(btnPrimary, 'flex-1')} onClick={() => onComplete(summary)}>
+                {completionLabel}
+              </button>
+            </>
+          ) : (
+            <>
+              <button className={cn(btnSecondary, 'flex-1')} onClick={handleBack}>Toate testele</button>
+              <button className={cn(btnPrimary, 'flex-1')} onClick={() => {
+                setListIndex(0); setErrors1(0); setErrors2(0); setTime1(0); setTime2(0); setElapsed(0); setPhase('instructaj')
+              }}>
+                <RotateCcw className="w-4 h-4" /> Reia testul
+              </button>
+            </>
+          )}
         </div>
       </div>
     )

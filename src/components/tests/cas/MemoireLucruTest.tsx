@@ -20,6 +20,12 @@ interface TrialResult {
   given: { digits: string; letters: string }
 }
 
+interface TestCompletionSummary {
+  score: number
+  correct: number
+  total: number
+}
+
 // Series: alternating digit-letter, increasing length
 const SERIES: SeriesItem[] = [
   { sequence: [3, 'F', 7], digits: [3, 7], letters: ['F'] },
@@ -29,6 +35,9 @@ const SERIES: SeriesItem[] = [
   { sequence: [7, 'G', 3, 'D', 9, 'N', 1], digits: [1, 3, 7, 9], letters: ['D', 'G', 'N'] },
   { sequence: [8, 'T', 5, 'C', 2, 'H', 4, 'E'], digits: [2, 4, 5, 8], letters: ['C', 'E', 'H', 'T'] },
   { sequence: [6, 'V', 3, 'S', 9, 'A', 1, 'W', 7], digits: [1, 3, 6, 7, 9], letters: ['A', 'S', 'V', 'W'] },
+  { sequence: [9, 'M', 2, 'Q', 6, 'B', 4, 'Z'], digits: [2, 4, 6, 9], letters: ['B', 'M', 'Q', 'Z'] },
+  { sequence: [1, 'L', 8, 'D', 5, 'R', 2, 'F', 7], digits: [1, 2, 5, 7, 8], letters: ['D', 'F', 'L', 'R'] },
+  { sequence: [4, 'X', 9, 'C', 1, 'P', 6, 'J', 3, 'H'], digits: [1, 3, 4, 6, 9], letters: ['C', 'H', 'J', 'P', 'X'] },
 ]
 
 function sortDigitsAsc(arr: number[]): string { return [...arr].sort((a, b) => a - b).join(' ') }
@@ -37,7 +46,23 @@ function sortLettersAlpha(arr: string[]): string { return [...arr].sort().join('
 const btnPrimary = 'flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#0f2e49] to-[#12436d] text-white text-sm font-bold border border-cyan-300/20 hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg'
 const btnSecondary = 'flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-muted)] transition-colors disabled:opacity-40'
 
-export function MemoireLucruTest({ institutionLabel }: { institutionLabel: string }) {
+export function MemoireLucruTest({
+  institutionLabel,
+  backHref = '/dashboard/tests',
+  onBack,
+  onComplete,
+  completionLabel = 'Continuă',
+  startHref,
+  autoStart = false,
+}: {
+  institutionLabel: string
+  backHref?: string
+  onBack?: () => void
+  onComplete?: (summary: TestCompletionSummary) => void
+  completionLabel?: string
+  startHref?: string
+  autoStart?: boolean
+}) {
   const router = useRouter()
   const [phase, setPhase] = useState<Phase>('instructaj')
   const [seriesIndex, setSeriesIndex] = useState(0)
@@ -104,9 +129,43 @@ export function MemoireLucruTest({ institutionLabel }: { institutionLabel: strin
 
   const correctCount = results.filter(r => r.correct).length
   const maxLen = results.length > 0 ? Math.max(...results.map(r => r.seriesLength)) : 0
+  const summary: TestCompletionSummary = {
+    score: Math.round((correctCount / SERIES.length) * 100),
+    correct: correctCount,
+    total: SERIES.length,
+  }
+
+  function handleBack() {
+    if (onBack) {
+      onBack()
+      return
+    }
+    router.push(backHref)
+  }
+
+  useEffect(() => {
+    if (!autoStart || phase !== 'instructaj') return
+    setPhase('series')
+    startSeries()
+  }, [autoStart, phase])
 
   // ── INSTRUCTAJ ────────────────────────────────────────────────
   if (phase === 'instructaj') {
+    if (autoStart) {
+      return (
+        <div className="max-w-2xl mx-auto py-16 text-center space-y-4 animate-fade-up">
+          <div className="mx-auto w-16 h-16 rounded-3xl border border-cyan-400/20 bg-cyan-400/10 flex items-center justify-center">
+            <Eye className="w-7 h-7 text-cyan-300" />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold tracking-[0.22em] uppercase text-cyan-300/70 mb-2">Intrare în probă</p>
+            <h1 className="text-2xl font-extrabold tracking-tight text-white">Memorie de Lucru</h1>
+            <p className="text-sm text-white/60 mt-2">Pornim seria și trecem în modul de concentrare.</p>
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div className="max-w-2xl mx-auto py-8 space-y-5 animate-fade-up">
         <div className="rounded-[28px] border border-[var(--border)] bg-[linear-gradient(145deg,rgba(15,23,36,0.98),rgba(17,42,63,0.95))] overflow-hidden">
@@ -118,7 +177,7 @@ export function MemoireLucruTest({ institutionLabel }: { institutionLabel: strin
           <div className="px-7 py-5 space-y-2 text-sm text-white/60">
             <p>• Vei vedea o serie de cifre și litere afișate una câte una.</p>
             <p>• La final, trebuie să scrii: cifrele în ordine crescătoare + literele în ordine alfabetică.</p>
-            <p>• Seriile cresc în lungime (3 → 9 elemente).</p>
+            <p>• Seriile cresc în lungime (3 → 10 elemente).</p>
             <p>• Nu există limită de timp per item, dar testul se oprește după prima eroare.</p>
           </div>
         </div>
@@ -132,8 +191,12 @@ export function MemoireLucruTest({ institutionLabel }: { institutionLabel: strin
         </div>
 
         <div className="flex gap-3">
-          <button className={btnSecondary} onClick={() => router.back()}><ArrowLeft className="w-4 h-4" /> Înapoi</button>
-          <button className={cn(btnPrimary, 'flex-1')} onClick={() => { setPhase('series'); startSeries() }}>Începe testul</button>
+          <button className={btnSecondary} onClick={handleBack}><ArrowLeft className="w-4 h-4" /> Înapoi</button>
+          {startHref ? (
+            <button className={cn(btnPrimary, 'flex-1')} onClick={() => router.push(startHref)}>Începe testul</button>
+          ) : (
+            <button className={cn(btnPrimary, 'flex-1')} onClick={() => { setPhase('series'); startSeries() }}>Începe testul</button>
+          )}
         </div>
       </div>
     )
@@ -278,12 +341,23 @@ export function MemoireLucruTest({ institutionLabel }: { institutionLabel: strin
       </div>
 
       <div className="flex gap-3">
-        <button className={cn(btnSecondary, 'flex-1')} onClick={() => router.push('/dashboard/tests')}>Toate testele</button>
-        <button className={cn(btnPrimary, 'flex-1')} onClick={() => {
-          setSeriesIndex(0); setResults([]); setLastFeedback(null); setPhase('instructaj')
-        }}>
-          <RotateCcw className="w-4 h-4" /> Reia testul
-        </button>
+        {onComplete ? (
+          <>
+            <button className={cn(btnSecondary, 'flex-1')} onClick={handleBack}>Ieși din simulare</button>
+            <button className={cn(btnPrimary, 'flex-1')} onClick={() => onComplete(summary)}>
+              {completionLabel}
+            </button>
+          </>
+        ) : (
+          <>
+            <button className={cn(btnSecondary, 'flex-1')} onClick={handleBack}>Toate testele</button>
+            <button className={cn(btnPrimary, 'flex-1')} onClick={() => {
+              setSeriesIndex(0); setResults([]); setLastFeedback(null); setPhase('instructaj')
+            }}>
+              <RotateCcw className="w-4 h-4" /> Reia testul
+            </button>
+          </>
+        )}
       </div>
     </div>
   )

@@ -12,6 +12,7 @@ import {
 export async function POST(request: Request) {
   const { searchParams } = new URL(request.url)
   const secret = searchParams.get('secret')
+  const reset = searchParams.get('reset') === 'true'
 
   if (secret !== process.env.SEED_SECRET && process.env.NODE_ENV !== 'development') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -23,8 +24,28 @@ export async function POST(request: Request) {
   )
 
   const institutions = ['MAI', 'MApN', 'SRI', 'ANP']
+  const mcqCategories = [
+    'rationament-analitic',
+    'transfer-analogic',
+    'vocabular',
+    'intelegere-texte',
+    'rationament-matematic',
+    'calcul-matematic',
+  ]
   let totalInserted = 0
   const errors: string[] = []
+  const countsByInstitution: Record<string, number> = {}
+
+  if (reset) {
+    const { error } = await supabase
+      .from('test_questions')
+      .delete()
+      .in('category', mcqCategories)
+
+    if (error) {
+      return NextResponse.json({ error: `Reset failed: ${error.message}` }, { status: 500 })
+    }
+  }
 
   for (const institution of institutions) {
     const allQuestions = [
@@ -35,6 +56,7 @@ export async function POST(request: Request) {
       ...generateRationamentMatematic(institution),
       ...generateCalculMatematic(institution),
     ]
+    countsByInstitution[institution] = allQuestions.length
 
     for (let i = 0; i < allQuestions.length; i += 50) {
       const batch = allQuestions.slice(i, i + 50)
@@ -47,7 +69,13 @@ export async function POST(request: Request) {
     }
   }
 
-  return NextResponse.json({ success: true, totalInserted, errors: errors.length > 0 ? errors : undefined })
+  return NextResponse.json({
+    success: true,
+    reset,
+    totalInserted,
+    countsByInstitution,
+    errors: errors.length > 0 ? errors : undefined,
+  })
 }
 
 export async function GET() {

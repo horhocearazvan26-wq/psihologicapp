@@ -1,208 +1,216 @@
 import type { QuestionRow } from './rationament-analitic'
+import {
+  attachInstitution,
+  buildMcqOptions,
+  ensureUniqueByText,
+  type Difficulty,
+  type QuestionDraft,
+} from './helpers'
 
-const items: Omit<QuestionRow, 'institution'>[] = [
-  {
+function makeQuestion(
+  question_text: string,
+  correct: string,
+  distractors: string[],
+  explanation: string,
+  difficulty: Difficulty,
+  metadata: Record<string, unknown> = {}
+): QuestionDraft {
+  const { options, correct_answer } = buildMcqOptions(correct, distractors, question_text)
+  return {
     category: 'vocabular',
-    question_text: 'Care dintre cuvintele de mai jos este sinonim cu PERSPICACE?',
-    options: ['Obtuz', 'Acerb', 'Sagace', 'Inept'],
-    correct_answer: 2,
-    explanation: 'Perspicace = cu capacitate mare de înțelegere, pătrunzător. Sinonim: sagace (cu judecată ascuțită, înțelept).',
-    difficulty: 2,
-    metadata: {},
+    question_text,
+    options,
+    correct_answer,
+    explanation,
+    difficulty,
+    metadata,
     is_active: true,
-  },
-  {
-    category: 'vocabular',
-    question_text: 'Care dintre cuvintele de mai jos este ANTONIM pentru AUSTER?',
-    options: ['Sever', 'Lavish', 'Extravagant', 'Îngăduitor'],
-    correct_answer: 2,
-    explanation: 'Auster = sobru, sever, lipsit de ornamente. Antonim: extravagant (excesiv, ostentativ).',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'vocabular',
-    question_text: 'Cuvântul AMBIGUITATE se referă la:',
-    options: [
-      'Capacitatea de a executa două sarcini simultan',
-      'Caracterul dublu sau incert al unui enunț care poate fi interpretat în mai multe moduri',
-      'Sentimentul de nehotărâre în fața unei alegeri dificile',
-      'Coexistența unor sentimente opuse față de aceeași persoană',
-    ],
-    correct_answer: 1,
-    explanation: 'Ambiguitatea este proprietatea unui enunț, simbol sau situație de a admite mai multe interpretări. Nu trebuie confundat cu ambivalența (coexistența sentimentelor opuse).',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'vocabular',
-    question_text: 'Care este definiția corectă a termenului HEURISTIC?',
-    options: [
-      'Referitor la metode de căutare a adevărului prin descoperire progresivă și explorare',
-      'Referitor la studiul sistematic al erorilor de raționament',
-      'Referitor la analiza formală a argumentelor valide',
-      'Referitor la tehnicile de memorare mnemonică',
-    ],
-    correct_answer: 0,
-    explanation: 'Heuristic provine din gr. heuriskein (a descoperi). Desemnează metode de rezolvare prin explorare, încercare-eroare sau reguli empirice, fără garanția găsirii soluției optime.',
-    difficulty: 3,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'vocabular',
-    question_text: 'Care cuvânt este sinonim cu RETICENT?',
-    options: ['Elocvent', 'Ezitant', 'Rezervat', 'Taciturn'],
-    correct_answer: 2,
-    explanation: 'Reticent = care se abține să exprime deschis opinii sau informații, rezervat. Sinonim: rezervat. Taciturn înseamnă puțin vorbăreț, nu neapărat reticent.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'vocabular',
-    question_text: 'Termenul EPICENTRU este folosit corect în care din propozițiile de mai jos?',
-    options: [
-      'Epicentrul discuției a fost chestiunea bugetului.',
-      'Epicentrul cutremurului s-a aflat la 15 km adâncime.',
-      'Epicentrul cutremurului a fost localizat la suprafața scoarței terestre.',
-      'Epicentrul problemei constă în lipsa de comunicare.',
-    ],
-    correct_answer: 2,
-    explanation: 'Epicentrul este punctul de la suprafața pământului aflat direct deasupra focarului (hipocentrului) unui cutremur. Nu trebuie confundat cu hipocentrul (focarul din adâncime).',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'vocabular',
-    question_text: 'Ce înseamnă PROLIFIC?',
-    options: [
-      'Care produce puțin, rar',
-      'Care produce mult și rapid',
-      'Care are calități excepționale',
-      'Care imită alte opere',
-    ],
-    correct_answer: 1,
-    explanation: 'Prolific = foarte productiv, care produce mult (opere, idei, descendenți). Din lat. proles (urmași) + facere (a face).',
-    difficulty: 1,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'vocabular',
-    question_text: 'Care este antonimul cuvântului PERENĂ?',
-    options: ['Durabilă', 'Sezonală', 'Universală', 'Efemeră'],
-    correct_answer: 3,
-    explanation: 'Peren/Perenă = care durează mereu, permanent. Antonim: efemerism, efemer = de scurtă durată, trecător.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'vocabular',
-    question_text: 'Expresia AD HOC înseamnă:',
-    options: [
-      'Conform cu regulile stabilite',
-      'Creat sau destinat special pentru o situație particulară',
-      'Prin forța argumentului',
-      'Conform cu natura lucrului',
-    ],
-    correct_answer: 1,
-    explanation: 'Ad hoc (lat.) = pentru aceasta. Desemnează ceva creat, improvizat sau destinat strict pentru o situație specifică, fără aplicabilitate generală.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'vocabular',
-    question_text: 'INCOERENT înseamnă:',
-    options: [
-      'Lipsit de logică sau legătură internă',
-      'Excesiv de detaliat',
-      'Extrem de dens sau comprimat',
-      'Lipsit de claritate vizuală',
-    ],
-    correct_answer: 0,
-    explanation: 'Incoerent = fără coerență, fără legătură logică sau structurală. Opusul unui discurs sau sistem coerent (bine articulat intern).',
-    difficulty: 1,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'vocabular',
-    question_text: 'Care dintre cuvintele de mai jos desemnează cel mai bine sensul lui APOCRIF?',
-    options: [
-      'Autentic și certificat oficial',
-      'De origine îndoielnică, nerecunoscut ca autentic',
-      'Extrem de rar și valoros',
-      'Accesibil doar inițiaților',
-    ],
-    correct_answer: 1,
-    explanation: 'Apocrif = text sau operă a cărei autenticitate sau origine este contestată. Din gr. apokryphos = ascuns, secret.',
-    difficulty: 3,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'vocabular',
-    question_text: 'Termenul TAUTOLOGIE se referă la:',
-    options: [
-      'O afirmație care se contrazice pe sine',
-      'O afirmație redundantă care repetă același lucru în cuvinte diferite',
-      'O afirmație care nu poate fi nici adevărată nici falsă',
-      'O afirmație bazată pe o premisă falsă',
-    ],
-    correct_answer: 1,
-    explanation: 'Tautologia este o formulare care repetă același conținut în termeni diferiți (ex: "copil minor", "ucis la moarte"). În logică, o propoziție care este adevărată prin forma sa.',
-    difficulty: 3,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'vocabular',
-    question_text: 'Ce înseamnă LACONIC?',
-    options: [
-      'Confuz și neclar',
-      'Exprimat în puține cuvinte, concis',
-      'Plin de detalii inutile',
-      'Extrem de formal și rigid',
-    ],
-    correct_answer: 1,
-    explanation: 'Laconic = care folosește puține cuvinte, concis, sobru în exprimare. Provine de la spartanii din Laconia, faimoși pentru stilul scurt de comunicare.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'vocabular',
-    question_text: 'DEDUCTIV înseamnă:',
-    options: [
-      'Care pornește de la cazuri particulare spre o regulă generală',
-      'Care pornește de la o regulă generală spre un caz particular',
-      'Care se bazează pe observarea repetată a fenomenelor',
-      'Care formulează ipoteze fără a le verifica',
-    ],
-    correct_answer: 1,
-    explanation: 'Raționamentul deductiv merge de la general la particular (dacă premisele sunt adevărate și forma este validă, concluzia este cert adevărată). Spre deosebire de inductiv (de la particular la general).',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'vocabular',
-    question_text: 'Care cuvânt este sinonim cu ACERBITATE?',
-    options: ['Blândețe', 'Asprime', 'Indiferență', 'Resemnare'],
-    correct_answer: 1,
-    explanation: 'Acerbitate = asprime extremă, severitate dură, caracter acid. Sinonim: asprime, duritate.',
-    difficulty: 3,
-    metadata: {},
-    is_active: true,
-  },
+  }
+}
+
+const synonymPairs: Array<[string, string, string[]]> = [
+  ['perspicace', 'sagace', ['obtuz', 'inept', 'superficial']],
+  ['reticent', 'rezervat', ['impulsiv', 'elocvent', 'expansiv']],
+  ['laconic', 'concis', ['prolix', 'ambiguu', 'ostentativ']],
+  ['tenace', 'perseverent', ['ezitant', 'frivol', 'instabil']],
+  ['veridic', 'adevărat', ['aproximativ', 'fals', 'insinuant']],
+  ['prolific', 'productiv', ['steril', 'rar', 'imprecis']],
+  ['frugal', 'cumpătat', ['extravagant', 'abundent', 'ostentativ']],
+  ['auster', 'sobru', ['extravagant', 'ornamental', 'lax']],
+  ['contingent', 'accidental', ['esențial', 'obligatoriu', 'inerent']],
+  ['elocvent', 'convingător', ['confuz', 'reținut', 'banal']],
+  ['arid', 'sec', ['abundent', 'colorat', 'bogat']],
+  ['probitate', 'integritate', ['naivitate', 'aversiune', 'celeritate']],
 ]
 
+const antonymPairs: Array<[string, string, string[]]> = [
+  ['peren', 'efemer', ['durabil', 'constant', 'statornic']],
+  ['auster', 'extravagant', ['meticulos', 'ponderat', 'laconic']],
+  ['pertinent', 'irelevant', ['concis', 'evident', 'coerent']],
+  ['avid', 'dezinteresat', ['tenace', 'abundent', 'frugal']],
+  ['lucid', 'confuz', ['vehement', 'reticent', 'meticulos']],
+  ['flexibil', 'rigid', ['marginal', 'efemer', 'taciturn']],
+  ['empatic', 'insensibil', ['rezervat', 'tenace', 'erudit']],
+  ['coerent', 'incoerent', ['metodic', 'veridic', 'consistent']],
+  ['progresiv', 'regresiv', ['ponderat', 'didactic', 'colateral']],
+  ['explicit', 'implicit', ['lucid', 'retoric', 'amplu']],
+]
+
+const definitionItems: Array<[string, string, string[], string, Difficulty]> = [
+  [
+    'Ce înseamnă termenul HEURISTIC?',
+    'Metodă de rezolvare prin explorare și reguli practice, fără garanția soluției optime',
+    [
+      'Metodă strict formală de demonstrare a teoremelor',
+      'Tehnică de memorare bazată pe repetiție mecanică',
+      'Procedeu de eliminare a erorilor din argumentare',
+    ],
+    'Heuristic desemnează strategii practice de descoperire și rezolvare, utile mai ales când algoritmul optim nu este imediat disponibil.',
+    3 as Difficulty,
+  ],
+  [
+    'Ambiguitatea se referă la:',
+    'Caracterul unui enunț care permite mai multe interpretări',
+    [
+      'Prezența simultană a două emoții opuse',
+      'Incapacitatea de a învăța o regulă nouă',
+      'Tendința de a folosi doar termeni generali',
+    ],
+    'Ambiguitatea descrie un mesaj sau o situație care poate fi înțeleasă în mai multe moduri.',
+    2 as Difficulty,
+  ],
+  [
+    'Ce desemnează termenul APOCRIF?',
+    'Text sau document a cărui autenticitate este contestată',
+    [
+      'Text considerat obligatoriu de doctrina oficială',
+      'Document redactat anonim, dar autentificat ulterior',
+      'Mesaj criptat destinat doar inițiaților',
+    ],
+    'Apocrif desemnează o sursă de origine incertă sau contestată, adesea exclusă din corpusul autentic.',
+    3 as Difficulty,
+  ],
+  [
+    'Tautologia este:',
+    'O formulare redundantă care repetă același conținut',
+    [
+      'O contradicție logică internă',
+      'O eroare de calcul derivată din premise false',
+      'O analogie bazată pe asemănări superficiale',
+    ],
+    'În limbaj curent, tautologia este o repetare inutilă a aceleiași idei; în logică, este o propoziție adevărată prin forma ei.',
+    3 as Difficulty,
+  ],
+  [
+    'Termenul EPICENTRU este utilizat corect atunci când indică:',
+    'Punctul de la suprafață situat deasupra focarului unui cutremur',
+    [
+      'Locul din adâncime unde se produce cutremurul',
+      'Zona în care undele seismice dispar complet',
+      'Centrul administrativ al unei regiuni expuse seismelor',
+    ],
+    'Epicentrul este proiecția focarului la suprafața Pământului; focarul din adâncime este hipocentrul.',
+    2 as Difficulty,
+  ],
+  [
+    'Ce înseamnă AD HOC?',
+    'Conceput special pentru o situație particulară',
+    [
+      'Validat prin tradiție și uz îndelungat',
+      'Conform unui principiu universal aplicabil',
+      'Realizat sub presiune și fără discernământ',
+    ],
+    'Ad hoc înseamnă „pentru aceasta”: creat pentru un context precis, fără pretenția de generalitate.',
+    2 as Difficulty,
+  ],
+]
+
+const contextualItems: Array<[string, string, string[], string, Difficulty]> = [
+  [
+    'În enunțul „Raportul său a fost succint, dar nu lacunar”, cuvântul „lacunar” este cel mai apropiat ca sens de:',
+    'incomplet',
+    ['amplu', 'meticulos', 'retoric'],
+    'Un raport lacunar este unul cu goluri, omisiuni sau lipsuri relevante de conținut.',
+    3 as Difficulty,
+  ],
+  [
+    'În contextul „un argument falacios”, termenul „falacios” înseamnă:',
+    'care pare valid, dar este înșelător',
+    [
+      'care este adevărat prin definiție',
+      'care pornește din premise incontestabile',
+      'care este pur descriptiv și lipsit de concluzii',
+    ],
+    'Un argument falacios are aparența validității, dar conține o eroare de raționament sau o manipulare conceptuală.',
+    3 as Difficulty,
+  ],
+  [
+    'În formula „o afirmație peremptorie”, adjectivul „peremptorie” sugerează că afirmația este:',
+    'categorică și nu lasă loc de replică',
+    ['ezitantă și vagă', 'metaforică și ornamentată', 'marginală și secundară'],
+    'O afirmație peremptorie este formulată ferm, categoric și fără deschidere spre nuanțare.',
+    3 as Difficulty,
+  ],
+  [
+    'Dacă un comportament este descris drept „circumspect”, el este:',
+    'prudent și atent',
+    ['impulsiv și precipitat', 'frivol și superficial', 'rigid și inflexibil'],
+    'Circumspect înseamnă precaut, atent la riscuri și la implicații.',
+    2 as Difficulty,
+  ],
+  [
+    'În expresia „un lider carismatic”, termenul „carismatic” se referă la:',
+    'capacitatea de a inspira și atrage adepți prin prezență personală',
+    [
+      'aptitudinea de a respecta riguros procedurile',
+      'abilitatea de a rezolva rapid probleme matematice',
+      'tendința de a evita expunerea publică',
+    ],
+    'Carisma este o formă de influență interpersonală bazată pe prezență, expresivitate și putere de atracție socială.',
+    2 as Difficulty,
+  ],
+  [
+    'În propoziția „decizia a fost arbitrară”, adjectivul „arbitrară” sugerează că ea a fost:',
+    'luată fără un criteriu clar sau justificare solidă',
+    [
+      'luată prin consultare colectivă',
+      'stabilită pe baza unei proceduri legale riguroase',
+      'susținută de probe experimentale puternice',
+    ],
+    'Arbitrar desemnează ceva impus fără fundament suficient sau fără reguli coerente.',
+    2 as Difficulty,
+  ],
+]
+
+const items: QuestionDraft[] = ensureUniqueByText([
+  ...synonymPairs.map(([word, synonym, distractors]) =>
+    makeQuestion(
+      `Care dintre cuvintele de mai jos este sinonim cu ${word.toUpperCase()}?`,
+      synonym,
+      distractors,
+      `${word} are sens apropiat de „${synonym}”, în timp ce celelalte variante aparțin altor câmpuri semantice.`,
+      2,
+      { family: 'sinonim' }
+    )
+  ),
+  ...antonymPairs.map(([word, antonym, distractors]) =>
+    makeQuestion(
+      `Care dintre variante este antonimul cel mai potrivit pentru ${word.toUpperCase()}?`,
+      antonym,
+      distractors,
+      `Antonimul lui ${word} este „${antonym}”, adică termenul cu sens opus în context semantic apropiat.`,
+      2,
+      { family: 'antonim' }
+    )
+  ),
+  ...definitionItems.map(([question, correct, distractors, explanation, difficulty]) =>
+    makeQuestion(question, correct, distractors, explanation, difficulty, { family: 'definitie' })
+  ),
+  ...contextualItems.map(([question, correct, distractors, explanation, difficulty]) =>
+    makeQuestion(question, correct, distractors, explanation, difficulty, { family: 'context' })
+  ),
+])
+
 export function generateVocabular(institution: string): QuestionRow[] {
-  return items.map(item => ({ ...item, institution }))
+  return attachInstitution(items, institution)
 }

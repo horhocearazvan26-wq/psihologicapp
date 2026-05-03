@@ -51,7 +51,22 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
 CREATE TABLE IF NOT EXISTS public.test_questions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   institution TEXT NOT NULL CHECK (institution IN ('MAI', 'MApN', 'SRI', 'ANP')),
-  category TEXT NOT NULL CHECK (category IN ('attention', 'logic', 'memory', 'numerical', 'vocabulary', 'personality')),
+  category TEXT NOT NULL CHECK (
+    category IN (
+      'attention',
+      'logic',
+      'memory',
+      'numerical',
+      'vocabulary',
+      'personality',
+      'rationament-analitic',
+      'transfer-analogic',
+      'vocabular',
+      'intelegere-texte',
+      'rationament-matematic',
+      'calcul-matematic'
+    )
+  ),
   question_text TEXT NOT NULL,
   options JSONB NOT NULL DEFAULT '[]',
   correct_answer INTEGER NOT NULL,
@@ -72,7 +87,25 @@ CREATE TABLE IF NOT EXISTS public.test_sessions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
   institution TEXT NOT NULL CHECK (institution IN ('MAI', 'MApN', 'SRI', 'ANP')),
-  category TEXT NOT NULL CHECK (category IN ('attention', 'logic', 'memory', 'numerical', 'vocabulary', 'personality')),
+  category TEXT NOT NULL CHECK (
+    category IN (
+      'attention',
+      'logic',
+      'memory',
+      'numerical',
+      'vocabulary',
+      'personality',
+      'rationament-analitic',
+      'transfer-analogic',
+      'vocabular',
+      'intelegere-texte',
+      'rationament-matematic',
+      'calcul-matematic',
+      'memorie-lucru',
+      'inhibitie-cognitiva',
+      'comutare-atentie'
+    )
+  ),
   is_simulation BOOLEAN NOT NULL DEFAULT FALSE,
   score NUMERIC(5,2),
   total_questions INTEGER NOT NULL DEFAULT 0,
@@ -94,7 +127,25 @@ CREATE TABLE IF NOT EXISTS public.user_progress (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
   institution TEXT NOT NULL CHECK (institution IN ('MAI', 'MApN', 'SRI', 'ANP')),
-  category TEXT NOT NULL CHECK (category IN ('attention', 'logic', 'memory', 'numerical', 'vocabulary', 'personality')),
+  category TEXT NOT NULL CHECK (
+    category IN (
+      'attention',
+      'logic',
+      'memory',
+      'numerical',
+      'vocabulary',
+      'personality',
+      'rationament-analitic',
+      'transfer-analogic',
+      'vocabular',
+      'intelegere-texte',
+      'rationament-matematic',
+      'calcul-matematic',
+      'memorie-lucru',
+      'inhibitie-cognitiva',
+      'comutare-atentie'
+    )
+  ),
   tests_taken INTEGER NOT NULL DEFAULT 0,
   average_score NUMERIC(5,2) NOT NULL DEFAULT 0,
   best_score NUMERIC(5,2) NOT NULL DEFAULT 0,

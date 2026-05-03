@@ -24,6 +24,12 @@ interface PlansaResult {
   reactionMs: number
 }
 
+interface TestCompletionSummary {
+  score: number
+  correct: number
+  total: number
+}
+
 // Training planșe (3 simple)
 const TRAINING: Plansa[] = [
   { digit: 6, borderColor: 'red', fillColor: null, isSolid: false },   // Roșu → Mare/Mic
@@ -31,7 +37,7 @@ const TRAINING: Plansa[] = [
   { digit: 0, borderColor: 'none', fillColor: 'verde', isSolid: true }, // Solid → Culoare
 ]
 
-// Test planșe (10)
+// Test planșe (18)
 const TEST_PLANSE: Plansa[] = [
   { digit: 8, borderColor: 'red', fillColor: null, isSolid: false },    // roșu → Mare (>5)
   { digit: 4, borderColor: 'yellow', fillColor: null, isSolid: false }, // galben → Par
@@ -43,6 +49,14 @@ const TEST_PLANSE: Plansa[] = [
   { digit: 2, borderColor: 'yellow', fillColor: null, isSolid: false }, // galben → Par
   { digit: 0, borderColor: 'none', fillColor: 'galben', isSolid: true },// solid → Galben
   { digit: 5, borderColor: 'red', fillColor: null, isSolid: false },    // roșu → Mic (=5 → Mic boundary: ≤5 = Mic)
+  { digit: 6, borderColor: 'yellow', fillColor: null, isSolid: false }, // galben → Par
+  { digit: 0, borderColor: 'none', fillColor: 'verde', isSolid: true }, // solid → Verde
+  { digit: 1, borderColor: 'red', fillColor: null, isSolid: false },    // roșu → Mic
+  { digit: 9, borderColor: 'yellow', fillColor: null, isSolid: false }, // galben → Impar
+  { digit: 0, borderColor: 'none', fillColor: 'albastru', isSolid: true },
+  { digit: 4, borderColor: 'red', fillColor: null, isSolid: false },    // roșu → Mic
+  { digit: 7, borderColor: 'yellow', fillColor: null, isSolid: false }, // galben → Impar
+  { digit: 0, borderColor: 'none', fillColor: 'roșu', isSolid: true },
 ]
 
 function getCorrectResponse(p: Plansa): string {
@@ -86,7 +100,23 @@ const RULE_HINTS: Record<BorderColor | 'solid', string> = {
 const btnPrimary = 'flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#0f2e49] to-[#12436d] text-white text-sm font-bold border border-cyan-300/20 hover:brightness-110 transition-all shadow-lg disabled:opacity-40'
 const btnSecondary = 'flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-muted)] transition-colors'
 
-export function ComutareAtentieTest({ institutionLabel }: { institutionLabel: string }) {
+export function ComutareAtentieTest({
+  institutionLabel,
+  backHref = '/dashboard/tests',
+  onBack,
+  onComplete,
+  completionLabel = 'Continuă',
+  startHref,
+  autoStart = false,
+}: {
+  institutionLabel: string
+  backHref?: string
+  onBack?: () => void
+  onComplete?: (summary: TestCompletionSummary) => void
+  completionLabel?: string
+  startHref?: string
+  autoStart?: boolean
+}) {
   const router = useRouter()
   const [phase, setPhase] = useState<Phase>('instructaj')
   const [plansaIndex, setPlansaIndex] = useState(0)
@@ -145,7 +175,35 @@ export function ComutareAtentieTest({ institutionLabel }: { institutionLabel: st
     }
   }
 
+  function handleBack() {
+    if (onBack) {
+      onBack()
+      return
+    }
+    router.push(backHref)
+  }
+
+  useEffect(() => {
+    if (!autoStart || phase !== 'instructaj') return
+    startPhase('training', TRAINING)
+  }, [autoStart, phase])
+
   if (phase === 'instructaj') {
+    if (autoStart) {
+      return (
+        <div className="max-w-2xl mx-auto py-16 text-center space-y-4 animate-fade-up">
+          <div className="mx-auto w-16 h-16 rounded-3xl border border-cyan-400/20 bg-cyan-400/10 flex items-center justify-center">
+            <Clock className="w-7 h-7 text-cyan-300" />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold tracking-[0.22em] uppercase text-cyan-300/70 mb-2">Intrare în probă</p>
+            <h1 className="text-2xl font-extrabold tracking-tight text-white">Comutarea Atenției</h1>
+            <p className="text-sm text-white/60 mt-2">Pornim antrenamentul și intrăm în modul de răspuns rapid.</p>
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div className="max-w-2xl mx-auto py-8 space-y-5 animate-fade-up">
         <div className="rounded-[28px] border border-[var(--border)] bg-[linear-gradient(145deg,rgba(15,23,36,0.98),rgba(17,42,63,0.95))] overflow-hidden">
@@ -170,10 +228,14 @@ export function ComutareAtentieTest({ institutionLabel }: { institutionLabel: st
           </div>
         </div>
         <div className="flex gap-3">
-          <button className={btnSecondary} onClick={() => router.back()}><ArrowLeft className="w-4 h-4" /> Înapoi</button>
-          <button className={cn(btnPrimary, 'flex-1')} onClick={() => startPhase('training', TRAINING)}>
-            Antrenament (3 planșe) →
-          </button>
+          <button className={btnSecondary} onClick={handleBack}><ArrowLeft className="w-4 h-4" /> Înapoi</button>
+          {startHref ? (
+            <button className={cn(btnPrimary, 'flex-1')} onClick={() => router.push(startHref)}>Începe testul</button>
+          ) : (
+            <button className={cn(btnPrimary, 'flex-1')} onClick={() => startPhase('training', TRAINING)}>
+              Antrenament (3 planșe) →
+            </button>
+          )}
         </div>
       </div>
     )
@@ -182,6 +244,11 @@ export function ComutareAtentieTest({ institutionLabel }: { institutionLabel: st
   if (phase === 'results') {
     const correct = results.filter(r => r.isCorrect).length
     const avgMs = results.reduce((s, r) => s + r.reactionMs, 0) / results.length
+    const summary: TestCompletionSummary = {
+      score: Math.round((correct / results.length) * 100),
+      correct,
+      total: results.length,
+    }
 
     return (
       <div className="max-w-2xl mx-auto py-8 space-y-5 animate-fade-up">
@@ -215,10 +282,21 @@ export function ComutareAtentieTest({ institutionLabel }: { institutionLabel: st
         </div>
 
         <div className="flex gap-3">
-          <button className={cn(btnSecondary, 'flex-1')} onClick={() => router.push('/dashboard/tests')}>Toate testele</button>
-          <button className={cn(btnPrimary, 'flex-1')} onClick={() => { setResults([]); setPhase('instructaj') }}>
-            <RotateCcw className="w-4 h-4" /> Reia testul
-          </button>
+          {onComplete ? (
+            <>
+              <button className={cn(btnSecondary, 'flex-1')} onClick={handleBack}>Ieși din simulare</button>
+              <button className={cn(btnPrimary, 'flex-1')} onClick={() => onComplete(summary)}>
+                {completionLabel}
+              </button>
+            </>
+          ) : (
+            <>
+              <button className={cn(btnSecondary, 'flex-1')} onClick={handleBack}>Toate testele</button>
+              <button className={cn(btnPrimary, 'flex-1')} onClick={() => { setResults([]); setPhase('instructaj') }}>
+                <RotateCcw className="w-4 h-4" /> Reia testul
+              </button>
+            </>
+          )}
         </div>
       </div>
     )
@@ -294,4 +372,3 @@ export function ComutareAtentieTest({ institutionLabel }: { institutionLabel: st
     </div>
   )
 }
-

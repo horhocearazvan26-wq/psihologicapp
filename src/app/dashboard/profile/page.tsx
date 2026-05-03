@@ -1,5 +1,5 @@
 import { headers } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getRequiredUser } from '@/lib/supabase/server'
 import { ProfileForm } from './profile-form'
 import type { Institution } from '@/types'
 import { INSTITUTION_FULL_NAMES } from '@/lib/utils'
@@ -10,19 +10,19 @@ export default async function ProfilePage() {
   const requestDate = requestHeaders.get('date')
   const now = requestDate ? new Date(requestDate) : null
 
+  const user = await getRequiredUser('/auth/login')
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
 
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .eq('id', user!.id)
+    .eq('id', user.id)
     .single()
 
   const { data: stats } = await supabase
     .from('test_sessions')
     .select('id, score')
-    .eq('user_id', user!.id)
+    .eq('user_id', user.id)
     .eq('completed', true)
 
   const totalTests = stats?.length ?? 0
@@ -47,7 +47,7 @@ export default async function ProfilePage() {
   }
 
   const currentPlan = profile?.subscription_plan ?? 'free'
-  const initial = (profile?.full_name?.[0] ?? user!.email![0]).toUpperCase()
+  const initial = (profile?.full_name?.[0] ?? user.email?.[0] ?? 'U').toUpperCase()
 
   return (
     <div className="space-y-8 max-w-2xl animate-fade-up">
@@ -72,7 +72,7 @@ export default async function ProfilePage() {
           </h2>
           <div className="flex items-center gap-2 mt-1.5">
             <Mail className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-            <span className="text-sm text-[var(--text-muted)] truncate">{user!.email}</span>
+            <span className="text-sm text-[var(--text-muted)] truncate">{user.email}</span>
           </div>
           <div className="flex items-center gap-2 mt-2.5 flex-wrap">
             <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${planStyle[currentPlan]}`}>
@@ -121,13 +121,13 @@ export default async function ProfilePage() {
       <div className="dash-card rounded-2xl p-6 space-y-3">
         <h3 className="font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Informații cont</h3>
         {[
-          { label: 'Email', value: user!.email },
+          { label: 'Email', value: user.email ?? '—' },
           { label: 'Plan', value: planLabel[currentPlan] },
           ...(profile?.subscribed_institution ? [{
             label: 'Instituție abonată',
             value: `${profile.subscribed_institution} — ${INSTITUTION_FULL_NAMES[profile.subscribed_institution as Institution]}`,
           }] : []),
-          { label: 'Cont creat', value: new Date(user!.created_at).toLocaleDateString('ro-RO', { day: 'numeric', month: 'long', year: 'numeric' }) },
+          { label: 'Cont creat', value: new Date(user.created_at).toLocaleDateString('ro-RO', { day: 'numeric', month: 'long', year: 'numeric' }) },
         ].map((row) => (
           <div key={row.label} className="flex justify-between text-sm border-b pb-3 last:border-0 last:pb-0" style={{ borderColor: 'var(--border)' }}>
             <span style={{ color: 'var(--text-muted)' }}>{row.label}</span>

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getRequiredUser } from '@/lib/supabase/server'
 import { CheckoutButton } from '@/components/dashboard/checkout-button'
 import { CheckCircle, Star, Shield, Clock } from 'lucide-react'
 import type { SubscriptionPlan } from '@/types'
@@ -42,9 +42,9 @@ const faqs = [
 ]
 
 export default async function PricingPage() {
+  const user = await getRequiredUser('/auth/login')
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user!.id).single()
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
   const currentPlan: SubscriptionPlan = profile?.subscription_plan ?? 'free'
 
   return (

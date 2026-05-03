@@ -1,9 +1,10 @@
 import { Suspense } from 'react'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getRequiredUser } from '@/lib/supabase/server'
 import {
   INSTITUTION_LABELS,
   CATEGORY_LABELS,
-  CATEGORY_SHORT_LABELS,
+  getCategoryLabel,
+  getCategoryShortLabel,
   getScoreColor,
 } from '@/lib/utils'
 import type { Institution, TestCategory } from '@/types'
@@ -45,14 +46,14 @@ function ProgressSkeleton() {
 }
 
 async function ProgressContent() {
+  const user = await getRequiredUser('/auth/login')
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
 
   const { data: progressData } = await supabase
-    .from('user_progress').select('*').eq('user_id', user!.id)
+    .from('user_progress').select('*').eq('user_id', user.id)
 
   const { data: sessions } = await supabase
-    .from('test_sessions').select('*').eq('user_id', user!.id)
+    .from('test_sessions').select('*').eq('user_id', user.id)
     .eq('completed', true).order('completed_at', { ascending: false }).limit(30)
 
   const totalTests = progressData?.reduce((sum, p) => sum + p.tests_taken, 0) ?? 0
@@ -74,7 +75,7 @@ async function ProgressContent() {
     const avg = catProgress.length > 0
       ? catProgress.reduce((s, p) => s + p.average_score, 0) / catProgress.length
       : 0
-    return { category: CATEGORY_LABELS[cat], score: Math.round(avg), icon: CATEGORY_SHORT_LABELS[cat] }
+    return { category: CATEGORY_LABELS[cat], score: Math.round(avg), icon: getCategoryShortLabel(cat) }
   }).filter(c => c.score > 0)
 
   function getProgress(institution: Institution, category: TestCategory) {
@@ -192,10 +193,10 @@ async function ProgressContent() {
                 className={`flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-white/[0.02] ${i < sessions.length - 1 ? 'border-b' : ''}`}
                 style={{ borderColor: 'var(--border)' }}
               >
-                <CategoryIcon category={session.category as TestCategory} className="h-9 w-9 rounded-xl bg-[var(--bg-muted)] text-[var(--text-primary)]" iconClassName="h-4 w-4 text-[var(--text-primary)]" />
+                <CategoryIcon category={session.category} className="h-9 w-9 rounded-xl bg-[var(--bg-muted)] text-[var(--text-primary)]" iconClassName="h-4 w-4 text-[var(--text-primary)]" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                    {CATEGORY_LABELS[session.category as TestCategory]}
+                    {getCategoryLabel(session.category)}
                     <span className="font-normal ml-1.5" style={{ color: 'var(--text-muted)' }}>— {session.institution}</span>
                     {session.is_simulation && (
                       <span className="ml-2 text-[10px] bg-violet-500/10 text-violet-400 px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wide">

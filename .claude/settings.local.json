@@ -8,7 +8,15 @@
       "Bash(npx next:*)",
       "Bash(git add:*)",
       "Bash(git push:*)",
-      "Bash(perl -i -pe 's/\\\\s+dark:[^\\\\s\"'\"'\"']+//g' /Users/razvanhorhocea/Desktop/PSIHOLOGICapp/src/app/page.tsx)"
+      "Bash(perl -i -pe 's/\\\\s+dark:[^\\\\s\"'\"'\"']+//g' /Users/razvanhorhocea/Desktop/PSIHOLOGICapp/src/app/page.tsx)",
+      "Bash(python3 -c \"import pypdf\")",
+      "Bash(brew install *)",
+      "Bash(npx vercel@latest logs https://psihologicapp-ehya9e9nk-horhocearazvan26-wqs-projects.vercel.app)",
+      "Bash(curl *)",
+      "Bash(npx vercel@latest inspect https://psihologicapp-ehya9e9nk-horhocearazvan26-wqs-projects.vercel.app)",
+      "Bash(timeout 15 npx vercel@latest logs dpl_HzPFavfQ3AuzhuxRQdwRa2oFzy7E --output raw)",
+      "Bash(npm run *)",
+      "Bash(npx vercel *)"
     ]
   }
 }

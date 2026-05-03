@@ -1,18 +1,17 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getRequiredUser } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { CATEGORY_LABELS, getScoreColor } from '@/lib/utils'
-import type { TestCategory } from '@/types'
+import { getCategoryLabel, getScoreColor, isKnownCategory } from '@/lib/utils'
 import { FileText, TrendingDown, CheckCircle, ChevronRight } from 'lucide-react'
 import { CategoryIcon } from '@/components/ui/category-icon'
 
 export default async function ReviewPage() {
+  const user = await getRequiredUser('/auth/login')
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
 
   const { data: sessions } = await supabase
     .from('test_sessions')
     .select('*')
-    .eq('user_id', user!.id)
+    .eq('user_id', user.id)
     .eq('completed', true)
     .order('score', { ascending: true })
     .limit(20)
@@ -31,7 +30,7 @@ export default async function ReviewPage() {
 
   const weakCategories = Object.entries(categoryMap)
     .map(([cat, data]) => ({
-      category: cat as TestCategory,
+      category: cat,
       avg: data.scores.reduce((a, b) => a + b, 0) / data.scores.length,
       institutions: data.institutions,
     }))
@@ -75,7 +74,7 @@ export default async function ReviewPage() {
                     <div className="flex items-center gap-3 mb-3">
                       <CategoryIcon category={wc.category} className="h-10 w-10 rounded-xl bg-[var(--bg-muted)] text-[var(--text-primary)] shrink-0" iconClassName="h-4 w-4 text-[var(--text-primary)]" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-[var(--text-primary)]">{CATEGORY_LABELS[wc.category]}</p>
+                        <p className="text-sm font-bold text-[var(--text-primary)]">{getCategoryLabel(wc.category)}</p>
                         <p className="text-xs text-[var(--text-muted)]">{wc.institutions.join(', ')}</p>
                       </div>
                       <span className={`text-sm font-extrabold shrink-0 ${getScoreColor(wc.avg)}`}>
@@ -91,7 +90,7 @@ export default async function ReviewPage() {
                     <p className="text-xs text-[var(--text-muted)] mb-3">
                       Scor mediu sub 70% — necesită practică suplimentară
                     </p>
-                    {wc.institutions[0] && (
+                    {wc.institutions[0] && isKnownCategory(wc.category) && (
                       <Link href={`/dashboard/tests/${wc.institutions[0].toLowerCase()}/${wc.category}`}>
                         <div className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold text-[var(--text-primary)] bg-[var(--bg-muted)] hover:bg-[var(--border-strong)] transition-colors border border-[var(--border)]">
                           Exersează acum <ChevronRight className="w-3.5 h-3.5" />
@@ -114,10 +113,10 @@ export default async function ReviewPage() {
                     key={session.id}
                     className={`flex flex-col gap-3 px-5 py-3.5 transition-colors hover:bg-[var(--bg-muted)] sm:flex-row sm:items-center ${i < reviewSessions.length - 1 ? 'border-b border-[var(--border)]' : ''}`}
                   >
-                    <CategoryIcon category={session.category as TestCategory} className="h-9 w-9 rounded-xl bg-[var(--bg-muted)] text-[var(--text-primary)] shrink-0" iconClassName="h-4 w-4 text-[var(--text-primary)]" />
+                    <CategoryIcon category={session.category} className="h-9 w-9 rounded-xl bg-[var(--bg-muted)] text-[var(--text-primary)] shrink-0" iconClassName="h-4 w-4 text-[var(--text-primary)]" />
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-[var(--text-primary)]">
-                        {CATEGORY_LABELS[session.category as TestCategory]}
+                        {getCategoryLabel(session.category)}
                         <span className="text-[var(--text-muted)] font-normal ml-1.5">— {session.institution}</span>
                       </p>
                       <p className="text-xs text-[var(--text-muted)]">
@@ -133,7 +132,7 @@ export default async function ReviewPage() {
                         </p>
                         <p className="text-xs text-[var(--text-muted)]">{session.correct_answers}/{session.total_questions}</p>
                       </div>
-                      <Link href={`/dashboard/tests/${session.institution.toLowerCase()}/${session.category}`}>
+                      <Link href={isKnownCategory(session.category) ? `/dashboard/tests/${session.institution.toLowerCase()}/${session.category}` : '#'}>
                         <div className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-muted)] transition-colors">
                           Reia
                         </div>
@@ -167,10 +166,10 @@ export default async function ReviewPage() {
                     key={session.id}
                     className={`flex items-center gap-3 px-5 py-3.5 ${i < goodSessions.length - 1 ? 'border-b border-[var(--border)]' : ''}`}
                   >
-                    <CategoryIcon category={session.category as TestCategory} className="h-9 w-9 rounded-xl bg-[var(--bg-muted)] text-[var(--text-primary)] shrink-0" iconClassName="h-4 w-4 text-[var(--text-primary)]" />
+                    <CategoryIcon category={session.category} className="h-9 w-9 rounded-xl bg-[var(--bg-muted)] text-[var(--text-primary)] shrink-0" iconClassName="h-4 w-4 text-[var(--text-primary)]" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-[var(--text-primary)] truncate">
-                        {CATEGORY_LABELS[session.category as TestCategory]}
+                        {getCategoryLabel(session.category)}
                         <span className="text-[var(--text-muted)] font-normal ml-1.5">— {session.institution}</span>
                       </p>
                     </div>

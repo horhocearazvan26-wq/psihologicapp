@@ -3,7 +3,7 @@
 import { useState, useSyncExternalStore, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { CATEGORY_LABELS, getScoreColor } from '@/lib/utils'
+import { CATEGORY_LABELS, getCategoryLabel, getScoreColor } from '@/lib/utils'
 import type { TestCategory } from '@/types'
 import {
   Play, Layers, TrendingUp, ChevronRight, ArrowRight,
@@ -473,10 +473,10 @@ export function DashboardClient({
                     border: '1px solid rgba(255,255,255,0.09)',
                   }}
                 >
-                  <CategoryIcon category={session.category as TestCategory} className="h-10 w-10 rounded-xl border-white/10 bg-white/0" iconClassName="h-4 w-4 text-white/70" />
+                  <CategoryIcon category={session.category} className="h-10 w-10 rounded-xl border-white/10 bg-white/0" iconClassName="h-4 w-4 text-white/70" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-white truncate">{CATEGORY_LABELS[session.category as TestCategory]}</p>
+                  <p className="text-sm font-medium text-white truncate">{getCategoryLabel(session.category)}</p>
                   <div className="flex items-center gap-1.5 text-[11px] text-white/30 mt-0.5">
                     <Clock className="w-3 h-3" />
                     <span>{new Date(session.completed_at).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' })}</span>

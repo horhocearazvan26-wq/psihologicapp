@@ -1,210 +1,267 @@
 import type { QuestionRow } from './rationament-analitic'
+import {
+  attachInstitution,
+  buildMcqOptions,
+  ensureUniqueByText,
+  type Difficulty,
+  type QuestionDraft,
+} from './helpers'
 
-// Each item: show a number series with 2 blanks, pick the correct pair
-// question_text shows the series; options are pairs formatted as "x, y"
-const items: Omit<QuestionRow, 'institution'>[] = [
-  {
+function formatValue(value: number): string {
+  return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/\.00$/, '')
+}
+
+function makePairQuestion(
+  series: number[],
+  blanks: [number, number],
+  correctPair: [number, number],
+  distractors: [number, number][],
+  explanation: string,
+  difficulty: Difficulty,
+  metadata: Record<string, unknown> = {}
+): QuestionDraft {
+  const masked = series.map((value, index) => (blanks.includes(index) ? '__' : formatValue(value)))
+  const correct = `${formatValue(correctPair[0])} și ${formatValue(correctPair[1])}`
+  const wrong = distractors.map(([a, b]) => `${formatValue(a)} și ${formatValue(b)}`)
+  const { options, correct_answer } = buildMcqOptions(correct, wrong, masked.join('|'))
+
+  return {
     category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n2, 5, __, 11, 14, __, 20',
-    options: ['7 și 17', '8 și 18', '6 și 16', '9 și 17'],
-    correct_answer: 0,
-    explanation: 'Regula: +3. Șirul este 2, 5, 8, 11, 14, 17, 20. Numerele lipsă sunt 8 și 17. Corectat: opțiunea A este 7 și 17 → șirul corect are 8 și 17 → opțiunea A.',
-    difficulty: 1,
-    metadata: { series: [2, 5, null, 11, 14, null, 20], blanks: [2, 5] },
+    question_text: `Identificați numerele lipsă din șirul următor:\n${masked.join(', ')}`,
+    options,
+    correct_answer,
+    explanation,
+    difficulty,
+    metadata: {
+      ...metadata,
+      series,
+      blanks,
+      correctPair,
+    },
     is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n3, 6, 12, __, 48, __',
-    options: ['20 și 80', '24 și 96', '18 și 72', '22 și 88'],
-    correct_answer: 1,
-    explanation: 'Regula: ×2. Șirul: 3, 6, 12, 24, 48, 96. Numerele lipsă: 24 și 96.',
-    difficulty: 1,
-    metadata: { series: [3, 6, 12, null, 48, null] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n100, 90, __, 72, __, 56',
-    options: ['82 și 64', '80 și 64', '81 și 63', '82 și 66'],
-    correct_answer: 1,
-    explanation: 'Diferențele: -10, -8, -8, -8, -8. Verificare: 100, 90, 82 (−8), 74... Nu. Alt tipar: 100, 90, 81, 72, 64, 56 — diferențe: −10, −9, −9, −8, −8. Inconstant. Regula: diferențele scad cu 1 la fiecare pas: -10, -9, -8, -7... → 100, 90, 81, 73, 66... Nu se potrivește. Regula simplă: −10, −8, -8, -8, -8 → 90, 82, 74, 66, 58 nu dă. Cea mai simplă: șir cu scădere de 8: 100-8=92? Nu merge. Verificăm: 100, 90(−10), 80(−10?). Dacă −10: 100,90,80,70,60,50 nu dă 72. Tipar alternativ: 100, 90, 80 (−10), 72 (−8), 64 (−8), 56 (−8). Deci 80 și 64.',
-    difficulty: 2,
-    metadata: { series: [100, 90, null, 72, null, 56] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n1, 1, 2, 3, 5, __, 13, __',
-    options: ['7 și 19', '8 și 21', '9 și 22', '6 și 20'],
-    correct_answer: 1,
-    explanation: 'Șirul Fibonacci: fiecare termen = suma celor doi precedenți. 5+3=8, 8+13=21. Numerele lipsă: 8 și 21.',
-    difficulty: 2,
-    metadata: { series: [1, 1, 2, 3, 5, null, 13, null] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n2, 6, 12, 20, __, 42, __',
-    options: ['28 și 52', '30 și 56', '32 și 58', '26 și 54'],
-    correct_answer: 1,
-    explanation: 'Diferențele: 4, 6, 8, 10, 12, 14 (cresc cu 2). Deci: 20+10=30, 42+14=56. Numerele lipsă: 30 și 56.',
-    difficulty: 2,
-    metadata: { series: [2, 6, 12, 20, null, 42, null] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n81, 27, __, 3, __, 1/3',
-    options: ['9 și 1', '12 și 2', '6 și 1', '9 și 1/2'],
-    correct_answer: 0,
-    explanation: 'Regula: ÷3. Șirul: 81, 27, 9, 3, 1, 1/3. Numerele lipsă: 9 și 1.',
-    difficulty: 2,
-    metadata: { series: [81, 27, null, 3, null, '1/3'] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n1, 4, 9, 16, __, 36, __',
-    options: ['20 și 42', '25 și 49', '23 și 47', '24 și 48'],
-    correct_answer: 1,
-    explanation: 'Șirul pătratelor perfecte: 1², 2², 3², 4², 5², 6², 7². Numerele lipsă: 25 și 49.',
-    difficulty: 2,
-    metadata: { series: [1, 4, 9, 16, null, 36, null] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n2, 3, 5, 7, __, 13, __',
-    options: ['9 și 15', '11 și 17', '10 și 16', '11 și 15'],
-    correct_answer: 1,
-    explanation: 'Șirul numerelor prime: 2, 3, 5, 7, 11, 13, 17. Numerele lipsă: 11 și 17.',
-    difficulty: 2,
-    metadata: { series: [2, 3, 5, 7, null, 13, null] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n3, 7, 13, 21, __, 43, __',
-    options: ['29 și 55', '31 și 57', '33 și 55', '31 și 55'],
-    correct_answer: 1,
-    explanation: 'Diferențele: 4, 6, 8, 10, 12, 14 (cresc cu 2). 21+10=31, 43+14=57. Numerele lipsă: 31 și 57.',
-    difficulty: 2,
-    metadata: { series: [3, 7, 13, 21, null, 43, null] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n2, 5, 11, 23, __, 95, __',
-    options: ['46 și 190', '47 și 191', '45 și 189', '48 și 192'],
-    correct_answer: 1,
-    explanation: 'Regula: ×2+1. 2×2+1=5, 5×2+1=11, 11×2+1=23, 23×2+1=47, 47×2+1=95, 95×2+1=191. Numerele lipsă: 47 și 191.',
-    difficulty: 3,
-    metadata: { series: [2, 5, 11, 23, null, 95, null] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n1, 2, 6, 24, __, 720, __',
-    options: ['100 și 5000', '120 și 5040', '110 și 5020', '130 și 5060'],
-    correct_answer: 1,
-    explanation: 'Factoriale: 1!, 2!, 3!, 4!, 5!, 6!, 7!. Deci: 1, 2, 6, 24, 120, 720, 5040. Numerele lipsă: 120 și 5040.',
-    difficulty: 3,
-    metadata: { series: [1, 2, 6, 24, null, 720, null] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n4, 9, 16, 25, __, 49, __',
-    options: ['36 și 64', '34 și 62', '38 și 66', '36 și 63'],
-    correct_answer: 0,
-    explanation: 'Pătrate perfecte pornind de la 2: 2²=4, 3²=9, 4²=16, 5²=25, 6²=36, 7²=49, 8²=64. Numerele lipsă: 36 și 64.',
-    difficulty: 1,
-    metadata: { series: [4, 9, 16, 25, null, 49, null] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n0, 1, 3, 6, __, 15, __',
-    options: ['9 și 20', '10 și 21', '8 și 19', '11 și 22'],
-    correct_answer: 1,
-    explanation: 'Numere triunghiulare: T(n) = n(n+1)/2. T(1)=1, T(2)=3, T(3)=6, T(4)=10, T(5)=15, T(6)=21. Adăugând 0: 0, 1, 3, 6, 10, 15, 21. Numerele lipsă: 10 și 21.',
-    difficulty: 3,
-    metadata: { series: [0, 1, 3, 6, null, 15, null] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n1, 8, 27, __, 125, __',
-    options: ['48 și 196', '64 și 216', '50 și 200', '72 și 220'],
-    correct_answer: 1,
-    explanation: 'Cuburi perfecte: 1³, 2³, 3³, 4³, 5³, 6³. Deci: 1, 8, 27, 64, 125, 216. Numerele lipsă: 64 și 216.',
-    difficulty: 2,
-    metadata: { series: [1, 8, 27, null, 125, null] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n5, 10, 20, 35, __, 80, __',
-    options: ['55 și 110', '55 și 115', '50 și 110', '60 și 115'],
-    correct_answer: 0,
-    explanation: 'Diferențele: 5, 10, 15, 20, 25, 30 (cresc cu 5). 35+20=55, 80+30=110. Numerele lipsă: 55 și 110.',
-    difficulty: 2,
-    metadata: { series: [5, 10, 20, 35, null, 80, null] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n1, 3, 9, __, 81, __',
-    options: ['27 și 243', '18 și 162', '36 și 270', '24 și 240'],
-    correct_answer: 0,
-    explanation: 'Regula: ×3. 1, 3, 9, 27, 81, 243. Numerele lipsă: 27 și 243.',
-    difficulty: 1,
-    metadata: { series: [1, 3, 9, null, 81, null] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n17, 14, 11, __, 5, __',
-    options: ['9 și 2', '8 și 2', '8 și 3', '9 și 3'],
-    correct_answer: 1,
-    explanation: 'Regula: −3. 17, 14, 11, 8, 5, 2. Numerele lipsă: 8 și 2.',
-    difficulty: 1,
-    metadata: { series: [17, 14, 11, null, 5, null] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n1, 2, 4, 7, 11, __, 22, __',
-    options: ['15 și 28', '16 și 29', '14 și 27', '16 și 30'],
-    correct_answer: 1,
-    explanation: 'Diferențele: 1, 2, 3, 4, 5, 6, 7 (cresc cu 1). 11+5=16, 22+7=29. Numerele lipsă: 16 și 29.',
-    difficulty: 2,
-    metadata: { series: [1, 2, 4, 7, 11, null, 22, null] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n256, __, 64, __, 16, 8',
-    options: ['128 și 32', '192 și 48', '120 și 30', '160 și 40'],
-    correct_answer: 0,
-    explanation: 'Regula: ÷2. 256, 128, 64, 32, 16, 8. Numerele lipsă: 128 și 32.',
-    difficulty: 1,
-    metadata: { series: [256, null, 64, null, 16, 8] },
-    is_active: true,
-  },
-  {
-    category: 'rationament-matematic',
-    question_text: 'Identificați numerele lipsă din șirul următor:\n3, 4, 6, 9, 13, __, 24, __',
-    options: ['17 și 31', '18 și 31', '18 și 33', '17 și 32'],
-    correct_answer: 1,
-    explanation: 'Diferențele: 1, 2, 3, 4, 5, 6, 7 (cresc cu 1). 13+5=18, 24+7=31. Numerele lipsă: 18 și 31.',
-    difficulty: 2,
-    metadata: { series: [3, 4, 6, 9, 13, null, 24, null] },
-    is_active: true,
-  },
-]
+  }
+}
+
+function arithmeticQuestions(): QuestionDraft[] {
+  return [
+    { start: 4, step: 3, length: 7, blanks: [2, 5] as [number, number] },
+    { start: 17, step: -4, length: 7, blanks: [1, 4] as [number, number] },
+    { start: 12, step: 6, length: 6, blanks: [3, 5] as [number, number] },
+    { start: 95, step: -7, length: 6, blanks: [2, 4] as [number, number] },
+    { start: 8, step: 9, length: 7, blanks: [3, 6] as [number, number] },
+    { start: 150, step: -12, length: 6, blanks: [1, 3] as [number, number] },
+  ].map(({ start, step, length, blanks }) => {
+    const series = Array.from({ length }, (_, index) => start + step * index)
+    const correctPair: [number, number] = [series[blanks[0]], series[blanks[1]]]
+    return makePairQuestion(
+      series,
+      blanks,
+      correctPair,
+      [
+        [correctPair[0] + step, correctPair[1] + step],
+        [correctPair[0] - step, correctPair[1] - step],
+        [correctPair[0], correctPair[1] + Math.sign(step || 1) * 2],
+      ],
+      `Șirul este o progresie aritmetică cu rația ${step > 0 ? `+${step}` : step}. Valorile lipsă sunt ${formatValue(correctPair[0])} și ${formatValue(correctPair[1])}.`,
+      Math.abs(step) >= 9 ? 2 : 1,
+      { family: 'progresie-aritmetica', step }
+    )
+  })
+}
+
+function geometricQuestions(): QuestionDraft[] {
+  return [
+    { start: 3, ratio: 2, length: 6, blanks: [3, 5] as [number, number] },
+    { start: 96, ratio: 0.5, length: 6, blanks: [1, 4] as [number, number] },
+    { start: 5, ratio: 3, length: 5, blanks: [2, 4] as [number, number] },
+    { start: 243, ratio: 1 / 3, length: 6, blanks: [2, 5] as [number, number] },
+    { start: 7, ratio: 2, length: 7, blanks: [4, 6] as [number, number] },
+  ].map(({ start, ratio, length, blanks }) => {
+    const series = Array.from({ length }, (_, index) => start * ratio ** index)
+    const correctPair: [number, number] = [series[blanks[0]], series[blanks[1]]]
+    return makePairQuestion(
+      series,
+      blanks,
+      correctPair,
+      [
+        [correctPair[0] * ratio, correctPair[1] * ratio],
+        [correctPair[0] / ratio, correctPair[1] / ratio],
+        [correctPair[0], correctPair[1] + (ratio > 1 ? ratio : 1)],
+      ],
+      `Fiecare termen se obține înmulțind cu ${formatValue(ratio)} termenul precedent. Valorile lipsă sunt ${formatValue(correctPair[0])} și ${formatValue(correctPair[1])}.`,
+      ratio === 3 || ratio === 1 / 3 ? 2 : 1,
+      { family: 'progresie-geometrica', ratio }
+    )
+  })
+}
+
+function secondDifferenceQuestions(): QuestionDraft[] {
+  return [
+    { base: [2, 6, 12, 20, 30, 42, 56], blanks: [4, 6] as [number, number] },
+    { base: [5, 9, 15, 23, 33, 45, 59], blanks: [3, 5] as [number, number] },
+    { base: [3, 8, 15, 24, 35, 48, 63], blanks: [2, 6] as [number, number] },
+    { base: [10, 14, 20, 28, 38, 50, 64], blanks: [1, 4] as [number, number] },
+  ].map(({ base, blanks }) =>
+    makePairQuestion(
+      base,
+      blanks,
+      [base[blanks[0]], base[blanks[1]]],
+      [
+        [base[blanks[0]] + 2, base[blanks[1]] + 2],
+        [base[blanks[0]] - 2, base[blanks[1]] - 2],
+        [base[blanks[0]] + 1, base[blanks[1]] - 1],
+      ],
+      'Diferențele dintre termeni cresc constant cu 2, ceea ce indică o progresie cu a doua diferență constantă. Completarea corectă urmează exact acest tipar.',
+      2,
+      { family: 'a-doua-diferenta' }
+    )
+  )
+}
+
+function specialSeriesQuestions(): QuestionDraft[] {
+  const configs = [
+    {
+      series: [1, 1, 2, 3, 5, 8, 13, 21],
+      blanks: [5, 7] as [number, number],
+      explanation: 'Șirul este de tip Fibonacci: fiecare termen este suma celor doi termeni anteriori.',
+      difficulty: 2 as Difficulty,
+      family: 'fibonacci',
+    },
+    {
+      series: [1, 4, 9, 16, 25, 36, 49],
+      blanks: [4, 6] as [number, number],
+      explanation: 'Șirul conține pătrate perfecte consecutive: 1², 2², 3², ...',
+      difficulty: 2 as Difficulty,
+      family: 'patrate',
+    },
+    {
+      series: [1, 8, 27, 64, 125, 216],
+      blanks: [3, 5] as [number, number],
+      explanation: 'Șirul conține cuburi perfecte consecutive: 1³, 2³, 3³, ...',
+      difficulty: 2 as Difficulty,
+      family: 'cuburi',
+    },
+    {
+      series: [2, 3, 5, 7, 11, 13, 17, 19],
+      blanks: [4, 7] as [number, number],
+      explanation: 'Șirul este format din numere prime în ordine crescătoare.',
+      difficulty: 2 as Difficulty,
+      family: 'prime',
+    },
+    {
+      series: [1, 2, 6, 24, 120, 720],
+      blanks: [3, 5] as [number, number],
+      explanation: 'Șirul reprezintă factorialele: 1!, 2!, 3!, 4!, 5!, 6!.',
+      difficulty: 3 as Difficulty,
+      family: 'factoriale',
+    },
+    {
+      series: [0, 1, 3, 6, 10, 15, 21],
+      blanks: [4, 6] as [number, number],
+      explanation: 'Șirul conține numere triunghiulare: sumele succesive 1, 1+2, 1+2+3 etc.',
+      difficulty: 3 as Difficulty,
+      family: 'triunghiulare',
+    },
+  ]
+
+  return configs.map(({ series, blanks, explanation, difficulty, family }) =>
+    makePairQuestion(
+      series,
+      blanks,
+      [series[blanks[0]], series[blanks[1]]],
+      [
+        [series[blanks[0]] + 1, series[blanks[1]] + 1],
+        [series[blanks[0]] - 1, series[blanks[1]] - 1],
+        [series[blanks[0]], series[blanks[1]] + 2],
+      ],
+      explanation,
+      difficulty,
+      { family }
+    )
+  )
+}
+
+function alternatingQuestions(): QuestionDraft[] {
+  const configs = [
+    {
+      odd: [4, 8, 12, 16],
+      even: [3, 6, 9, 12],
+      blanks: [3, 6] as [number, number],
+    },
+    {
+      odd: [30, 27, 24, 21],
+      even: [2, 4, 8, 16],
+      blanks: [2, 7] as [number, number],
+    },
+    {
+      odd: [5, 10, 15, 20],
+      even: [40, 35, 30, 25],
+      blanks: [1, 4] as [number, number],
+    },
+    {
+      odd: [2, 4, 8, 16],
+      even: [81, 27, 9, 3],
+      blanks: [5, 7] as [number, number],
+    },
+  ]
+
+  return configs.map(({ odd, even, blanks }, index) => {
+    const series: number[] = []
+    for (let i = 0; i < odd.length; i += 1) {
+      series.push(odd[i], even[i])
+    }
+    const correctPair: [number, number] = [series[blanks[0]], series[blanks[1]]]
+    return makePairQuestion(
+      series,
+      blanks,
+      correctPair,
+      [
+        [correctPair[0] + 2, correctPair[1] + 2],
+        [correctPair[0] - 2, correctPair[1] - 2],
+        [correctPair[0], correctPair[1] + 4],
+      ],
+      'Șirul alternează între două reguli independente: una pentru pozițiile impare și una pentru pozițiile pare. Valorile lipsă trebuie găsite urmărind separat cele două subșiruri.',
+      index >= 2 ? 3 : 2,
+      { family: 'alternant' }
+    )
+  })
+}
+
+function mixedOperationQuestions(): QuestionDraft[] {
+  const configs = [
+    { series: [2, 5, 11, 23, 47, 95], blanks: [4, 5] as [number, number], rule: '×2 + 1' },
+    { series: [3, 7, 15, 31, 63, 127], blanks: [3, 5] as [number, number], rule: '×2 + 1' },
+    { series: [4, 9, 19, 39, 79, 159], blanks: [2, 4] as [number, number], rule: '×2 + 1' },
+    { series: [6, 13, 27, 55, 111, 223], blanks: [3, 5] as [number, number], rule: '×2 + 1' },
+    { series: [1, 4, 10, 22, 46, 94], blanks: [2, 5] as [number, number], rule: '×2 + 2' },
+  ]
+
+  return configs.map(({ series, blanks, rule }, index) =>
+    makePairQuestion(
+      series,
+      blanks,
+      [series[blanks[0]], series[blanks[1]]],
+      [
+        [series[blanks[0]] + 1, series[blanks[1]] + 1],
+        [series[blanks[0]] - 1, series[blanks[1]] - 1],
+        [series[blanks[0]], series[blanks[1]] + 2],
+      ],
+      `Regula seriei este ${rule}: fiecare termen se obține aplicând această transformare termenului precedent.`,
+      index < 3 ? 2 : 3,
+      { family: 'operatie-mixta', rule }
+    )
+  )
+}
+
+const items: QuestionDraft[] = ensureUniqueByText([
+  ...arithmeticQuestions(),
+  ...geometricQuestions(),
+  ...secondDifferenceQuestions(),
+  ...specialSeriesQuestions(),
+  ...alternatingQuestions(),
+  ...mixedOperationQuestions(),
+])
 
 export function generateRationamentMatematic(institution: string): QuestionRow[] {
-  return items.map(item => ({ ...item, institution }))
+  return attachInstitution(items, institution)
 }

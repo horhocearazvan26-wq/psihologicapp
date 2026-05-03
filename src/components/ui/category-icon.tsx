@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react'
 import { Brain, BookOpen, BookA, FileText, Calculator, Hash, Layers, Zap, Shuffle } from 'lucide-react'
 import type { TestCategory } from '@/types'
+import type { LegacyTestCategory } from '@/lib/utils'
 import { IconBadge } from './icon-badge'
 
 export const CATEGORY_ICON_MAP: Record<TestCategory, LucideIcon> = {
@@ -15,16 +16,30 @@ export const CATEGORY_ICON_MAP: Record<TestCategory, LucideIcon> = {
   'comutare-atentie':      BookOpen,
 }
 
+const LEGACY_CATEGORY_ICON_MAP: Record<LegacyTestCategory, LucideIcon> = {
+  attention: Zap,
+  logic: Brain,
+  memory: Layers,
+  numerical: Calculator,
+  vocabulary: BookA,
+  personality: Shuffle,
+}
+
 interface CategoryIconProps {
-  category: TestCategory
+  category: string
   className?: string
   iconClassName?: string
 }
 
 export function CategoryIcon({ category, className, iconClassName }: CategoryIconProps) {
+  const Icon =
+    CATEGORY_ICON_MAP[category as TestCategory] ??
+    LEGACY_CATEGORY_ICON_MAP[category as LegacyTestCategory] ??
+    BookOpen
+
   return (
     <IconBadge
-      icon={CATEGORY_ICON_MAP[category]}
+      icon={Icon}
       className={className}
       iconClassName={iconClassName}
     />

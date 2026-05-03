@@ -1,3 +1,11 @@
+import {
+  attachInstitution,
+  buildMcqOptions,
+  ensureUniqueByText,
+  type Difficulty,
+  type QuestionDraft,
+} from './helpers'
+
 export interface QuestionRow {
   institution: string
   category: string
@@ -10,189 +18,206 @@ export interface QuestionRow {
   is_active: boolean
 }
 
-const items: Omit<QuestionRow, 'institution'>[] = [
-  {
+function makeQuestion(
+  premises: string[],
+  stem: string,
+  correct: string,
+  distractors: string[],
+  explanation: string,
+  difficulty: Difficulty,
+  metadata: Record<string, unknown> = {}
+): QuestionDraft {
+  const question_text = `${premises.join('\n')}\n${stem}`
+  const { options, correct_answer } = buildMcqOptions(correct, distractors, question_text)
+  return {
     category: 'rationament-analitic',
-    question_text: 'Toți vertebratele sunt animale.\nToți peștii sunt vertebrate.\nCare dintre următoarele propoziții rezultă în mod necesar din aceste premise?',
-    options: [
-      'Toți animalele sunt pești.',
-      'Toți peștii sunt animale.',
-      'Unii pești nu sunt animale.',
-      'Niciun pește nu este animal.',
-    ],
-    correct_answer: 1,
-    explanation: 'Forma Barbara: Toți M sunt P, Toți S sunt M → Toți S sunt P. Peștii sunt un subset al vertebratelor, care sunt un subset al animalelor.',
-    difficulty: 1,
-    metadata: {},
+    question_text,
+    options,
+    correct_answer,
+    explanation,
+    difficulty,
+    metadata,
     is_active: true,
-  },
-  {
-    category: 'rationament-analitic',
-    question_text: 'Nicio reptilă nu este homeoterm.\nToți crocodilii sunt reptile.\nCare propoziție rezultă în mod necesar?',
-    options: [
-      'Unii crocodili sunt homeoterni.',
-      'Toți homeotermii sunt reptile.',
-      'Niciun crocodil nu este homeoterm.',
-      'Unele reptile sunt homeotermii.',
-    ],
-    correct_answer: 2,
-    explanation: 'Forma Celarent: Niciun M nu este P, Toți S sunt M → Niciun S nu este P. Dacă nicio reptilă nu este homeoterm și toți crocodilii sunt reptile, atunci niciun crocodil nu este homeoterm.',
-    difficulty: 1,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'rationament-analitic',
-    question_text: 'Toți compușii organici conțin carbon.\nUnii pigmenți naturali sunt compuși organici.\nCare propoziție rezultă în mod necesar?',
-    options: [
-      'Toți pigmenții naturali conțin carbon.',
-      'Niciun pigment natural nu conține carbon.',
-      'Unii pigmenți naturali conțin carbon.',
-      'Toți compușii care conțin carbon sunt pigmenți.',
-    ],
-    correct_answer: 2,
-    explanation: 'Forma Darii: Toți M sunt P, Unii S sunt M → Unii S sunt P. Acei pigmenți care sunt compuși organici conțin carbon.',
-    difficulty: 1,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'rationament-analitic',
-    question_text: 'Nicio sursă de energie regenerabilă nu produce deșeuri radioactive.\nUnele centrale electrice produc deșeuri radioactive.\nCare propoziție rezultă în mod necesar?',
-    options: [
-      'Unele centrale electrice nu sunt surse de energie regenerabilă.',
-      'Toate centralele electrice sunt surse de energie regenerabilă.',
-      'Nicio centrală electrică nu este sursă de energie regenerabilă.',
-      'Unele surse de energie regenerabilă produc deșeuri radioactive.',
-    ],
-    correct_answer: 0,
-    explanation: 'Forma Ferio: Niciun M nu este P, Unii S sunt P → Unii S nu sunt M. Acele centrale care produc deșeuri radioactive nu pot fi surse regenerabile.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'rationament-analitic',
-    question_text: 'Toți mammalele sunt homeotermii.\nToți delfinii sunt mamifere.\nToți homeotermii au metabolism ridicat.\nCare propoziție rezultă în mod necesar?',
-    options: [
-      'Unii delfini au metabolism ridicat.',
-      'Toți delfinii au metabolism ridicat.',
-      'Unii homeotermii sunt delfini.',
-      'Niciun delfin nu are metabolism ridicat.',
-    ],
-    correct_answer: 1,
-    explanation: 'Lanț silogistic: Delfini → Mamifere → Homeotermii → Metabolism ridicat. Toți delfinii au în mod necesar metabolism ridicat.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'rationament-analitic',
-    question_text: 'Toți mineralii din clasa a VII-a au duritate peste 7 pe scara Mohs.\nNicio substanță cu duritate sub 5 nu poate zgâria sticla.\nDiamanul are duritate 10 pe scara Mohs.\nCe putem concluziona despre diamant?',
-    options: [
-      'Diamantul nu poate zgâria sticla.',
-      'Diamantul poate zgâria sticla.',
-      'Diamantul este o substanță organică.',
-      'Nu putem stabili nimic despre diamant din aceste premise.',
-    ],
-    correct_answer: 1,
-    explanation: 'Diamantul are duritate 10 > 5, deci nu se află în categoria substanțelor cu duritate sub 5 care nu pot zgâria sticla. Prin contra-pozitivă, el poate zgâria sticla.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'rationament-analitic',
-    question_text: 'Unii filozofi greci au influențat gândirea medievală.\nToți influențatorii gândirii medievale au fost studiați de scolastici.\nCare propoziție rezultă în mod necesar?',
-    options: [
-      'Toți filozofii greci au fost studiați de scolastici.',
-      'Niciun filozof grec nu a fost studiat de scolastici.',
-      'Unii filozofi greci au fost studiați de scolastici.',
-      'Toți scolasticii au studiat filozofia greacă.',
-    ],
-    correct_answer: 2,
-    explanation: 'Unii filozofi greci au influențat gândirea medievală (premisa 1), iar toți cei care au influențat gândirea medievală au fost studiați de scolastici (premisa 2). Prin urmare, acei filozofi greci care au influențat gândirea medievală au fost studiați de scolastici.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'rationament-analitic',
-    question_text: 'Toți compușii cu legătură dublă carbon-carbon sunt nesaturați.\nNicio grăsime saturată nu conține legătură dublă carbon-carbon.\nUleiurile vegetale sunt nesaturate.\nCe putem stabili cu certitudine?',
-    options: [
-      'Uleiurile vegetale sunt grăsimi saturate.',
-      'Nicio grăsime saturată nu este nesaturată.',
-      'Toți compușii nesaturați sunt uleiuri vegetale.',
-      'Grăsimile saturate nu au legătură dublă C=C, deci nu sunt nesaturate prin definiție.',
-    ],
-    correct_answer: 3,
-    explanation: 'Din premise: saturate → fără legătură dublă C=C; fără legătură dublă C=C → nu nesaturat (contrapoziție). Deci saturate → nu nesaturate. Opțiunea D exprimă corect această concluzie.',
-    difficulty: 3,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'rationament-analitic',
-    question_text: 'Dacă o teorie este falsificabilă, atunci poate fi testată empiric.\nDacă o teorie poate fi testată empiric, atunci este știință.\nAstrologia nu este știință.\nCe putem concluziona?',
-    options: [
-      'Astrologia este falsificabilă.',
+  }
+}
+
+function universalChainQuestions(): QuestionDraft[] {
+  const configs = [
+    ['Toți astronomii sunt oameni de știință.', 'Toți cosmologii sunt astronomi.', 'Toți cosmologii sunt oameni de știință.'],
+    ['Toate aliajele feroase conțin fier.', 'Toate oțelurile inoxidabile sunt aliaje feroase.', 'Toate oțelurile inoxidabile conțin fier.'],
+    ['Toate organismele eucariote au nucleu celular.', 'Toate ciupercile sunt organisme eucariote.', 'Toate ciupercile au nucleu celular.'],
+    ['Toți judecătorii sunt magistrați.', 'Toți președinții de complet sunt judecători.', 'Toți președinții de complet sunt magistrați.'],
+    ['Toate fluviile navigabile sunt căi de transport strategic.', 'Dunărea este un fluviu navigabil.', 'Dunărea este o cale de transport strategic.'],
+  ]
+
+  return configs.map(([p1, p2, correct]) =>
+    makeQuestion(
+      [p1, p2],
+      'Care dintre următoarele concluzii rezultă în mod necesar?',
+      correct,
+      [
+        p1.replace('Toți', 'Unii'),
+        p2.replace('Toți', 'Niciun'),
+        `Nu putem stabili dacă ${correct.toLowerCase()}`,
+      ],
+      'Structura este una de tip Barbara: Toți M sunt P, Toți S sunt M, deci Toți S sunt P.',
+      1,
+      { family: 'universal-chain' }
+    )
+  )
+}
+
+function universalNegativeQuestions(): QuestionDraft[] {
+  const configs = [
+    ['Nicio reptilă nu este homeotermă.', 'Toți crocodilii sunt reptile.', 'Niciun crocodil nu este homeoterm.'],
+    ['Niciun material radioactiv neizolat nu este sigur pentru manipulare directă.', 'Toate barele de combustibil expuse sunt materiale radioactive neizolate.', 'Nicio bară de combustibil expusă nu este sigură pentru manipulare directă.'],
+    ['Niciun arbitru în conflict de interese nu poate valida verdictul.', 'Toți evaluatorii care dețin acțiuni în companie sunt în conflict de interese.', 'Niciun evaluator care deține acțiuni în companie nu poate valida verdictul.'],
+    ['Niciun compus saturat nu conține legături duble C=C.', 'Toate parafinele sunt compuși saturați.', 'Nicio parafină nu conține legături duble C=C.'],
+  ]
+
+  return configs.map(([p1, p2, correct]) =>
+    makeQuestion(
+      [p1, p2],
+      'Ce rezultă cu necesitate din premise?',
+      correct,
+      [
+        correct.replace('Niciun', 'Unii'),
+        p2.replace('Toate', 'Unele'),
+        'Nu se poate formula nicio concluzie validă',
+      ],
+      'Structura este de tip Celarent: Niciun M nu este P, Toți S sunt M, deci Niciun S nu este P.',
+      2,
+      { family: 'universal-negative' }
+    )
+  )
+}
+
+function particularInferenceQuestions(): QuestionDraft[] {
+  const configs = [
+    ['Unii cercetători în neuroștiințe lucrează cu imagistică funcțională.', 'Toți cei care lucrează cu imagistică funcțională utilizează seturi mari de date.', 'Unii cercetători în neuroștiințe utilizează seturi mari de date.'],
+    ['Unii senatori sunt juriști.', 'Toți juriștii cunosc tehnica argumentării.', 'Unii senatori cunosc tehnica argumentării.'],
+    ['Unele bacterii extremofile trăiesc în medii cu aciditate ridicată.', 'Toate organismele care trăiesc în medii cu aciditate ridicată au mecanisme speciale de adaptare.', 'Unele bacterii extremofile au mecanisme speciale de adaptare.'],
+    ['Unele decizii administrative produc efecte retroactive.', 'Toate deciziile care produc efecte retroactive sunt contestabile în instanță.', 'Unele decizii administrative sunt contestabile în instanță.'],
+  ]
+
+  return configs.map(([p1, p2, correct]) =>
+    makeQuestion(
+      [p1, p2],
+      'Care concluzie este validă logic?',
+      correct,
+      [
+        correct.replace('Unii', 'Toți'),
+        p2.replace('Toate', 'Nicio'),
+        'Nu se poate extrage nicio concluzie particulară',
+      ],
+      'Forma este de tip Darii: Unii S sunt M, Toți M sunt P, deci Unii S sunt P.',
+      2,
+      { family: 'particular-inference' }
+    )
+  )
+}
+
+function conditionalQuestions(): QuestionDraft[] {
+  return [
+    makeQuestion(
+      [
+        'Dacă un sistem este criptat end-to-end, atunci conținutul mesajelor nu poate fi citit de un intermediar.',
+        'Dacă un intermediar nu poate citi conținutul mesajelor, atunci interceptarea pasivă devine inutilă.',
+        'Sistemul X este criptat end-to-end.',
+      ],
+      'Care concluzie rezultă cu necesitate?',
+      'Interceptarea pasivă devine inutilă în sistemul X.',
+      [
+        'Sistemul X nu poate fi compromis în niciun mod.',
+        'Orice sistem criptat este imun la atacuri active.',
+        'Nu se poate concluziona nimic despre interceptarea pasivă.',
+      ],
+      'Aplicăm de două ori modus ponens pe lanțul condițional: P→Q, Q→R, P, deci R.',
+      2,
+      { family: 'conditional-chain' }
+    ),
+    makeQuestion(
+      [
+        'Dacă un raport este falsificabil, atunci poate fi testat empiric.',
+        'Dacă poate fi testat empiric, atunci intră în domeniul științei.',
+        'Astrologia nu intră în domeniul științei.',
+      ],
+      'Ce concluzie este cel mai bine susținută logic?',
       'Astrologia nu poate fi testată empiric sau nu este falsificabilă.',
-      'Toate teoriile falsificabile sunt astrologie.',
-      'Nicio știință nu este falsificabilă.',
-    ],
-    correct_answer: 1,
-    explanation: 'Prin modus tollens aplicat în lanț: Știință ← Testabilă empiric ← Falsificabilă. Deoarece Astrologia ≠ Știință, rezultă că Astrologia nu este testabilă empiric sau nu este falsificabilă (cel puțin una din condiții trebuie să eșueze).',
-    difficulty: 3,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'rationament-analitic',
-    question_text: 'Toți generalii victorioși au studiat istoria militară.\nUnii generali victorioși au luptat în Primul Război Mondial.\nToți cei care au luptat în Primul Război Mondial au cunoscut tranșeele.\nCare concluzie este validă?',
-    options: [
-      'Toți cei care au studiat istoria militară au cunoscut tranșeele.',
-      'Unii generali victorioși care au studiat istoria militară au cunoscut tranșeele.',
-      'Niciun general victorios nu a cunoscut tranșeele.',
-      'Toți generalii victorioși au cunoscut tranșeele.',
-    ],
-    correct_answer: 1,
-    explanation: 'Acei generali victorioși care au luptat în WWI (unii) → au studiat istoria militară (toți generalii victorioși o fac) ȘI au cunoscut tranșeele. Deci unii generali victorioși au cunoscut tranșeele și au studiat istoria militară.',
-    difficulty: 3,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'rationament-analitic',
-    question_text: 'Toți agenții de informații operează sub acoperire.\nNicio persoană care operează sub acoperire nu poate confirma identitatea sa publică.\nUnii diplomați sunt agenți de informații.\nCare propoziție rezultă în mod necesar?',
-    options: [
-      'Toți diplomații operează sub acoperire.',
-      'Niciun diplomat nu poate confirma identitatea sa publică.',
-      'Unii diplomați nu pot confirma identitatea lor publică.',
-      'Toți cei care nu pot confirma identitatea lor sunt diplomați.',
-    ],
-    correct_answer: 2,
-    explanation: 'Unii diplomați sunt agenți → operează sub acoperire → nu pot confirma identitatea publică. Deci unii diplomați nu pot confirma identitatea lor publică.',
-    difficulty: 3,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'rationament-analitic',
-    question_text: 'Dacă presiunea atmosferică scade brusc, atunci se formează nori de furtună.\nDacă se formează nori de furtună, atunci probabilitatea de precipitații crește.\nPresiunea atmosferică nu a scăzut brusc.\nCe putem concluziona cu certitudine?',
-    options: [
-      'Nu s-au format nori de furtună.',
-      'Probabilitatea de precipitații nu a crescut.',
+      [
+        'Astrologia este în mod cert falsificabilă.',
+        'Toate teoriile științifice sunt astrologice.',
+        'Nu există nicio relație între testabilitate și știință.',
+      ],
+      'Prin contrapoziție și modus tollens, dacă Știință este consecința testabilității, absența apartenenței la știință ne împiedică să afirmăm testabilitatea sau falsificabilitatea.',
+      3,
+      { family: 'conditional-chain' }
+    ),
+    makeQuestion(
+      [
+        'Dacă presiunea atmosferică scade rapid, atunci se formează nori de furtună.',
+        'Presiunea atmosferică nu a scăzut rapid.',
+      ],
+      'Ce putem afirma cu certitudine?',
       'Nu putem stabili cu certitudine dacă s-au format nori de furtună.',
-      'Nu există nori de furtună și nu există precipitații.',
-    ],
-    correct_answer: 2,
-    explanation: 'Negarea antecedentului (fallacy of denying the antecedent): P→Q, ¬P nu implică ¬Q. Norii de furtună pot apărea și din alte cauze. Nu putem concluziona nimic cert despre starea norilor.',
-    difficulty: 3,
-    metadata: {},
-    is_active: true,
-  },
-]
+      [
+        'Nu s-au format nori de furtună.',
+        'Probabilitatea de precipitații este nulă.',
+        'Cerul este sigur senin.',
+      ],
+      'Negarea antecedentului nu permite inferența negării consecventului; furtuna ar putea apărea și din alte cauze.',
+      3,
+      { family: 'fallacy' }
+    ),
+  ]
+}
+
+function comparisonQuestions(): QuestionDraft[] {
+  return [
+    makeQuestion(
+      [
+        'Andrei este mai înalt decât Bogdan.',
+        'Bogdan este mai înalt decât Cătălin.',
+      ],
+      'Care dintre concluzii este necesară?',
+      'Andrei este mai înalt decât Cătălin.',
+      [
+        'Cătălin este mai înalt decât Andrei.',
+        'Bogdan și Andrei au aceeași înălțime.',
+        'Nu se poate compara Andrei cu Cătălin.',
+      ],
+      'Este un silogism liniar de tip tranzitiv: dacă A > B și B > C, atunci A > C.',
+      1,
+      { family: 'comparatie-lineara' }
+    ),
+    makeQuestion(
+      [
+        'Documentul A este mai recent decât documentul B.',
+        'Documentul B este mai recent decât documentul C.',
+        'Documentul C este mai recent decât documentul D.',
+      ],
+      'Ce concluzie rezultă cu necesitate?',
+      'Documentul A este mai recent decât documentul D.',
+      [
+        'Documentul D este mai recent decât documentul A.',
+        'Documentul B este mai vechi decât documentul D.',
+        'Nu se poate stabili ordinea dintre A și D.',
+      ],
+      'Ordinea temporală este tranzitivă pe întreg lanțul: A > B > C > D, deci A > D.',
+      2,
+      { family: 'comparatie-lineara' }
+    ),
+  ]
+}
+
+const items: QuestionDraft[] = ensureUniqueByText([
+  ...universalChainQuestions(),
+  ...universalNegativeQuestions(),
+  ...particularInferenceQuestions(),
+  ...conditionalQuestions(),
+  ...comparisonQuestions(),
+])
 
 export function generateRationamentAnalitic(institution: string): QuestionRow[] {
-  return items.map(item => ({ ...item, institution }))
+  return attachInstitution(items, institution)
 }

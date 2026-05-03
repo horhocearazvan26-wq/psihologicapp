@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getRequiredUser } from '@/lib/supabase/server'
 import { getProfile } from '@/lib/supabase/queries'
 import { DashboardClient } from '@/components/dashboard/dashboard-client'
 
@@ -28,9 +28,9 @@ function DashboardSkeleton() {
 }
 
 async function DashboardContent() {
+  const user = await getRequiredUser('/auth/login')
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  const userId = user!.id
+  const userId = user.id
 
   const [profile, { data: recentSessions }, { data: progressData }] = await Promise.all([
     getProfile(userId),   // returns cached result from layout — no extra DB call

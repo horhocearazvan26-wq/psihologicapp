@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getRequiredUser } from '@/lib/supabase/server'
 import { cn } from '@/lib/utils'
 import { Award, BookOpen, Brain, Flame, Goal, Palette, Shield, Sparkles, Star, Target, Trophy, Zap } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -41,11 +41,11 @@ const achievements: Achievement[] = [
 ]
 
 export default async function AchievementsPage() {
+  const user = await getRequiredUser('/auth/login')
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
 
   const { data: sessions } = await supabase
-    .from('test_sessions').select('*').eq('user_id', user!.id)
+    .from('test_sessions').select('*').eq('user_id', user.id)
     .eq('completed', true).order('completed_at', { ascending: false })
 
   const totalTests = sessions?.length ?? 0

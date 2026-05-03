@@ -1,228 +1,101 @@
 import type { QuestionRow } from './rationament-analitic'
+import {
+  attachInstitution,
+  buildMcqOptions,
+  ensureUniqueByText,
+  type Difficulty,
+  type QuestionDraft,
+} from './helpers'
 
-const items: Omit<QuestionRow, 'institution'>[] = [
-  {
+function makeQuestion(
+  prompt: string,
+  correct: string,
+  distractors: string[],
+  explanation: string,
+  difficulty: Difficulty,
+  metadata: Record<string, unknown> = {}
+): QuestionDraft {
+  const { options, correct_answer } = buildMcqOptions(correct, distractors, prompt)
+  return {
     category: 'transfer-analogic',
-    question_text: 'CARTE este pentru CITIT ceea ce VIOARĂ este pentru ___',
-    options: ['Ascultat', 'Cântat', 'Compus', 'Acordat'],
-    correct_answer: 1,
-    explanation: 'O carte este instrumentul activității de citit; o vioară este instrumentul activității de cântat.',
-    difficulty: 1,
-    metadata: {},
+    question_text: prompt,
+    options,
+    correct_answer,
+    explanation,
+    difficulty,
+    metadata,
     is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'SĂMÂNȚĂ este pentru PLANTĂ ceea ce OUĂ este pentru ___',
-    options: ['Coajă', 'Pasăre', 'Cuib', 'Pene'],
-    correct_answer: 1,
-    explanation: 'Sămânța este forma incipientă a plantei; oul este forma incipientă a păsării.',
-    difficulty: 1,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'CUVÂNT este pentru PROPOZIȚIE ceea ce NOTĂ este pentru ___',
-    options: ['Muzician', 'Melodie', 'Portativ', 'Ritm'],
-    correct_answer: 1,
-    explanation: 'Cuvintele se combină pentru a forma propoziții; notele se combină pentru a forma melodii.',
-    difficulty: 1,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'TERMOMETRU este pentru TEMPERATURĂ ceea ce BAROMETRU este pentru ___',
-    options: ['Umiditate', 'Vânt', 'Presiune atmosferică', 'Precipitații'],
-    correct_answer: 2,
-    explanation: 'Termometrul măsoară temperatura; barometrul măsoară presiunea atmosferică.',
-    difficulty: 1,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'MIEL este pentru OAIE ceea ce PUI este pentru ___',
-    options: ['Rață', 'Găină', 'Porumbel', 'Curcan'],
-    correct_answer: 1,
-    explanation: 'Mielul este puiul oii; puiul este descendentul tinerei găinii.',
-    difficulty: 1,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'STUP este pentru ALBINE ceea ce MUSUROI este pentru ___',
-    options: ['Termite', 'Furnici', 'Viespi', 'Gândaci'],
-    correct_answer: 1,
-    explanation: 'Stupul este habitatul coloniei de albine; mușuroiul este habitatul coloniei de furnici.',
-    difficulty: 1,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'AMIDON este pentru GLUCOZĂ ceea ce PROTEINĂ este pentru ___',
-    options: ['Lipide', 'Aminoacizi', 'Vitamine', 'Minerale'],
-    correct_answer: 1,
-    explanation: 'Amidonul se degradează în glucoză (monozaharidă); proteina se degradează în aminoacizi.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'PLANETĂ este pentru STEA ceea ce SATELIT este pentru ___',
-    options: ['Galaxie', 'Planetă', 'Stea', 'Cometă'],
-    correct_answer: 1,
-    explanation: 'Planeta orbitează în jurul stelei; satelitul orbitează în jurul planetei. Relația de orbită este aceeași, dar la nivel ierarhic inferior.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'LEGE este pentru PARLAMENT ceea ce SENTINȚĂ este pentru ___',
-    options: ['Poliție', 'Avocat', 'Tribunal', 'Guvern'],
-    correct_answer: 2,
-    explanation: 'Legea este emis de Parlament; sentința este emisă de Tribunal.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'OSMOZĂ este pentru MEMBRANĂ ceea ce DIFUZIE este pentru ___',
-    options: ['Presiune', 'Gradient de concentrație', 'Temperatură', 'Cataliz'],
-    correct_answer: 1,
-    explanation: 'Osmoza este mișcarea solventului prin membrană; difuzia este mișcarea substanțelor de-a lungul gradientului de concentrație.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'EROZIUNE este pentru ROCĂ ceea ce INFLAȚIE este pentru ___',
-    options: ['Bani', 'Putere de cumpărare', 'Prețuri', 'Dobândă'],
-    correct_answer: 1,
-    explanation: 'Eroziunea reduce/degradează roca; inflația reduce puterea de cumpărare.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'CATALIZATOR este pentru REACȚIE CHIMICĂ ceea ce FERMĂ este pentru ___',
-    options: ['Investiție', 'Profit economic', 'Accelerarea creșterii economice', 'Stimulul economic'],
-    correct_answer: 3,
-    explanation: 'Catalizatorul accelerează reacția chimică fără a fi consumat; stimulul economic accelerează activitatea economică fără a fi o resursă permanentă.',
-    difficulty: 3,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'ATROFIE este pentru MUȘCHI ceea ce DEPOPULARE este pentru ___',
-    options: ['Oraș', 'Economie', 'Cultură', 'Resurse'],
-    correct_answer: 0,
-    explanation: 'Atrofia reprezintă diminuarea masei musculare prin neutilizare; depopularea reprezintă scăderea populației unui oraș.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'PARADOX este pentru LOGICĂ ceea ce DISONANȚĂ este pentru ___',
-    options: ['Muzică', 'Filozofie', 'Fizică', 'Matematică'],
-    correct_answer: 0,
-    explanation: 'Paradoxul este o contradicție internă care sfidează logica; disonanța este o combinație de sunete care sfidează armonia muzicală.',
-    difficulty: 3,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'FOTOSINTEZA este pentru CLOROPLAST ceea ce RESPIRAȚIA CELULARĂ este pentru ___',
-    options: ['Nucleu', 'Mitocondrie', 'Ribozom', 'Reticul endoplasmatic'],
-    correct_answer: 1,
-    explanation: 'Fotosinteza are loc în cloroplaste; respirația celulară are loc în mitocondrii.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'ANTICORP este pentru ANTIGEN ceea ce CHEIE este pentru ___',
-    options: ['Ușă', 'Lacăt', 'Mâner', 'Broască'],
-    correct_answer: 1,
-    explanation: 'Anticorpul se leagă specific de antigen (structura complementară); cheia este proiectată să deschidă un anumit lacăt (structura complementară).',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'SEISM este pentru CUTREMUR ceea ce TSUNAMI este pentru ___',
-    options: ['Vânt puternic', 'Undă seismică marină', 'Alunecarea stratului de rocă', 'Erupție vulcanică'],
-    correct_answer: 1,
-    explanation: 'Seismul este termenul tehnic pentru cutremur; tsunami este termenul tehnic pentru undă seismică marină.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'IMPULS este pentru NEURON ceea ce SEMNAL este pentru ___',
-    options: ['Receptor', 'Fibră optică', 'Antenă', 'Emițător'],
-    correct_answer: 1,
-    explanation: 'Impulsul electric se propagă prin neuron; semnalul luminos se propagă prin fibra optică.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'SINTAXĂ este pentru LIMBAJ ceea ce ALGORITM este pentru ___',
-    options: ['Calculator', 'Matematică', 'Programare', 'Logică'],
-    correct_answer: 2,
-    explanation: 'Sintaxa definește regulile de structurare a unui limbaj; algoritmul definește regulile de structurare a programării (rezolvarea problemelor).',
-    difficulty: 3,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'PARADIGMĂ este pentru ȘTIINȚĂ ceea ce DOGMĂ este pentru ___',
-    options: ['Filozofie', 'Religie', 'Politică', 'Artă'],
-    correct_answer: 1,
-    explanation: 'Paradigma este un cadru acceptat de referință în știință (Kuhn); dogma este un cadru acceptat de referință în religie — ambele structurează gândirea în domeniu.',
-    difficulty: 3,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'COROZIUNE este pentru METAL ceea ce PUTREFACȚIE este pentru ___',
-    options: ['Plastic', 'Materie organică', 'Rocă', 'Sticlă'],
-    correct_answer: 1,
-    explanation: 'Coroziunea este procesul de degradare chimică a metalelor; putrefacția este procesul de degradare biologică a materiei organice.',
-    difficulty: 2,
-    metadata: {},
-    is_active: true,
-  },
-  {
-    category: 'transfer-analogic',
-    question_text: 'PLACEBO este pentru MEDICAMENT ceea ce SIMULACRU este pentru ___',
-    options: ['Artă', 'Realitate', 'Iluzie', 'Ficțiune'],
-    correct_answer: 1,
-    explanation: 'Placebo-ul imită un medicament fără a fi unul real; simulacrul imită realitatea fără a fi realitate — ambele sunt copii fără substanța originalului.',
-    difficulty: 3,
-    metadata: {},
-    is_active: true,
-  },
+  }
+}
+
+const directAnalogies: Array<[string, string, string, string, string[]]> = [
+  ['CARTE', 'CITIT', 'VIOARĂ', 'CÂNTAT', ['ASCULTAT', 'ACORDAT', 'COMPUS']],
+  ['TERMOMETRU', 'TEMPERATURĂ', 'BAROMETRU', 'PRESIUNE ATMOSFERICĂ', ['UMIDITATE', 'VÂNT', 'ALTITUDINE']],
+  ['STUP', 'ALBINE', 'MUȘUROI', 'FURNICI', ['TERMITE', 'GÂNDACI', 'VIESPI']],
+  ['PLANETĂ', 'STEA', 'SATELIT', 'PLANETĂ', ['GALAXIE', 'COMETĂ', 'ASTEROID']],
+  ['LEGE', 'PARLAMENT', 'SENTINȚĂ', 'TRIBUNAL', ['GUVERN', 'POLIȚIE', 'AVOCAT']],
+  ['CLOROPLAST', 'FOTOSINTEZĂ', 'MITOCONDRIE', 'RESPIRAȚIE CELULARĂ', ['DIVIZIUNE', 'TRANSCRIPȚIE', 'FERMENTAȚIE']],
+  ['ANTICORP', 'ANTIGEN', 'CHEIE', 'LACĂT', ['MÂNER', 'BROASCĂ', 'BALAMA']],
+  ['SINTAXĂ', 'LIMBAJ', 'ALGORITM', 'PROGRAMARE', ['LOGICĂ', 'MATEMATICĂ', 'COMPILATOR']],
+  ['COROZIUNE', 'METAL', 'PUTREFACȚIE', 'MATERIE ORGANICĂ', ['PLASTIC', 'STICLĂ', 'RĂȘINĂ']],
+  ['EPITELIU', 'PROTECȚIE', 'NEURON', 'TRANSMITERE', ['DIVIZIUNE', 'DIGESTIE', 'DILATARE']],
 ]
 
+const relationalAnalogies: Array<[string, string, string, string, string[], string]> = [
+  ['MIEL', 'OAIE', 'PUI', 'GĂINĂ', ['RAȚĂ', 'CURCAN', 'CUȘCĂ'], 'relație de descendent'],
+  ['SEMINȚE', 'PLANTĂ', 'OU', 'PASĂRE', ['PENE', 'CUIB', 'COAJĂ'], 'relație de formă incipientă'],
+  ['CUVÂNT', 'PROPOZIȚIE', 'NOTĂ', 'MELODIE', ['PORTATIV', 'RITM', 'MUZICIAN'], 'relație parte-întreg compozițional'],
+  ['OSMOZĂ', 'MEMBRANĂ', 'DIFUZIE', 'GRADIENT DE CONCENTRAȚIE', ['PRESIUNE', 'TEMPERATURĂ', 'CATALIZATOR'], 'relație proces-condiție'],
+  ['EROZIUNE', 'ROCĂ', 'INFLAȚIE', 'PUTERE DE CUMPĂRARE', ['PREȚURI', 'DOBÂNDĂ', 'MONEDĂ'], 'relație proces de diminuare'],
+  ['ATROFIE', 'MUȘCHI', 'DEPOPULARE', 'ORAȘ', ['ECONOMIE', 'INFRASTRUCTURĂ', 'CULTURĂ'], 'relație de reducere a masei/numărului'],
+  ['PARADOX', 'LOGICĂ', 'DISONANȚĂ', 'MUZICĂ', ['FILOZOFIE', 'FIZICĂ', 'MATEMATICĂ'], 'relație de tensiune față de regulile domeniului'],
+  ['SEISM', 'CUTREMUR', 'TSUNAMI', 'UNDĂ SEISMICĂ MARINĂ', ['ERUPȚIE', 'ALUNECARE', 'VÂNT PUTERNIC'], 'relație termen tehnic - fenomen'],
+  ['IMPULS', 'NEURON', 'SEMNAL', 'FIBRĂ OPTICĂ', ['EMIȚĂTOR', 'ANTENĂ', 'RECEPTOR'], 'relație propagare prin suport'],
+  ['PARADIGMĂ', 'ȘTIINȚĂ', 'DOGMĂ', 'RELIGIE', ['POLITICĂ', 'ARTĂ', 'RETORICĂ'], 'relație cadru de referință al domeniului'],
+]
+
+const functionalAnalogies: Array<[string, string, string, string, string[]]> = [
+  ['SCALPEL', 'INCIZIE', 'DALTĂ', 'CIOPLIRE', ['POLIZARE', 'MĂSURARE', 'FIXARE']],
+  ['FILTRU', 'PURIFICARE', 'PARATRĂSNET', 'PROTECȚIE', ['ACCELERARE', 'DILATARE', 'CONSERVARE']],
+  ['CATALIZATOR', 'ACCELERAREA REACȚIEI', 'STIMULENT', 'ACCELERAREA ACTIVITĂȚII', ['DIZOLVAREA', 'NEUTRALIZAREA', 'IZOLAREA']],
+  ['ARHIVĂ', 'STOCARE', 'ANTENĂ', 'RECEPȚIE', ['COMPRESIE', 'DECODARE', 'EMISIE']],
+  ['CONSTITUȚIE', 'ORGANIZAREA STATULUI', 'GENOM', 'ORGANIZAREA ORGANISMULUI', ['EREDITATEA', 'MUTAȚIA', 'ADAPTAREA']],
+  ['BUSOLĂ', 'ORIENTARE', 'TERMOSTAT', 'REGLARE', ['AMPLIFICARE', 'COMPRESIE', 'PROIECȚIE']],
+]
+
+const items: QuestionDraft[] = ensureUniqueByText([
+  ...directAnalogies.map(([a, b, c, correct, distractors]) =>
+    makeQuestion(
+      `${a} este pentru ${b} ceea ce ${c} este pentru ___`,
+      correct,
+      distractors,
+      `Relația dintre primele două elemente este păstrată și în a doua pereche; varianta corectă este ${correct.toLowerCase()}.`,
+      1,
+      { family: 'direct' }
+    )
+  ),
+  ...relationalAnalogies.map(([a, b, c, correct, distractors, relation], index) =>
+    makeQuestion(
+      `${a} este pentru ${b} ceea ce ${c} este pentru ___`,
+      correct,
+      distractors,
+      `Analogia se bazează pe ${relation}. Relația A:B este replicată de C:${correct}.`,
+      index < 5 ? 2 : 3,
+      { family: 'relational', relation }
+    )
+  ),
+  ...functionalAnalogies.map(([a, b, c, correct, distractors], index) =>
+    makeQuestion(
+      `${a} este pentru ${b} ceea ce ${c} este pentru ___`,
+      correct,
+      distractors,
+      `În ambele perechi vorbim despre funcția principală a obiectului sau sistemului. ${a} servește pentru ${b.toLowerCase()}, iar ${c} pentru ${correct.toLowerCase()}.`,
+      index < 3 ? 2 : 3,
+      { family: 'functional' }
+    )
+  ),
+])
+
 export function generateTransferAnalogic(institution: string): QuestionRow[] {
-  return items.map(item => ({ ...item, institution }))
+  return attachInstitution(items, institution)
 }
