@@ -77,6 +77,7 @@ export async function signInWithGoogle(redirectTo?: string) {
     provider: 'google',
     options: {
       redirectTo: callbackUrl.toString(),
+      skipBrowserRedirect: true,
     },
   })
 
