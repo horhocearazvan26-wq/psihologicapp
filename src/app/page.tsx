@@ -9,6 +9,7 @@ import {
   Play, Flame, Trophy, Sparkles,
 } from 'lucide-react'
 import { ScrollReveal } from '@/components/ui/scroll-reveal'
+import { IosNotification } from '@/components/ui/ios-notification'
 
 const sora = Sora({ subsets: ['latin'], weight: ['700', '800'] })
 
@@ -468,31 +469,7 @@ export default async function HomePage() {
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: -1, height: 100, background: 'linear-gradient(180deg,rgba(2,8,20,0) 0%,rgba(2,8,20,0.8) 100%)', pointerEvents: 'none' }} />
 
         {/* iOS Notification */}
-        <div className="ios-notif-wrap" style={{ position: 'absolute', top: 24, left: '50%', width: 'min(380px, calc(100vw - 40px))', zIndex: 20 }}>
-          <div className="ios-notif">
-            <div style={{ padding: '14px 14px 0' }}>
-              <div style={{ display: 'flex', gap: 11, alignItems: 'flex-start' }}>
-                {/* App icon */}
-                <div style={{ width: 44, height: 44, borderRadius: 11, background: 'linear-gradient(145deg,#2563eb,#7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(37,99,235,0.35)' }}>
-                  <Brain style={{ width: 22, height: 22, color: 'white' }} />
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#1c1c1e', letterSpacing: '-0.01em' }}>PsihoPrep</span>
-                    <span style={{ fontSize: 12, color: '#8e8e93', fontWeight: 400 }}>acum</span>
-                  </div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#1c1c1e', lineHeight: 1.3, marginBottom: 3 }}>Sesiunea ANP este activă</div>
-                  <div style={{ fontSize: 13, color: '#3c3c43', lineHeight: 1.4, opacity: 0.72 }}>Dosar + psihologic în desfășurare. Pregăteste-te acum.</div>
-                </div>
-              </div>
-            </div>
-            <div style={{ height: 1, background: 'rgba(0,0,0,0.08)', margin: '12px 0 0' }} />
-            <div className="notif-actions">
-              <button className="notif-btn">Ignoră</button>
-              <Link href="/auth/register" className="notif-btn-cta">Pregătește-te →</Link>
-            </div>
-          </div>
-        </div>
+        <IosNotification />
 
         {/* Hero grid */}
         <div className="hero-grid" style={{ maxWidth: 1152, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: '1fr 460px', gap: 64, alignItems: 'center' }}>
