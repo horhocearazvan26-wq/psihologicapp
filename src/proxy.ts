@@ -1,22 +1,10 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-function hasSupabaseSessionCookie(request: NextRequest) {
-  return request.cookies
-    .getAll()
-    .some(cookie => cookie.name.startsWith('sb-') && cookie.name.includes('auth-token'))
-}
-
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const isProtectedRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/onboarding')
   const isAuthRoute = pathname.startsWith('/auth') && pathname !== '/auth/callback'
-  const isHome = pathname === '/'
-  const mightHaveSession = hasSupabaseSessionCookie(request)
-
-  if (!isProtectedRoute && !isAuthRoute && !(isHome && mightHaveSession)) {
-    return NextResponse.next({ request })
-  }
 
   let supabaseResponse = NextResponse.next({ request })
 
@@ -41,17 +29,17 @@ export async function proxy(request: NextRequest) {
     }
   )
 
+  // Always refresh the session so cookies stay current
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (isHome && user) {
+  if (pathname === '/' && user) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 
-  // Protected routes — require authentication
   if (isProtectedRoute && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth/login'
@@ -59,7 +47,6 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Auth routes — redirect if already logged in
   if (isAuthRoute && user) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
