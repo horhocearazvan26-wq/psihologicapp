@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Brain, Loader2 } from 'lucide-react'
-import { signInWithEmail, signUpWithEmail, signInWithGoogle, resetPassword } from '@/app/auth/actions'
+import { signInWithEmail, signUpWithEmail, resetPassword } from '@/app/auth/actions'
 import { createClient } from '@/lib/supabase/client'
 
 type AuthMode = 'login' | 'register' | 'forgot' | 'reset'
@@ -77,12 +77,16 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
   async function handleGoogleSignIn() {
     setLoading(true)
     setError(null)
-    const result = await signInWithGoogle(redirectTo)
-    if (result?.error) {
-      setError(result.error)
+    const supabase = createClient()
+    const callbackUrl = new URL('/auth/callback', window.location.origin)
+    if (redirectTo) callbackUrl.searchParams.set('next', redirectTo)
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: callbackUrl.toString() },
+    })
+    if (error) {
+      setError(error.message)
       setLoading(false)
-    } else if (result?.url) {
-      window.location.href = result.url
     }
   }
 
