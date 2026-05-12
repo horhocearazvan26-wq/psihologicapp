@@ -62,32 +62,33 @@
 html {
   height: 100%;
   scroll-behavior: smooth;
-  background: #f7f8f6;
+  background: #07101e;
 }
 
 body {
   min-height: 100%;
   background: var(--bg-base);
   color: var(--text-primary);
-  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
+  font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+  letter-spacing: -0.01em;
   background-image:
-    linear-gradient(to right, rgb(255 255 255 / 0.32) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(255 255 255 / 0.32) 1px, transparent 1px);
+    linear-gradient(to right, rgb(255 255 255 / 0.28) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.28) 1px, transparent 1px);
   background-size: 36px 36px;
 }
 
 .dark body {
   background-image:
-    linear-gradient(to right, rgb(80 140 255 / 0.025) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(80 140 255 / 0.025) 1px, transparent 1px);
+    linear-gradient(to right, rgb(50 100 200 / 0.018) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(50 100 200 / 0.018) 1px, transparent 1px);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
-  letter-spacing: 0;
+  letter-spacing: -0.025em;
+  font-weight: 700;
 }
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -528,4 +529,194 @@ a, button, [role="button"] {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ── Raycast-style bottom nav ── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: stretch;
+  background: rgba(6, 10, 20, 0.88);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+@media (min-width: 768px) {
+  .bottom-nav { display: none !important; }
+}
+.bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 4px 8px;
+  position: relative;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  min-width: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.bottom-nav-item:active { opacity: 0.7; }
+.bottom-nav-indicator {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+  background: linear-gradient(90deg, #22d3ee, #818cf8);
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+  transition: width 0.2s cubic-bezier(.22,1,.36,1), opacity 0.2s ease;
+}
+
+/* ── Raycast-style dash card ── */
+.dash-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+.dash-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ── Raycast-style stat card ── */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.stat-card-value { animation: countUp 0.5s cubic-bezier(.22,1,.36,1) both; }
+
+/* ── Precision typography ── */
+.text-display {
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+.text-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ── Active glow effect ── */
+.nav-active-glow {
+  filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.5));
+}
+
+/* ── Frosted panel ── */
+.frosted-panel {
+  background: rgba(8, 16, 32, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+}
+
+/* ── Pulse dot ── */
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.4); }
+  50%       { box-shadow: 0 0 0 4px rgba(34, 211, 238, 0); }
+}
+.pulse-dot { animation: pulse-dot 2s ease infinite; }
+
+/* ── Guide pages — premium animations ── */
+@keyframes orbDrift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(36px, -28px) scale(1.07); }
+  66%       { transform: translate(-22px, 22px) scale(0.95); }
+}
+@keyframes borderGlimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+@keyframes badgeFloat {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50%       { transform: translateY(-6px) rotate(1.5deg); }
+}
+@keyframes bundleRingPulse {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(245,158,11,0.2), 0 0 40px rgba(245,158,11,0.06); }
+  50%       { box-shadow: 0 0 0 1.5px rgba(245,158,11,0.55), 0 0 60px rgba(245,158,11,0.16); }
+}
+@keyframes heroLineScan {
+  0%   { transform: translateX(-100%) skewX(-20deg); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateX(350%) skewX(-20deg); opacity: 0; }
+}
+
+.guide-orb-1 { animation: orbDrift 14s ease-in-out infinite; }
+.guide-orb-2 { animation: orbDrift 18s ease-in-out infinite reverse; animation-delay: -6s; }
+.guide-orb-3 { animation: orbDrift 11s ease-in-out infinite; animation-delay: -3s; }
+
+.guide-card {
+  transition: transform 0.35s cubic-bezier(.22,1,.36,1), box-shadow 0.35s ease, border-color 0.28s ease !important;
+}
+.guide-card:hover {
+  transform: translateY(-8px) translateZ(0);
+  box-shadow: 0 40px 90px var(--card-glow-color, rgba(0,0,0,0.1)), 0 12px 30px rgba(0,0,0,0.06) !important;
+}
+
+.bundle-badge   { animation: badgeFloat 3.5s ease-in-out infinite; }
+.bundle-ring    { animation: bundleRingPulse 3s ease-in-out infinite; }
+
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.30s; }
+.stagger-7 { animation-delay: 0.35s; }
+.stagger-8 { animation-delay: 0.40s; }
+
+/* FAQ card hover */
+.faq-card {
+  border: 1px solid #eaeef4;
+  background: white;
+  box-shadow: 0 10px 36px rgba(15,23,42,0.04);
+  transition: box-shadow 0.25s ease !important;
+}
+.faq-card:hover {
+  box-shadow: 0 16px 50px rgba(15,23,42,0.09) !important;
+}
+
+/* source link hover */
+.source-link {
+  border: 1px solid #ddd5c5;
+  background: white;
+  box-shadow: 0 6px 20px rgba(15,23,42,0.04);
+  transition: border-color 0.22s ease, box-shadow 0.22s ease !important;
+}
+.source-link:hover {
+  border-color: #b78022 !important;
+  box-shadow: 0 10px 30px rgba(183,128,34,0.13) !important;
+}
+
+/* timeline vertical line */
+.timeline-track::before {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 36px;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(217,180,95,0.6) 0%, rgba(217,180,95,0.08) 100%);
+}
+
+/* hero scan line (purely decorative) */
+.hero-scan::after {
+  content: '';
+  position: absolute;
+  inset-y-0: 0;
+  width: 60px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+  animation: heroLineScan 5s ease-in-out infinite;
+  animation-delay: 2s;
+  pointer-events: none;
 }
