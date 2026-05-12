@@ -159,7 +159,7 @@ export default function GuidesPage() {
                 className="btn-shimmer inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-sm font-extrabold text-[#060d18] transition-transform hover:-translate-y-0.5 active:translate-y-0"
                 style={{ background: '#ffffff', boxShadow: '0 8px 28px rgba(0,0,0,0.35)' }}
               >
-                Explorează ghidurile
+                Vedere ghidurile
               </a>
               <Link
                 href="/ghid/test-psihologic-anp-2026"
